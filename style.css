@@ -1,0 +1,536 @@
+:root{
+  --toolbar-bg: #f6f7fb;
+  --btn-bg: #2b6ef6;
+  --btn-fg: white;
+  --mask-color: #000;
+  --mask-opacity: 1;
+  --selected-border: 3px solid #ffd54d;
+}
+
+/* reset */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family: system-ui, "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
+  margin:0;
+  padding:0;
+  color:#111;
+  background:#fff;
+}
+
+/* header */
+header{
+  padding:24px 30px;
+  border-bottom:1.5px solid #e6e9ef;
+  background:var(--toolbar-bg);
+  display:flex;
+  align-items:center;
+}
+header h1{
+  font-size:30px;
+  margin:0;
+}
+
+/* main layout */
+.container {
+  padding:20px;
+  display:flex;
+  gap:20px;
+  align-items:flex-start;
+}
+
+h2 {
+    font-size: 50px;
+}
+
+p {
+    font-size:25px;
+}
+
+.how-to-use {
+  margin-top: 40px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.how-to-use h2 {
+  text-align: center;
+  margin-bottom: 16px;
+  font-size:40px;
+}
+
+.how-to-use ol {
+  padding-left: 0;
+  margin-left: 0;
+  list-style-position: inside;
+  font-size:19px;
+}
+
+/* left column (main area) */
+.main-col{
+  flex:1;
+  min-width:640px;
+}
+
+/* right column (instructions) */
+.side-col{
+  width:320px;
+}
+
+/* big button group area (below header) */
+.action-area{
+  margin:18px 0;
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+/* tool-group: group buttons by role */
+.tool-group {
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+
+/* add extra space between the two tool groups -> doubled */
+.tool-group + .tool-group {
+  margin-left:56px; /* was 28px, now doubled */
+}
+
+/* Big buttons: 1.5x previous size -> larger padding/font */
+.big-btn{
+  padding:12px 10px;
+  border-radius:10px;
+  font-size:16px;
+  background:var(--btn-bg);
+  color:var(--btn-fg);
+  border:none;
+  cursor:pointer;
+}
+
+.secondary-btn{
+  padding:10px 14px;
+  border-radius:8px;
+  font-size:0.95rem;
+  background:#fff;
+  border:1px solid #ccc;
+  cursor:pointer;
+}
+
+/* select for shape compact (changed min-width from 120px to 80px) */
+#shapeSelect {
+  min-width:80px;
+}
+
+/* image area */
+.image-area{
+  position:relative;
+  width:100%;
+  min-height:360px;
+  border:1px solid #ddd;
+  background:#fafafa;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:auto;
+}
+
+/* image itself */
+.image-area img{
+  display:block;
+  max-width:100%;
+  height:auto;
+}
+
+/* mask base */
+.mask{
+  position:absolute;
+  background:var(--mask-color);
+  opacity:var(--mask-opacity);
+  cursor:move;
+  box-sizing:border-box;
+  z-index: 60; /* ensure masks are above text-box in edit mode */
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* circle mask */
+.mask.circle{
+  border-radius:50%;
+}
+
+/* selected style */
+.mask.selected{
+  outline: var(--selected-border);
+  outline-offset: -4px;
+}
+
+/* resize handle */
+.resize-handle{
+  position:absolute;
+  width:12px;
+  height:12px;
+  right:0;
+  bottom:0;
+  background:#fff;
+  border:1px solid #333;
+  box-sizing:border-box;
+  cursor:se-resize;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* text-box styles */
+.text-box {
+  position:absolute;
+  background:#fff;
+  z-index: 50; /* lower than mask so masks visually overlay text in edit mode */
+}
+.text-box-inner {
+  pointer-events:none;
+}
+
+/* editor toolbar (in edit page) */
+.editor-tools{
+  margin-top:12px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+/* project list in study page */
+.project-card{
+  border:1px solid #e6e9ef;
+  padding:8px;
+  margin-bottom:12px;
+  background:#fff;
+}
+
+/* accordion header */
+.project-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:8px;
+  cursor:pointer;
+  user-select:none;
+  border:1px solid #e6e9ef;
+  border-radius:6px;
+  background:#fff;
+  margin-bottom:6px;
+}
+
+/* header title/date */
+.project-header .title {
+  font-weight:600;
+}
+
+/* category chip in header */
+.category-chip {
+  display:inline-block;
+  font-size:0.8rem;
+  padding:4px 8px;
+  border-radius:12px;
+  background:#eef6ff;
+  color:#0b66d1;
+  margin-left:8px;
+  border:1px solid #d6eaff;
+}
+
+/* category icon (small) */
+.category-icon {
+  display:inline-block;
+  width:20px;
+  height:20px;
+  line-height:20px;
+  text-align:center;
+  border-radius:50%;
+  background:#f0f6ff;
+  color:#0b66d1;
+  font-size:12px;
+  margin-left:8px;
+  cursor:help;
+}
+
+/* delete icon in header */
+.delete-icon{
+  background:transparent;
+  border:none;
+  cursor:pointer;
+  font-size:16px;
+  line-height:1;
+  padding:4px;
+  border-radius:6px;
+  color:#c44;
+}
+.delete-icon:hover{
+  background:rgba(200,100,100,0.08);
+}
+
+/* checkbox - make larger and easier to click */
+.project-header input[type="checkbox"]{
+  transform: scale(2); /* visual scale */
+  transform-origin: center;
+  margin: 0 8px;
+  width: 18px;
+  height: 18px;
+  /* increase hit area using padding on surrounding element (header) */
+}
+
+/* folded content */
+.project-content {
+  display:none;
+  padding:8px;
+  border:1px solid #eee;
+  background:#fafafa;
+  border-radius:6px;
+  margin-bottom:12px;
+}
+
+/* when open */
+.project-card.open .project-content {
+  display:block;
+}
+
+/* modal for text insertion */
+.modal{
+  position:fixed;
+  left:0;
+  top:0;
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: rgba(0,0,0,0.4);
+  z-index: 1000;
+}
+.modal .modal-content{
+  background:#fff;
+  padding:16px;
+  border-radius:8px;
+  width: min(720px, 90%);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+}
+
+/* fullscreen button (study) */
+.fullscreen-btn {
+  padding:8px 12px;
+  font-size:0.95rem;
+  border-radius:8px;
+  border:1px solid #ccc;
+  background:#fff;
+  cursor:pointer;
+}
+
+/* small utility */
+.hidden { display:none !important; }
+.note-box{
+  padding:12px;
+  border:1px dashed #ddd;
+  background:#fbfbff;
+  border-radius:8px;
+}
+
+.footer-note{
+  margin-top:18px;
+  color:#666;
+  font-size:0.9rem;
+}
+
+/* ===== Top page button styles ===== */
+.home-action-btn{
+  display:inline-block;
+  padding:28px 36px; /* larger padding */
+  border-radius:14px;
+  background:var(--btn-bg);
+  color:var(--btn-fg);
+  text-decoration:none;
+  font-weight:700;
+  font-size:2.1rem; /* approx 2x of big button text */
+  box-shadow: 0 6px 18px rgba(43,110,246,0.18);
+  min-width:220px;
+  text-align:center;
+  white-space: nowrap;
+}
+.home-action-btn:hover{
+  transform: translateY(-2px);
+}
+
+/* ===== shared mobile responsiveness ===== */
+.category-editor-panel{
+  max-width: 92vw !important;
+  width: min(92vw, 420px) !important;
+  min-width: 0 !important;
+  box-sizing: border-box;
+}
+
+button,
+.big-btn,
+.secondary-btn,
+.home-action-btn,
+.fullscreen-btn{
+  white-space: nowrap;
+}
+
+@media (max-width:768px){
+  html,body{
+    overflow-x:hidden;
+  }
+
+  header{
+    padding:16px 18px;
+  }
+  header h1{
+    font-size:22px;
+  }
+
+  .container{
+    padding:12px;
+    gap:14px;
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .main-col,
+  .side-col{
+    width:100%;
+    min-width:0;
+  }
+
+  h2{
+    font-size:30px;
+  }
+
+  p{
+    font-size:16px;
+  }
+
+  .how-to-use{
+    margin-top:24px;
+    max-width:100%;
+  }
+  .how-to-use h2{
+    font-size:22px;
+  }
+  .how-to-use ol{
+    font-size:15px;
+    line-height:1.6;
+  }
+
+  .action-area{
+    margin:14px 0;
+    gap:8px;
+  }
+
+  .tool-group{
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  .tool-group + .tool-group{
+    margin-left:0;
+    margin-top:8px;
+  }
+
+  .big-btn{
+    padding:11px 12px;
+    font-size:15px;
+  }
+
+  .secondary-btn{
+    padding:10px 12px;
+    font-size:14px;
+  }
+
+  .home-action-btn{
+    padding:15px 16px;
+    font-size:1.08rem;
+    min-width:0;
+    max-width:46vw;
+  }
+
+  .image-area{
+    min-height:280px;
+  }
+
+  .note-box{
+    padding:10px;
+  }
+
+  .project-header{
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  .project-header .title{
+    font-size:1rem;
+  }
+
+  .project-header .meta{
+    font-size:0.82rem;
+  }
+
+  .project-header input[type="checkbox"]{
+    transform:scale(1.6);
+    margin:0 4px;
+  }
+
+  .project-content{
+    min-height:220px;
+  }
+
+  .project-content > div{
+    flex-wrap:wrap;
+  }
+
+  .project-content .fullscreen-btn{
+    padding:8px 10px;
+    font-size:0.9rem;
+  }
+
+  .modal .modal-content{
+    width:min(92vw, 720px);
+    padding:14px;
+  }
+
+  #shapeSelect{
+    min-width:0;
+    max-width:100%;
+  }
+
+  /* study page top bar and similar inline flex rows */
+  div[style*="display:flex"][style*="gap:12px"][style*="align-items:center"]{
+    flex-wrap:wrap;
+  }
+
+  div[style*="display:flex"][style*="gap:8px"]{
+    flex-wrap:wrap;
+  }
+
+  #btnBackHome{
+    margin-left:0 !important;
+  }
+
+  label[for="sortSelect"],
+  label[for="displayFilterSelect"]{
+    margin-left:0 !important;
+  }
+
+  #sortSelect,
+  #displayFilterSelect{
+    min-width:0;
+    flex:1 1 160px;
+    max-width:100%;
+  }
+
+  input,
+  select,
+  textarea{
+    font-size:16px;
+  }
+}

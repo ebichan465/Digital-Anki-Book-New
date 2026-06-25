@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Digital Anki Book - 暗記モード</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Digital Anki Book</h1>
+  </header>
+
+  <div class="container">
+    <div class="main-col">
+      <div style="margin-bottom:12px; display:flex; gap:12px; align-items:center;">
+        <button id="btnBackHome" class="big-btn">トップに戻る</button>
+        <label for="sortSelect" style="margin-left:12px;">並び順</label>
+        <select id="sortSelect" style="padding:8px; border-radius:6px;">
+          <option value="new">新しい順</option>
+          <option value="old">古い順</option>
+        </select>
+
+        <!-- 新: 表示する画像フィルタ -->
+        <label for="displayFilterSelect" style="margin-left:12px;">表示する画像</label>
+        <select id="displayFilterSelect" style="padding:8px; border-radius:6px;">
+          <!-- options populated dynamically by study.js -->
+        </select>
+      </div>
+
+      <div id="projectsList"></div>
+    </div>
+
+    <aside class="side-col">
+      <div class="note-box">
+        <h3>使い方</h3>
+        <ol>
+          <li>開きたい画像の枠をクリック→画像が表示される</li>
+          <li>画像内のマスクをクリックすると、答えが表示。</li>
+          <li>「リセット」ボタンで、その画像のマスクをすべて初期状態に戻せる。</li>
+        </ol>
+      </div>
+    </aside>
+  </div>
+
+  <script src="study.js"></script>
+</body>
+</html>

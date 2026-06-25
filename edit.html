@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Digital Anki Book - 編集</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Digital Anki Book</h1>
+  </header>
+
+  <div class="container">
+    <div class="main-col">
+      <!-- 使い方をページ上部に表示 -->
+      <div style="margin-bottom:12px;">
+        <div class="note-box">
+          <h3>使い方</h3>
+          <ol>
+            <li>「画像選択」→ 画像を読み込む、または「テキスト挿入」→テキスト入力</li>
+            <li>「マスク追加」→ マスクが挿入される</li>
+            <li>マスクの色はカラーピッカーで変更可能。</li>
+            <li>完成したら名前をつけて保存。</li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="action-area" style="flex-direction:column; align-items:flex-start;">
+        <div style="display:flex; gap:12px; align-items:center;">
+          <div class="tool-group" id="editTools">
+            <button id="btnInsertText" class="secondary-btn">テキスト挿入</button>
+
+            <button id="btnChooseImage" class="big-btn">画像選択</button>
+
+            <input type="color" id="colorPicker" title="マスクの色" style="width:48px; height:40px; padding:0; border-radius:6px; border:1px solid #ccc;">
+
+            <!-- 形状選択をセレクトボックスに統合 -->
+            <select id="shapeSelect" title="マスク形状" style="height:40px; border-radius:6px; padding:6px;">
+              <option value="rect">四角形 □</option>
+              <option value="circle">円形 ◯</option>
+            </select>
+
+            <button id="btnDuplicateMask" class="secondary-btn">複製</button>
+
+            <button id="btnAddMask" class="big-btn">マスク追加</button>
+            <!-- ボタン名変更 -->
+            <button id="btnDeleteSelected" class="secondary-btn">マスク削除</button>
+          </div>
+
+          <div class="tool-group" id="actionTools">
+            <button id="btnSave" class="big-btn">保存</button>
+            <button id="btnBack" class="secondary-btn">トップへ戻る</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="image-area" id="imageArea">
+        <img id="mainImage" alt="画像がここに表示されます" />
+        <!-- textBox overlays appended here -->
+      </div>
+
+    </div>
+
+    <aside class="side-col">
+      <!-- Projects box -->
+      <div class="note-box" style="margin-bottom:12px;">
+        <h4 style="font-weight:700;">保存しているプロジェクト</h4>
+        <select id="projectSelect" style="width:100%; margin-bottom:8px;"></select>
+        <div style="display:flex; gap:8px; margin-bottom:8px;">
+          <button id="btnLoad" class="secondary-btn">読み込み</button>
+          <button id="btnDeleteProject" class="secondary-btn">削除</button>
+        </div>
+      </div>
+
+      <!-- Categories box (separated) -->
+      <div class="note-box" id="categoryBox" style="display:none;">
+        <h4 style="font-weight:700;">カテゴリを選択（複数可）</h4>
+        <!-- categoryList will be filled with checkbox items by JS -->
+        <div id="categoryList" style="display:flex; flex-direction:column; gap:6px; max-height:220px; overflow:auto; margin-bottom:8px;"></div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <button id="btnNewCategory" class="secondary-btn" style="width:100%;">新たなカテゴリ</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <input type="file" id="imageInput" accept="image/*" class="hidden" />
+
+  <div id="textModal" class="modal hidden" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <h3 style="margin-top:0;">テキスト挿入</h3>
+
+      <div style="display:flex; gap:8px; margin-bottom:8px;">
+        <div style="flex:1;">
+          <label style="font-size:0.9rem;">キャンバス幅 (px)</label>
+          <input id="textCanvasWidth" type="number" value="1200" min="200" max="4096" style="width:100%; margin-top:4px;" />
+        </div>
+        <div style="width:160px;">
+          <label style="font-size:0.9rem;">キャンバス高さ (px)</label>
+          <input id="textCanvasHeight" type="number" value="400" min="100" max="4096" style="width:100%; margin-top:4px;" />
+        </div>
+      </div>
+
+      <label style="font-size:0.9rem;">フォントサイズ (px)</label>
+      <input id="textFontSize" type="number" value="32" min="8" max="200" style="width:100%; margin-bottom:8px;" />
+
+      <label style="font-size:0.9rem;">文字色</label>
+      <input id="textColorPicker" type="color" value="#000000" style="width:100%; margin-bottom:8px; height:40px;" />
+
+      <label style="font-size:0.9rem;">テキスト（改行可）</label>
+      <textarea id="textInputArea" rows="6" style="width:100%; margin-bottom:8px;"></textarea>
+      <div style="display:flex; gap:8px; justify-content:flex-end;">
+        <button id="btnInsertCancel" class="secondary-btn">キャンセル</button>
+        <button id="btnInsertConfirm" class="big-btn">挿入</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="edit.js"></script>
+</body>
+</html>
