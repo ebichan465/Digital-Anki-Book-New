@@ -152,6 +152,9 @@ p {
   cursor:move;
   box-sizing:border-box;
   z-index: 60; /* ensure masks are above text-box in edit mode */
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* circle mask */
@@ -176,6 +179,9 @@ p {
   border:1px solid #333;
   box-sizing:border-box;
   cursor:se-resize;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 /* text-box styles */

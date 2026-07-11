@@ -1,3 +1,4 @@
+<!-- index.html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -19,22 +20,24 @@
       覚えたい画像の上に自分でマスクを配置し、クリック操作で答えを確認することで、演習形式の暗記学習ができます。
     </p>
 
-    <div style="display:flex; gap:18px; justify-content:center; margin-top:28px; flex-wrap:wrap;">
+    <div style="display:flex; flex-direction:column; gap:16px; justify-content:center; align-items:center; margin-top:28px;">
       <a href="edit.html" class="home-action-btn">マスクをつくる</a>
       <div class="home-study-wrap">
         <a href="study.html" class="home-action-btn" id="homeStudyLink">暗記モード</a>
         <div id="homeReviewBubble" class="review-bubble hidden" aria-live="polite"></div>
       </div>
     </div>
+
     <section class="how-to-use">
-  <h2>このサイトの使い方</h2>
-  <ol>
-    <li>「マスクをつくる」を押して、画像・テキストにマスクを挿入し、保存しよう</li>
-    <li>「暗記モード」を押して、保存した画像・テキストを使って学習しよう</li>
-  </ol>
-</section>
+      <h2>このサイトの使い方</h2>
+      <ol>
+        <li>「マスクをつくる」を押して、画像・テキストにマスクを挿入し、保存しよう</li>
+        <li>「暗記モード」を押して、保存した画像・テキストを使って学習しよう</li>
+      </ol>
+    </section>
   </div>
 </main>
+
 <script>
 (() => {
   const STORAGE_KEY = 'digital-anki-projects-v1';

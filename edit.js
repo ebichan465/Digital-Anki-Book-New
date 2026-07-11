@@ -1,3 +1,4 @@
+// edit.js
 (() => {
   const STORAGE_KEY = 'digital-anki-projects-v1';
   const CATS_KEY = 'digital-anki-categories-v1';
@@ -98,13 +99,35 @@
     currentProject.review = normalizeReviewForSave(currentProject.review, currentProject.createdAt);
   }
 
+  let activePointerInteractions = 0;
+  let previousBodyOverflow = '';
+
+  function lockPageScroll(){
+    if (activePointerInteractions === 0) {
+      previousBodyOverflow = document.body.style.overflow || '';
+    }
+    activePointerInteractions += 1;
+    document.body.style.overflow = 'hidden';
+  }
+
+  function unlockPageScroll(){
+    if (activePointerInteractions > 0) {
+      activePointerInteractions -= 1;
+    }
+    if (activePointerInteractions <= 0) {
+      activePointerInteractions = 0;
+      document.body.style.overflow = previousBodyOverflow;
+    }
+  }
+
   // ----- utils -----
   function uid(prefix='id'){ return prefix + '-' + Math.random().toString(36).slice(2,9); }
 
   function loadAllProjects(){
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
-    try { return JSON.parse(raw).projects || []; } catch(e){ return []; }
+    try { return JSON.parse(raw).projects || []; } catch(e){ return [];
+    }
   }
   function saveAllProjects(arr){ localStorage.setItem(STORAGE_KEY, JSON.stringify({projects: arr})); }
 
@@ -118,21 +141,6 @@
     try { return JSON.parse(raw).categories || []; } catch(e){ return []; }
   }
   function saveAllCategories(arr){ localStorage.setItem(CATS_KEY, JSON.stringify({categories: arr})); }
-
-  // Insert label "色" between image selection button and colorPicker (do it dynamically so HTML doesn't need editing)
-  (function insertColorLabelOnce(){
-    try {
-      if (!btnChooseImage || !colorPicker) return;
-      const existingLabel = colorPicker.previousSibling;
-      if (existingLabel && existingLabel.dataset && existingLabel.dataset.insertedColorLabel) return;
-      const label = document.createElement('span');
-      label.textContent = '色';
-      label.style.margin = '0 8px';
-      label.style.fontWeight = '600';
-      label.dataset.insertedColorLabel = '1';
-      colorPicker.parentNode && colorPicker.parentNode.insertBefore(label, colorPicker);
-    } catch(e){}
-  })();
 
   function refreshCategoryOptions(){
     const cats = loadAllCategories();
@@ -313,8 +321,10 @@
     el.className = 'mask';
     el.classList.add(m.shape || 'rect');
     el.dataset.id = m.id;
+    el.style.touchAction = 'none';
     const handle = document.createElement('div');
     handle.className = 'resize-handle';
+    handle.style.touchAction = 'none';
     el.appendChild(handle);
     imageArea.appendChild(el);
     m.el = el;
@@ -349,6 +359,7 @@
 
     el.addEventListener('pointerdown', (ev)=>{
       ev.preventDefault();
+      lockPageScroll();
       selectMask(m.id);
       startClient = { x: ev.clientX, y: ev.clientY };
       startBox = { left: el.offsetLeft, top: el.offsetTop, width: el.offsetWidth, height: el.offsetHeight };
@@ -371,10 +382,24 @@
     });
 
     window.addEventListener('pointerup', (ev)=>{
-      if (!dragging && !resizing) return;
+      if (!dragging && !resizing) {
+        unlockPageScroll();
+        return;
+      }
       try{ el.releasePointerCapture && el.releasePointerCapture(ev.pointerId);}catch(e){}
       dragging=false; resizing=false;
       commit();
+      unlockPageScroll();
+    });
+
+    window.addEventListener('pointercancel', ()=>{
+      if (!dragging && !resizing) {
+        unlockPageScroll();
+        return;
+      }
+      dragging=false;
+      resizing=false;
+      unlockPageScroll();
     });
 
     el.addEventListener('dblclick', (ev)=>{
