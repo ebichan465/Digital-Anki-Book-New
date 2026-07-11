@@ -152,9 +152,6 @@ p {
   cursor:move;
   box-sizing:border-box;
   z-index: 60; /* ensure masks are above text-box in edit mode */
-  touch-action: none;
-  -webkit-user-select: none;
-  user-select: none;
 }
 
 /* circle mask */
@@ -179,9 +176,6 @@ p {
   border:1px solid #333;
   box-sizing:border-box;
   cursor:se-resize;
-  touch-action: none;
-  -webkit-user-select: none;
-  user-select: none;
 }
 
 /* text-box styles */
@@ -342,7 +336,7 @@ p {
   font-size:0.9rem;
 }
 
-/* ===== Top page button styles ===== */
+/* ===== Top page: home-action-btn (2x size) ===== */
 .home-action-btn{
   display:inline-block;
   padding:28px 36px; /* larger padding */
@@ -355,33 +349,113 @@ p {
   box-shadow: 0 6px 18px rgba(43,110,246,0.18);
   min-width:220px;
   text-align:center;
-  white-space: nowrap;
 }
 .home-action-btn:hover{
   transform: translateY(-2px);
 }
 
-/* ===== shared mobile responsiveness ===== */
-.category-editor-panel{
-  max-width: 92vw !important;
-  width: min(92vw, 420px) !important;
-  min-width: 0 !important;
-  box-sizing: border-box;
+/* smaller screens - make home buttons more responsive */
+@media (max-width:720px){
+  .home-action-btn{
+    padding:18px 20px;
+    font-size:1.6rem;
+    min-width:160px;
+  }
 }
 
+/* ===== review / mobile additions ===== */
 button,
 .big-btn,
 .secondary-btn,
 .home-action-btn,
 .fullscreen-btn{
-  white-space: nowrap;
+  white-space:nowrap;
 }
 
-@media (max-width:768px){
-  html,body{
-    overflow-x:hidden;
-  }
+.home-study-wrap{
+  position:relative;
+  display:inline-flex;
+  align-items:flex-start;
+}
 
+.review-bubble{
+  position:absolute;
+  top:-18px;
+  right:-8px;
+  transform: translateY(-100%);
+  background:#fff7d1;
+  color:#7a5a00;
+  border:1px solid #f2d36b;
+  border-radius:999px;
+  padding:8px 12px;
+  font-size:0.95rem;
+  font-weight:700;
+  box-shadow:0 6px 16px rgba(0,0,0,0.12);
+  white-space:nowrap;
+  z-index:3;
+}
+.review-bubble::after{
+  content:'';
+  position:absolute;
+  right:18px;
+  bottom:-8px;
+  width:14px;
+  height:14px;
+  background:#fff7d1;
+  border-right:1px solid #f2d36b;
+  border-bottom:1px solid #f2d36b;
+  transform:rotate(45deg);
+}
+.review-summary{
+  margin: 0 0 12px 0;
+  padding: 12px 14px;
+  border:1px solid #f2d36b;
+  background:#fffdf0;
+  border-radius:10px;
+  font-weight:600;
+}
+.review-chip{
+  display:inline-block;
+  margin-left:8px;
+  padding:3px 8px;
+  border-radius:999px;
+  border:1px solid #f2d36b;
+  background:#fff7d1;
+  color:#7a5a00;
+  font-size:0.78rem;
+  font-weight:700;
+}
+.review-panel-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:8px;
+}
+.review-complete-btn{
+  padding:8px 12px;
+  border-radius:8px;
+  border:1px solid #d9b600;
+  background:#fff7a8;
+  color:#5f4a00;
+  cursor:pointer;
+  font-weight:700;
+}
+.review-complete-btn:hover{
+  background:#fff18a;
+}
+.study-mask{
+  border:2px dashed #ffeb3b;
+  box-sizing:border-box;
+}
+.study-mask.is-hidden{
+  background: transparent !important;
+  opacity: 1 !important;
+}
+.study-mask.is-visible{
+  opacity: 1 !important;
+}
+
+@media (max-width: 768px){
   header{
     padding:16px 18px;
   }
@@ -400,6 +474,27 @@ button,
   .side-col{
     width:100%;
     min-width:0;
+  }
+
+  .main-col > div[style*="display:flex"]{
+    flex-wrap:wrap;
+  }
+
+  .home-action-btn{
+    padding:15px 16px;
+    font-size:1.08rem;
+    min-width:0;
+    max-width:46vw;
+  }
+
+  .home-study-wrap{
+    display:block;
+  }
+
+  .review-bubble{
+    right:0;
+    left:50%;
+    transform: translate(-50%, -100%);
   }
 
   h2{
@@ -445,13 +540,6 @@ button,
   .secondary-btn{
     padding:10px 12px;
     font-size:14px;
-  }
-
-  .home-action-btn{
-    padding:15px 16px;
-    font-size:1.08rem;
-    min-width:0;
-    max-width:46vw;
   }
 
   .image-area{
@@ -501,24 +589,6 @@ button,
   #shapeSelect{
     min-width:0;
     max-width:100%;
-  }
-
-  /* study page top bar and similar inline flex rows */
-  div[style*="display:flex"][style*="gap:12px"][style*="align-items:center"]{
-    flex-wrap:wrap;
-  }
-
-  div[style*="display:flex"][style*="gap:8px"]{
-    flex-wrap:wrap;
-  }
-
-  #btnBackHome{
-    margin-left:0 !important;
-  }
-
-  label[for="sortSelect"],
-  label[for="displayFilterSelect"]{
-    margin-left:0 !important;
   }
 
   #sortSelect,

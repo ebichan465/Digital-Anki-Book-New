@@ -13,7 +13,7 @@
 
   <div class="container">
     <div class="main-col">
-      <div style="margin-bottom:12px; display:flex; gap:12px; align-items:center;">
+      <div style="margin-bottom:12px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
         <button id="btnBackHome" class="big-btn">トップに戻る</button>
         <label for="sortSelect" style="margin-left:12px;">並び順</label>
         <select id="sortSelect" style="padding:8px; border-radius:6px;">
@@ -26,8 +26,11 @@
         <select id="displayFilterSelect" style="padding:8px; border-radius:6px;">
           <!-- options populated dynamically by study.js -->
         </select>
+
+        <button id="btnToggleReviewView" class="secondary-btn">復習画像の一覧を見る</button>
       </div>
 
+      <div id="reviewSummary" class="review-summary hidden"></div>
       <div id="projectsList"></div>
     </div>
 

@@ -52,6 +52,52 @@
   function markDirty(flag = true) { isDirty = !!flag; }
   function clearDirty() { isDirty = false; }
 
+  const REVIEW_INTERVAL_DAYS = [1, 7, 30, 90];
+  const DAY_MS = 24 * 60 * 60 * 1000;
+
+  function buildInitialReview(createdAt){
+    const base = Number(createdAt) || Date.now();
+    return {
+      stage: 0,
+      nextReviewAt: base + REVIEW_INTERVAL_DAYS[0] * DAY_MS,
+      completed: false
+    };
+  }
+
+  function normalizeReviewForSave(review, createdAt){
+    const base = Number(createdAt) || Date.now();
+    const fallback = buildInitialReview(base);
+    if (!review || typeof review !== 'object') return fallback;
+    const stageRaw = Number(review.stage);
+    const stage = Number.isFinite(stageRaw) ? Math.max(0, Math.min(4, Math.floor(stageRaw))) : 0;
+    const completed = !!review.completed || stage >= REVIEW_INTERVAL_DAYS.length;
+    const stepIndex = Math.min(stage, REVIEW_INTERVAL_DAYS.length - 1);
+    const nextReviewAt = Number.isFinite(Number(review.nextReviewAt))
+      ? Number(review.nextReviewAt)
+      : (completed ? null : base + REVIEW_INTERVAL_DAYS[stepIndex] * DAY_MS);
+    if (completed) {
+      return { stage: REVIEW_INTERVAL_DAYS.length, nextReviewAt: null, completed: true };
+    }
+    return { stage, nextReviewAt, completed: false };
+  }
+
+  function getReviewState(project){
+    if (!project || typeof project !== 'object') return buildInitialReview(Date.now());
+    if (!project.review || typeof project.review !== 'object') {
+      const createdAt = Number(project.createdAt) || Date.now();
+      project.review = buildInitialReview(createdAt);
+      return project.review;
+    }
+    const normalized = normalizeReviewForSave(project.review, project.createdAt);
+    project.review = normalized;
+    return normalized;
+  }
+
+  function refreshCurrentProjectReviewDefaults(){
+    if (!currentProject) return;
+    currentProject.review = normalizeReviewForSave(currentProject.review, currentProject.createdAt);
+  }
+
   // ----- utils -----
   function uid(prefix='id'){ return prefix + '-' + Math.random().toString(36).slice(2,9); }
 
@@ -657,6 +703,7 @@
       syncCategoriesFromUIToCurrentProject();
       if (!currentProject) currentProject = {};
       if (!Array.isArray(currentProject.categories)) currentProject.categories = [];
+      refreshCurrentProjectReviewDefaults();
 
       let finalImageDataUrl = mainImage.src;
       let baseW = undefined, baseH = undefined;
@@ -705,7 +752,8 @@
         categories: currentProject.categories || [],
         imageBaseWidth: baseW,
         imageBaseHeight: baseH,
-        createdAt: currentProject && currentProject.createdAt ? currentProject.createdAt : Date.now()
+        createdAt: currentProject && currentProject.createdAt ? currentProject.createdAt : Date.now(),
+        review: normalizeReviewForSave(currentProject.review, currentProject.createdAt)
       };
       const all = loadAllProjects();
       const existingIdx = all.findIndex(p=>p.id===payload.id);
@@ -729,6 +777,7 @@
       const p = all.find(x=>x.id===id);
       if (!p) { alert('プロジェクトが見つかりません'); return; }
       currentProject = JSON.parse(JSON.stringify(p));
+      refreshCurrentProjectReviewDefaults();
       clearTextBox();
       masks.forEach(m=> m.el && m.el.remove());
       masks = [];

@@ -7,6 +7,8 @@
   const btnBackHome = document.getElementById('btnBackHome');
   const sortSelect = document.getElementById('sortSelect');
   const displayFilterSelect = document.getElementById('displayFilterSelect');
+  const btnToggleReviewView = document.getElementById('btnToggleReviewView');
+  const reviewSummary = document.getElementById('reviewSummary');
 
   function loadAllProjects(){ 
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -21,6 +23,97 @@
     try { return JSON.parse(raw).categories || []; } catch(e){ return []; }
   }
   function saveAllCategories(arr){ localStorage.setItem(CATS_KEY, JSON.stringify({categories: arr})); }
+
+  const REVIEW_INTERVAL_DAYS = [1, 7, 30, 90];
+  const DAY_MS = 24 * 60 * 60 * 1000;
+  let reviewViewActive = false;
+
+  function buildReviewState(createdAt){
+    const base = Number(createdAt) || Date.now();
+    return {
+      stage: 0,
+      nextReviewAt: base + REVIEW_INTERVAL_DAYS[0] * DAY_MS,
+      completed: false
+    };
+  }
+
+  function normalizeReviewState(project){
+    const createdAt = Number(project && project.createdAt) || Date.now();
+    const existing = project && project.review && typeof project.review === 'object' ? project.review : null;
+    if (!existing) {
+      project.review = buildReviewState(createdAt);
+      return true;
+    }
+
+    const stageRaw = Number(existing.stage);
+    const stage = Number.isFinite(stageRaw) ? Math.max(0, Math.min(4, Math.floor(stageRaw))) : 0;
+    const completed = !!existing.completed || stage >= REVIEW_INTERVAL_DAYS.length;
+    const stepIndex = Math.min(stage, REVIEW_INTERVAL_DAYS.length - 1);
+    const nextReviewAt = Number.isFinite(Number(existing.nextReviewAt))
+      ? Number(existing.nextReviewAt)
+      : (completed ? null : createdAt + REVIEW_INTERVAL_DAYS[stepIndex] * DAY_MS);
+
+    const normalized = {
+      stage: completed ? REVIEW_INTERVAL_DAYS.length : stage,
+      nextReviewAt: completed ? null : nextReviewAt,
+      completed
+    };
+
+    const prev = JSON.stringify(existing);
+    const next = JSON.stringify(normalized);
+    project.review = normalized;
+    return prev !== next;
+  }
+
+  function normalizeAllReviews(projects){
+    let changed = false;
+    projects.forEach(p => {
+      if (normalizeReviewState(p)) changed = true;
+    });
+    return changed;
+  }
+
+  function isReviewDue(project, now = Date.now()){
+    if (!project) return false;
+    if (!project.review || typeof project.review !== 'object') normalizeReviewState(project);
+    const review = project.review;
+    return !!review && !review.completed && Number.isFinite(Number(review.nextReviewAt)) && Number(review.nextReviewAt) <= now;
+  }
+
+  function countDueProjects(projects){
+    const now = Date.now();
+    return projects.filter(p => isReviewDue(p, now)).length;
+  }
+
+  function advanceReview(project){
+    if (!project) return;
+    if (!project.review || typeof project.review !== 'object') normalizeReviewState(project);
+    const review = project.review || buildReviewState(project.createdAt);
+    const currentStage = Number.isFinite(Number(review.stage)) ? Math.max(0, Math.floor(Number(review.stage))) : 0;
+    const nextStage = currentStage + 1;
+    if (nextStage >= REVIEW_INTERVAL_DAYS.length) {
+      project.review = {
+        stage: REVIEW_INTERVAL_DAYS.length,
+        nextReviewAt: null,
+        completed: true
+      };
+      return;
+    }
+    project.review = {
+      stage: nextStage,
+      nextReviewAt: Date.now() + REVIEW_INTERVAL_DAYS[nextStage] * DAY_MS,
+      completed: false
+    };
+  }
+
+  function getReviewLabel(project){
+    if (!project) return '';
+    const review = project.review && typeof project.review === 'object' ? project.review : buildReviewState(project.createdAt);
+    if (review.completed) return '完了';
+    const stage = Number.isFinite(Number(review.stage)) ? Math.max(0, Math.floor(Number(review.stage))) : 0;
+    const labels = ['1日後', '1週間後', '1ヶ月後', '3ヶ月後'];
+    return labels[Math.min(stage, labels.length - 1)] || '';
+  }
 
   function populateDisplayFilterOptions(){
     if (!displayFilterSelect) return;
@@ -42,6 +135,12 @@
       opt.textContent = cat;
       displayFilterSelect.appendChild(opt);
     });
+  }
+
+  function syncReviewDefaults(projects){
+    const changed = normalizeAllReviews(projects);
+    if (changed) saveAllProjects(projects);
+    return projects;
   }
 
   function waitForImageLayout(imgEl, timeout=800){
@@ -364,7 +463,7 @@
 
           proj.masks.forEach(mm => {
             const mEl = document.createElement('div');
-            mEl.className = 'mask';
+            mEl.className = 'mask study-mask';
             mEl.classList.add(mm.shape === 'circle' ? 'circle' : 'rect');
             const left = (mm.x * rect.width) + (rect.left - wrapperRect.left);
             const top = (mm.y * rect.height) + (rect.top - wrapperRect.top);
@@ -372,15 +471,25 @@
             mEl.style.top = top + 'px';
             mEl.style.width = (mm.w * rect.width) + 'px';
             mEl.style.height = (mm.h * rect.height) + 'px';
-            mEl.style.background = mm.color || '#000000';
-            mEl.style.opacity = mm.visible ? '1' : '0';
+            const updateStudyMask = () => {
+              if (mm.visible) {
+                mEl.classList.remove('is-hidden');
+                mEl.classList.add('is-visible');
+                mEl.style.background = mm.color || '#000000';
+              } else {
+                mEl.classList.add('is-hidden');
+                mEl.classList.remove('is-visible');
+                mEl.style.background = 'transparent';
+              }
+            };
+            updateStudyMask();
             mEl.addEventListener('click', (ev)=>{
               ev.stopPropagation();
               mm.visible = !mm.visible;
-              mEl.style.opacity = mm.visible ? '1' : '0';
+              updateStudyMask();
             });
             wrapper.appendChild(mEl);
-            maskObjs.push({ el: mEl, model: mm });
+            maskObjs.push({ el: mEl, model: mm, updateStudyMask });
           });
         });
       }
@@ -399,6 +508,7 @@
             o.el.style.top = top + 'px';
             o.el.style.width = (mm.w * rect.width) + 'px';
             o.el.style.height = (mm.h * rect.height) + 'px';
+            if (typeof o.updateStudyMask === 'function') o.updateStudyMask();
           });
         });
       }
@@ -412,7 +522,11 @@
       btnReset.addEventListener('click', ()=>{
         proj.masks.forEach(mm => mm.visible = true);
         if (maskObjs.length) {
-          maskObjs.forEach(o => o.el.style.opacity = '1');
+          maskObjs.forEach(o => {
+            o.el.style.background = o.model.color || '#000000';
+            o.el.classList.remove('is-hidden');
+            o.el.classList.add('is-visible');
+          });
         }
       });
 
@@ -549,6 +663,15 @@
   });
   if (displayFilterSelect) {
     displayFilterSelect.addEventListener('change', ()=> {
+      const openCards = document.querySelectorAll('.project-card.open');
+      openCards.forEach(c => c.classList.remove('open'));
+      closeAnyCategoryEditor();
+      render();
+    });
+  }
+  if (btnToggleReviewView) {
+    btnToggleReviewView.addEventListener('click', ()=> {
+      reviewViewActive = !reviewViewActive;
       const openCards = document.querySelectorAll('.project-card.open');
       openCards.forEach(c => c.classList.remove('open'));
       closeAnyCategoryEditor();
