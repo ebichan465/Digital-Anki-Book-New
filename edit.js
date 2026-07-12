@@ -1,4 +1,3 @@
-// edit.js
 (() => {
   const STORAGE_KEY = 'digital-anki-projects-v1';
   const CATS_KEY = 'digital-anki-categories-v1';
@@ -126,10 +125,17 @@
   function loadAllProjects(){
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
-    try { return JSON.parse(raw).projects || []; } catch(e){ return [];
+    try { return JSON.parse(raw).projects || []; } catch(e){ return []; }
+  }
+  function saveAllProjects(arr){
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({projects: arr}));
+      return true;
+    } catch (e) {
+      console.error('保存に失敗しました', e);
+      return false;
     }
   }
-  function saveAllProjects(arr){ localStorage.setItem(STORAGE_KEY, JSON.stringify({projects: arr})); }
 
   function loadAllCategories(){
     const raw = localStorage.getItem(CATS_KEY);
@@ -357,6 +363,15 @@
       markDirty(true); // moving/resizing a mask => unsaved
     }
 
+    const preventTouchScroll = (ev) => {
+      ev.preventDefault();
+    };
+
+    el.addEventListener('touchstart', preventTouchScroll, { passive: false });
+    el.addEventListener('touchmove', preventTouchScroll, { passive: false });
+    handle.addEventListener('touchstart', preventTouchScroll, { passive: false });
+    handle.addEventListener('touchmove', preventTouchScroll, { passive: false });
+
     el.addEventListener('pointerdown', (ev)=>{
       ev.preventDefault();
       lockPageScroll();
@@ -573,6 +588,29 @@
     return { dataUrl: canvas.toDataURL('image/png',0.95), width: targetW, height: targetH };
   }
 
+  async function persistProjectWithFallback(payload){
+    const widths = [null, 1000, 800, 640];
+    for (const maxWidth of widths) {
+      const candidate = JSON.parse(JSON.stringify(payload));
+      if (maxWidth !== null) {
+        try {
+          const compressed = await createCanvasFromDataURL(candidate.imageDataUrl, maxWidth);
+          candidate.imageDataUrl = compressed.dataUrl;
+          candidate.imageBaseWidth = compressed.width;
+          candidate.imageBaseHeight = compressed.height;
+        } catch (e) {
+          console.error('圧縮に失敗', e);
+        }
+      }
+      const all = loadAllProjects();
+      const existingIdx = all.findIndex(p => p.id === candidate.id);
+      if (existingIdx >= 0) all[existingIdx] = candidate;
+      else all.unshift(candidate);
+      if (saveAllProjects(all)) return candidate;
+    }
+    return null;
+  }
+
   function loadImage(dataUrl){
     mainImage.src = dataUrl;
     masks.forEach(m=> m.el && m.el.remove());
@@ -706,91 +744,99 @@
 
   if (btnSave) {
     btnSave.addEventListener('click', async ()=>{
-      if (!mainImage.src) { alert('保存する画像がありません'); return; }
+      try {
+        if (!mainImage.src) { alert('保存する画像がありません'); return; }
 
-      masks.forEach(m => {
-        const wrapperRect = imageArea.getBoundingClientRect();
-        const imgRect = mainImage.getBoundingClientRect();
-        const left = parseFloat(m.el.style.left || 0);
-        const top = parseFloat(m.el.style.top || 0);
-        const width = parseFloat(m.el.style.width || 0);
-        const height = parseFloat(m.el.style.height || 0);
-        const relX = (left - (imgRect.left - wrapperRect.left)) / imgRect.width;
-        const relY = (top - (imgRect.top - wrapperRect.top)) / imgRect.height;
-        const relW = width / imgRect.width;
-        const relH = height / imgRect.height;
-        m.x = Math.max(0, Math.min(1, relX));
-        m.y = Math.max(0, Math.min(1, relY));
-        m.w = Math.max(20 / imgRect.width, Math.min(1, relW));
-        m.h = Math.max(20 / imgRect.height, Math.min(1, relH));
-      });
+        masks.forEach(m => {
+          const wrapperRect = imageArea.getBoundingClientRect();
+          const imgRect = mainImage.getBoundingClientRect();
+          const left = parseFloat(m.el.style.left || 0);
+          const top = parseFloat(m.el.style.top || 0);
+          const width = parseFloat(m.el.style.width || 0);
+          const height = parseFloat(m.el.style.height || 0);
+          const relX = (left - (imgRect.left - wrapperRect.left)) / imgRect.width;
+          const relY = (top - (imgRect.top - wrapperRect.top)) / imgRect.height;
+          const relW = width / imgRect.width;
+          const relH = height / imgRect.height;
+          m.x = Math.max(0, Math.min(1, relX));
+          m.y = Math.max(0, Math.min(1, relY));
+          m.w = Math.max(20 / imgRect.width, Math.min(1, relW));
+          m.h = Math.max(20 / imgRect.height, Math.min(1, relH));
+        });
 
-      syncCategoriesFromUIToCurrentProject();
-      if (!currentProject) currentProject = {};
-      if (!Array.isArray(currentProject.categories)) currentProject.categories = [];
-      refreshCurrentProjectReviewDefaults();
+        syncCategoriesFromUIToCurrentProject();
+        if (!currentProject) currentProject = {};
+        if (!Array.isArray(currentProject.categories)) currentProject.categories = [];
+        refreshCurrentProjectReviewDefaults();
 
-      let finalImageDataUrl = mainImage.src;
-      let baseW = undefined, baseH = undefined;
-      const composed = await composeImageIfNeeded();
-      if (composed) {
-        finalImageDataUrl = composed.dataUrl;
-        baseW = composed.width;
-        baseH = composed.height;
-      } else {
-        baseW = mainImage.naturalWidth || undefined;
-        baseH = mainImage.naturalHeight || undefined;
-      }
+        let finalImageDataUrl = mainImage.src;
+        let baseW = undefined, baseH = undefined;
+        const composed = await composeImageIfNeeded();
+        if (composed) {
+          finalImageDataUrl = composed.dataUrl;
+          baseW = composed.width;
+          baseH = composed.height;
+        } else {
+          baseW = mainImage.naturalWidth || undefined;
+          baseH = mainImage.naturalHeight || undefined;
+        }
 
-      const normalizedMasks = masks.map(m => ({
-        id: m.id,
-        x: Number(m.x || 0),
-        y: Number(m.y || 0),
-        w: Number(m.w || 0),
-        h: Number(m.h || 0),
-        visible: (m.visible === undefined) ? true : Boolean(m.visible),
-        color: m.color,
-        shape: m.shape
-      }));
+        const normalizedMasks = masks.map(m => ({
+          id: m.id,
+          x: Number(m.x || 0),
+          y: Number(m.y || 0),
+          w: Number(m.w || 0),
+          h: Number(m.h || 0),
+          visible: (m.visible === undefined) ? true : Boolean(m.visible),
+          color: m.color,
+          shape: m.shape
+        }));
 
-      // Prompt for name; if user cancels (null) => abort save
-      let name;
-      if (currentProject && currentProject.name) {
-        const ans = prompt('プロジェクト名を入力してください', currentProject.name);
-        if (ans === null) {
+        // Prompt for name; if user cancels (null) => abort save
+        let name;
+        if (currentProject && currentProject.name) {
+          const ans = prompt('プロジェクト名を入力してください', currentProject.name);
+          if (ans === null) {
+            return;
+          }
+          name = (ans.trim() === '') ? currentProject.name : ans;
+        } else {
+          const ans = prompt('プロジェクト名を入力してください');
+          if (ans === null) {
+            return;
+          }
+          name = (ans.trim() === '') ? ('project-' + new Date().toLocaleString()) : ans;
+        }
+
+        const payload = {
+          id: currentProject && currentProject.id ? currentProject.id : uid('proj'),
+          name,
+          imageDataUrl: finalImageDataUrl,
+          masks: normalizedMasks,
+          categories: currentProject.categories || [],
+          imageBaseWidth: baseW,
+          imageBaseHeight: baseH,
+          createdAt: currentProject && currentProject.createdAt ? currentProject.createdAt : Date.now(),
+          review: normalizeReviewForSave(currentProject.review, currentProject.createdAt)
+        };
+
+        const savedPayload = await persistProjectWithFallback(payload);
+        if (!savedPayload) {
+          alert('保存に失敗しました。端末の保存容量が不足している可能性があります。');
           return;
         }
-        name = (ans.trim() === '') ? currentProject.name : ans;
-      } else {
-        const ans = prompt('プロジェクト名を入力してください');
-        if (ans === null) {
-          return;
-        }
-        name = (ans.trim() === '') ? ('project-' + new Date().toLocaleString()) : ans;
-      }
 
-      const payload = {
-        id: currentProject && currentProject.id ? currentProject.id : uid('proj'),
-        name,
-        imageDataUrl: finalImageDataUrl,
-        masks: normalizedMasks,
-        categories: currentProject.categories || [],
-        imageBaseWidth: baseW,
-        imageBaseHeight: baseH,
-        createdAt: currentProject && currentProject.createdAt ? currentProject.createdAt : Date.now(),
-        review: normalizeReviewForSave(currentProject.review, currentProject.createdAt)
-      };
-      const all = loadAllProjects();
-      const existingIdx = all.findIndex(p=>p.id===payload.id);
-      if (existingIdx>=0) all[existingIdx] = payload; else all.unshift(payload);
-      saveAllProjects(all);
-      refreshProjectSelect();
-      // update currentProject to saved payload and clear dirty flag
-      currentProject = JSON.parse(JSON.stringify(payload));
-      clearDirty();
-      alert('保存しました');
-      refreshCategoryOptions();
-      updateCategoryVisibility();
+        refreshProjectSelect();
+        // update currentProject to saved payload and clear dirty flag
+        currentProject = JSON.parse(JSON.stringify(savedPayload));
+        clearDirty();
+        alert('保存しました');
+        refreshCategoryOptions();
+        updateCategoryVisibility();
+      } catch (err) {
+        console.error(err);
+        alert('保存に失敗しました');
+      }
     });
   }
 
