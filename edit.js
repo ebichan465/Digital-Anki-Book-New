@@ -81,18 +81,6 @@
     return { stage, nextReviewAt, completed: false };
   }
 
-  function getReviewState(project){
-    if (!project || typeof project !== 'object') return buildInitialReview(Date.now());
-    if (!project.review || typeof project.review !== 'object') {
-      const createdAt = Number(project.createdAt) || Date.now();
-      project.review = buildInitialReview(createdAt);
-      return project.review;
-    }
-    const normalized = normalizeReviewForSave(project.review, project.createdAt);
-    project.review = normalized;
-    return normalized;
-  }
-
   function refreshCurrentProjectReviewDefaults(){
     if (!currentProject) return;
     currentProject.review = normalizeReviewForSave(currentProject.review, currentProject.createdAt);
@@ -147,6 +135,34 @@
     try { return JSON.parse(raw).categories || []; } catch(e){ return []; }
   }
   function saveAllCategories(arr){ localStorage.setItem(CATS_KEY, JSON.stringify({categories: arr})); }
+
+  function getDataUrlMime(dataUrl){
+    const match = /^data:([^;,]+)[;,]/.exec(dataUrl || '');
+    return match ? match[1].toLowerCase() : '';
+  }
+
+  function chooseOutputMime(inputMime){
+    if (!inputMime) return 'image/jpeg';
+    if (inputMime.includes('png')) return 'image/png';
+    if (inputMime.includes('webp')) return 'image/webp';
+    if (inputMime.includes('gif')) return 'image/png';
+    return 'image/jpeg';
+  }
+
+  // Insert label "色" between image selection button and colorPicker (do it dynamically so HTML doesn't need editing)
+  (function insertColorLabelOnce(){
+    try {
+      if (!btnChooseImage || !colorPicker) return;
+      const existingLabel = colorPicker.previousSibling;
+      if (existingLabel && existingLabel.dataset && existingLabel.dataset.insertedColorLabel) return;
+      const label = document.createElement('span');
+      label.textContent = '色';
+      label.style.margin = '0 8px';
+      label.style.fontWeight = '600';
+      label.dataset.insertedColorLabel = '1';
+      colorPicker.parentNode && colorPicker.parentNode.insertBefore(label, colorPicker);
+    } catch(e){}
+  })();
 
   function refreshCategoryOptions(){
     const cats = loadAllCategories();
@@ -568,28 +584,38 @@
     });
   }
 
-  async function createCanvasFromDataURL(dataUrl, maxWidth=1200){
+  async function createCanvasFromDataURL(dataUrl, maxDimension=1200){
     const img = new Image();
     await new Promise(r=>{ img.onload = r; img.onerror = r; img.src = dataUrl; });
     const origW = img.naturalWidth || img.width || 1200;
     const origH = img.naturalHeight || img.height || 800;
-    let targetW = origW;
-    let targetH = origH;
-    if (origW > maxWidth) {
-      const scale = maxWidth / origW;
-      targetW = Math.round(origW * scale);
-      targetH = Math.round(origH * scale);
-    }
+    const scale = Math.min(1, maxDimension / Math.max(origW, origH));
+    const targetW = Math.max(1, Math.round(origW * scale));
+    const targetH = Math.max(1, Math.round(origH * scale));
     const canvas = document.createElement('canvas');
     canvas.width = targetW;
     canvas.height = targetH;
     const ctx = canvas.getContext('2d');
     ctx.drawImage(img,0,0,targetW,targetH);
-    return { dataUrl: canvas.toDataURL('image/png',0.95), width: targetW, height: targetH };
+
+    const inputMime = getDataUrlMime(dataUrl);
+    const outputMime = chooseOutputMime(inputMime);
+    const quality = outputMime === 'image/jpeg' ? 0.82 : 0.95;
+    let outputDataUrl = dataUrl;
+    try {
+      outputDataUrl = canvas.toDataURL(outputMime, quality);
+    } catch (e) {
+      try {
+        outputDataUrl = canvas.toDataURL('image/png');
+      } catch (e2) {
+        outputDataUrl = dataUrl;
+      }
+    }
+    return { dataUrl: outputDataUrl, width: targetW, height: targetH, mimeType: outputMime };
   }
 
   async function persistProjectWithFallback(payload){
-    const widths = [null, 1000, 800, 640];
+    const widths = [null, 960, 720, 560, 400];
     for (const maxWidth of widths) {
       const candidate = JSON.parse(JSON.stringify(payload));
       if (maxWidth !== null) {
@@ -808,6 +834,7 @@
           name = (ans.trim() === '') ? ('project-' + new Date().toLocaleString()) : ans;
         }
 
+        const createdAt = currentProject && currentProject.createdAt ? currentProject.createdAt : Date.now();
         const payload = {
           id: currentProject && currentProject.id ? currentProject.id : uid('proj'),
           name,
@@ -816,8 +843,8 @@
           categories: currentProject.categories || [],
           imageBaseWidth: baseW,
           imageBaseHeight: baseH,
-          createdAt: currentProject && currentProject.createdAt ? currentProject.createdAt : Date.now(),
-          review: normalizeReviewForSave(currentProject.review, currentProject.createdAt)
+          createdAt,
+          review: normalizeReviewForSave(currentProject.review, createdAt)
         };
 
         const savedPayload = await persistProjectWithFallback(payload);
