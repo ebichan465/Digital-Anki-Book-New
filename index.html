@@ -4,79 +4,72 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#f8f1e6" />
   <title>Digital Anki Book</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-<header>
-  <h1>Digital Anki Book</h1>
-</header>
-
-<main class="container" style="align-items:center; justify-content:center; min-height:60vh;">
-  <div style="text-align:center; width:100%; max-width:900px; margin:0 auto; padding:0 12px;">
-    <h2 style="margin-bottom:24px; font-size:clamp(30px, 7vw, 50px);">Digital Anki Bookとは?</h2>
-    <p style="max-width:900px; margin:0 auto 30px; font-size:clamp(16px, 4.5vw, 25px); line-height:1.7; word-break:break-word;">
-      Digital Anki Bookは、赤シートで隠して勉強する感覚をそのままデジタルで再現した学習サイトです。
-      覚えたい画像の上に自分でマスクを配置し、クリック操作で答えを確認することで、演習形式の暗記学習ができます。
-    </p>
-
-    <div style="display:flex; flex-direction:column; gap:16px; justify-content:center; align-items:center; margin-top:28px;">
-      <a href="edit.html" class="home-action-btn">マスクをつくる</a>
-      <div class="home-study-wrap">
-        <a href="study.html" class="home-action-btn" id="homeStudyLink">暗記モード</a>
-        <div id="homeReviewBubble" class="review-bubble hidden" aria-live="polite"></div>
+<body class="home-page">
+  <main class="home-scene">
+    <section class="home-sheet" aria-label="Digital Anki Book">
+      <div class="home-title">
+        <h1>Digital Anki Book</h1>
+        <p class="home-subtitle">未来の文房具セット。</p>
       </div>
-    </div>
 
-    <section class="how-to-use">
-      <h2>このサイトの使い方</h2>
-      <ol>
-        <li>「マスクをつくる」を押して、画像・テキストにマスクを挿入し、保存しよう</li>
-        <li>「暗記モード」を押して、保存した画像・テキストを使って学習しよう</li>
-      </ol>
+      <div class="home-actions">
+        <a href="edit.html" class="home-action-btn home-action-btn--blue">
+          <span class="home-action-label">マスクをつくる</span>
+        </a>
+
+        <div class="home-study-wrap">
+          <a href="study.html" class="home-action-btn home-action-btn--red" id="homeStudyLink">
+            <span class="home-action-label">暗記する</span>
+          </a>
+          <div id="homeReviewBubble" class="review-bubble hidden" aria-live="polite"></div>
+        </div>
+      </div>
     </section>
-  </div>
-</main>
+  </main>
 
-<script>
-(() => {
-  const STORAGE_KEY = 'digital-anki-projects-v1';
-  const DAY = 24 * 60 * 60 * 1000;
-  const INTERVALS = [1, 7, 30, 90];
-  const bubble = document.getElementById('homeReviewBubble');
+  <script>
+  (() => {
+    const STORAGE_KEY = 'digital-anki-projects-v1';
+    const DAY = 24 * 60 * 60 * 1000;
+    const INTERVALS = [1, 7, 30, 90];
+    const bubble = document.getElementById('homeReviewBubble');
 
-  function loadAllProjects() {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    try {
-      return JSON.parse(raw).projects || [];
-    } catch (e) {
-      return [];
+    function loadAllProjects() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return [];
+      try {
+        return JSON.parse(raw).projects || [];
+      } catch (e) {
+        return [];
+      }
     }
-  }
 
-  function normalizeReview(project) {
-    const createdAt = Number(project && project.createdAt) || Date.now();
-    const r = project && project.review && typeof project.review === 'object' ? project.review : null;
-    const stage = Number.isFinite(Number(r && r.stage)) ? Number(r.stage) : 0;
-    const completed = !!(r && r.completed);
-    const nextReviewAt = Number.isFinite(Number(r && r.nextReviewAt))
-      ? Number(r.nextReviewAt)
-      : createdAt + (INTERVALS[Math.min(stage, INTERVALS.length - 1)] * DAY);
-    return { stage, nextReviewAt, completed };
-  }
+    function normalizeReview(project) {
+      const createdAt = Number(project && project.createdAt) || Date.now();
+      const r = project && project.review && typeof project.review === 'object' ? project.review : null;
+      const stage = Number.isFinite(Number(r && r.stage)) ? Number(r.stage) : 0;
+      const completed = !!(r && r.completed);
+      const nextReviewAt = Number.isFinite(Number(r && r.nextReviewAt))
+        ? Number(r.nextReviewAt)
+        : createdAt + (INTERVALS[Math.min(stage, INTERVALS.length - 1)] * DAY);
+      return { stage, nextReviewAt, completed };
+    }
 
-  const now = Date.now();
-  const dueCount = loadAllProjects().filter((project) => {
-    const review = normalizeReview(project);
-    return !review.completed && Number.isFinite(review.nextReviewAt) && review.nextReviewAt <= now;
-  }).length;
+    const now = Date.now();
+    const dueCount = loadAllProjects().filter((project) => {
+      const review = normalizeReview(project);
+      return !review.completed && Number.isFinite(review.nextReviewAt) && review.nextReviewAt <= now;
+    }).length;
 
-  if (bubble && dueCount > 0) {
-    bubble.textContent = `今日の復習 ${dueCount}枚`;
-    bubble.classList.remove('hidden');
-  }
-})();
-</script>
+    if (bubble && dueCount > 0) {
+      bubble.textContent = `今日の復習 ${dueCount}枚`;
+      bubble.classList.remove('hidden');
+    }
+  })();
+  </script>
 </body>
 </html>
