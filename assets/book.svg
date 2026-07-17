@@ -1,0 +1,6 @@
+<!-- assets/book.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 64" fill="none">
+  <path d="M18 14h20c6 0 10 4 10 10v28H24c-4 0-8-3-8-7V14Z" stroke="#7a7a7a" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M54 14H34c-6 0-10 4-10 10v28h18c4 0 8-3 8-7V14Z" stroke="#7a7a7a" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M36 18v30" stroke="#7a7a7a" stroke-width="3" stroke-linecap="round"/>
+</svg>
