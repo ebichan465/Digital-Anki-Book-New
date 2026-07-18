@@ -1,15 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 80" fill="none">
-  <defs>
-    <linearGradient id="page" x1="16" y1="18" x2="80" y2="62" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#ffffff" stop-opacity=".92"/>
-      <stop offset="1" stop-color="#f5f5f5" stop-opacity=".82"/>
-    </linearGradient>
-  </defs>
-  <path d="M16 20c10-4 20-4 30 0v44c-10-4-20-4-30 0V20Z" fill="url(#page)" stroke="#7a7a7a" stroke-width="4.2" stroke-linejoin="round"/>
-  <path d="M80 20c-10-4-20-4-30 0v44c10-4 20-4 30 0V20Z" fill="url(#page)" stroke="#7a7a7a" stroke-width="4.2" stroke-linejoin="round"/>
+  <path d="M16 22c10-3 20-3 30 0v42c-10-3-20-3-30 0V22Z" stroke="#7a7a7a" stroke-width="4.2" stroke-linejoin="round"/>
+  <path d="M80 22c-10-3-20-3-30 0v42c10-3 20-3 30 0V22Z" stroke="#7a7a7a" stroke-width="4.2" stroke-linejoin="round"/>
   <path d="M48 20v44" stroke="#7a7a7a" stroke-width="3.6" stroke-linecap="round"/>
-  <path d="M22 28c6-1.6 12-1.6 18 0" stroke="#7a7a7a" stroke-width="2.4" stroke-linecap="round" opacity=".72"/>
-  <path d="M56 28c6-1.6 12-1.6 18 0" stroke="#7a7a7a" stroke-width="2.4" stroke-linecap="round" opacity=".72"/>
-  <path d="M22 38c6-1.2 12-1.2 18 0" stroke="#7a7a7a" stroke-width="2.2" stroke-linecap="round" opacity=".58"/>
-  <path d="M56 38c6-1.2 12-1.2 18 0" stroke="#7a7a7a" stroke-width="2.2" stroke-linecap="round" opacity=".58"/>
+  <path d="M22 30h18" stroke="#7a7a7a" stroke-width="2.2" stroke-linecap="round" opacity=".72"/>
+  <path d="M58 30h18" stroke="#7a7a7a" stroke-width="2.2" stroke-linecap="round" opacity=".72"/>
+  <path d="M22 40h18" stroke="#7a7a7a" stroke-width="2" stroke-linecap="round" opacity=".58"/>
+  <path d="M58 40h18" stroke="#7a7a7a" stroke-width="2" stroke-linecap="round" opacity=".58"/>
 </svg>
