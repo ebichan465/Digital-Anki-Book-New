@@ -10,11 +10,11 @@
     </filter>
   </defs>
   <path
-    d="M22 30H378L382 34V42L378 46L382 50V58L378 62L382 66V74L378 78L382 82V90H22L18 86V78L22 74L18 70V62L22 58L18 54V46L22 42L18 38V30Z"
+    d="M20 18H380L384 22V28L378 32L384 36V42L378 46L384 50V56L378 60L384 64V70L378 74L384 78V84L378 88L384 92V102H20L16 98V92L22 88L16 84V78L22 74L16 70V64L22 60L16 56V50L22 46L16 42V36L22 32L16 28V22L20 18Z"
     fill="url(#g)"
     filter="url(#shadow)"
   />
-  <path d="M34 44H366" stroke="#ffffff" stroke-opacity=".20" stroke-width="4" stroke-linecap="round"/>
-  <path d="M34 60H366" stroke="#d8c48f" stroke-opacity=".10" stroke-width="2" />
+  <path d="M34 40H366" stroke="#ffffff" stroke-opacity=".18" stroke-width="4" stroke-linecap="round"/>
+  <path d="M34 58H366" stroke="#d8c48f" stroke-opacity=".10" stroke-width="2" />
   <path d="M34 76H366" stroke="#bfa96f" stroke-opacity=".06" stroke-width="2" />
 </svg>
