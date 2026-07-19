@@ -745,9 +745,9 @@ body.home-page .home-action-btn{
 body.home-page .home-action-btn::before{
   content:'';
   position:absolute;
-  top:0;
+  top:-18px;
   left:var(--tape-left);
-  transform:translate(-50%, -55%) rotate(var(--tape-rotate));
+  transform:translateX(-50%) rotate(var(--tape-rotate));
   width:40%;
   height:108px;
   background:url("assets/tape.svg") center / contain no-repeat;
