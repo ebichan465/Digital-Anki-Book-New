@@ -1,125 +1,242 @@
-<!-- edit.html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#fbf7ed" />
   <title>Digital Anki Book - 編集</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <header>
-    <h1>Digital Anki Book</h1>
-  </header>
+<body class="edit-page">
+  <div class="edit-scene">
+    <div class="edit-topbar" aria-label="編集トップバー">
+      <button id="btnBack" class="edit-topbar-btn edit-topbar-btn--back" type="button">
+        <span class="edit-topbar-btn__icon" aria-hidden="true">←</span>
+        <span class="edit-topbar-btn__text">トップへ</span>
+      </button>
 
-  <div class="container">
-    <div class="main-col">
-      <!-- 使い方をページ上部に表示 -->
-      <div style="margin-bottom:12px;">
-        <div class="note-box">
-          <h3>使い方</h3>
-          <ol>
-            <li>「画像選択」→ 画像を読み込む、または「テキスト挿入」→テキスト入力</li>
-            <li>「マスク追加」→ マスクが挿入される</li>
-            <li>マスクの色はカラーピッカーで変更可能。</li>
-            <li>完成したら名前をつけて保存。</li>
-          </ol>
-        </div>
+      <div class="edit-topbar__title">
+        <h1>マスクをつくる</h1>
       </div>
 
-      <div class="action-area" style="flex-direction:column; align-items:flex-start;">
-        <div style="display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap;">
-          <div class="tool-group" id="editTools">
-            <button id="btnInsertText" class="secondary-btn">テキスト挿入</button>
+      <button id="btnSave" class="edit-topbar-btn edit-topbar-btn--save" type="button">
+        <span class="edit-topbar-btn__text">保存</span>
+      </button>
+    </div>
 
-            <button id="btnChooseImage" class="big-btn">画像選択</button>
+    <main class="edit-layout">
+      <section class="edit-main">
+        <div class="edit-toolbar edit-toolbar--primary" id="editTools" role="toolbar" aria-label="編集ツール">
+          <button id="btnChooseImage" class="tool-card" type="button">
+            <span class="tool-card__icon" aria-hidden="true">◫</span>
+            <span class="tool-card__label">画像<br>選択</span>
+          </button>
 
-            <div style="display:flex; align-items:center; gap:8px;">
-              <label for="colorPicker" style="font-size:0.95rem; font-weight:600;">色</label>
-              <input type="color" id="colorPicker" title="マスクの色" style="width:48px; height:40px; padding:0; border-radius:6px; border:1px solid #ccc;">
+          <button id="btnInsertText" class="tool-card" type="button">
+            <span class="tool-card__icon" aria-hidden="true">T</span>
+            <span class="tool-card__label">テキスト</span>
+          </button>
+
+          <button id="btnAddMask" class="tool-card" type="button">
+            <span class="tool-card__icon" aria-hidden="true">＋</span>
+            <span class="tool-card__label">マスク<br>追加</span>
+          </button>
+
+          <button id="btnDuplicateMask" class="tool-card" type="button">
+            <span class="tool-card__icon" aria-hidden="true">⧉</span>
+            <span class="tool-card__label">複製</span>
+          </button>
+
+          <button id="btnDeleteSelected" class="tool-card" type="button">
+            <span class="tool-card__icon" aria-hidden="true">×</span>
+            <span class="tool-card__label">削除</span>
+          </button>
+        </div>
+
+        <div class="edit-paper-shell">
+          <div class="edit-hole-strip" aria-hidden="true"></div>
+
+          <div class="edit-paper">
+            <div class="image-area edit-canvas" id="imageArea">
+              <img id="mainImage" alt="画像がここに表示されます" />
             </div>
-
-            <!-- 形状選択をセレクトボックスに統合 -->
-            <select id="shapeSelect" title="マスク形状" style="height:40px; border-radius:6px; padding:6px;">
-              <option value="rect">四角形 □</option>
-              <option value="circle">円形 ◯</option>
-            </select>
-
-            <button id="btnDuplicateMask" class="secondary-btn">複製</button>
-
-            <button id="btnAddMask" class="big-btn">マスク追加</button>
-            <!-- ボタン名変更 -->
-            <button id="btnDeleteSelected" class="secondary-btn">マスク削除</button>
-          </div>
-
-          <div class="tool-group" id="actionTools">
-            <button id="btnSave" class="big-btn">保存</button>
-            <button id="btnBack" class="secondary-btn">トップへ戻る</button>
           </div>
         </div>
-      </div>
 
-      <div class="image-area" id="imageArea">
-        <img id="mainImage" alt="画像がここに表示されます" />
-        <!-- textBox overlays appended here -->
-      </div>
+        <div class="edit-toolbar edit-toolbar--secondary" aria-label="マスク設定">
+          <section class="mask-settings-group mask-settings-group--color">
+            <div class="mask-settings-title">マスクの色</div>
+            <div class="mask-swatches" role="radiogroup" aria-label="マスクの色">
+              <button type="button" class="swatch swatch--red" data-color="#e53935" aria-label="赤"></button>
+              <button type="button" class="swatch swatch--blue" data-color="#1e88e5" aria-label="青"></button>
+              <button type="button" class="swatch swatch--yellow" data-color="#fdd835" aria-label="黄"></button>
+              <button type="button" class="swatch swatch--green" data-color="#43a047" aria-label="緑"></button>
+              <button type="button" class="swatch swatch--white" data-color="#ffffff" aria-label="白"></button>
+              <button type="button" class="swatch swatch--black" data-color="#111111" aria-label="黒"></button>
+            </div>
+          </section>
 
+          <div class="mask-settings-divider" aria-hidden="true"></div>
+
+          <section class="mask-settings-group mask-settings-group--shape">
+            <div class="mask-settings-title">マスクの形</div>
+            <div class="mask-shapes" role="group" aria-label="マスクの形">
+              <button type="button" class="shape-btn" data-shape="rect" aria-label="四角">
+                <span class="shape-btn__icon" aria-hidden="true">□</span>
+                <span class="shape-btn__label">四角</span>
+              </button>
+              <button type="button" class="shape-btn" data-shape="circle" aria-label="丸">
+                <span class="shape-btn__icon" aria-hidden="true">◯</span>
+                <span class="shape-btn__label">丸</span>
+              </button>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <aside class="edit-sidebar">
+        <details class="project-panel">
+          <summary class="panel-summary">保存しているプロジェクト</summary>
+          <div class="project-panel__body">
+            <select id="projectSelect" class="project-select"></select>
+            <div class="project-panel__actions">
+              <button id="btnLoad" class="secondary-btn" type="button">読み込み</button>
+              <button id="btnDeleteProject" class="secondary-btn" type="button">削除</button>
+            </div>
+          </div>
+        </details>
+
+        <section class="edit-panel" id="categoryBox" style="display:none;">
+          <h4 class="panel-title">カテゴリを選択（複数可）</h4>
+          <div id="categoryList" class="category-list"></div>
+          <button id="btnNewCategory" class="secondary-btn edit-panel__button" type="button">新たなカテゴリ</button>
+        </section>
+      </aside>
+    </main>
+
+    <div class="hidden" aria-hidden="true">
+      <input type="file" id="imageInput" accept="image/*" />
+      <input type="color" id="colorPicker" title="マスクの色" />
+      <select id="shapeSelect" title="マスク形状">
+        <option value="rect">四角形</option>
+        <option value="circle">円形</option>
+      </select>
     </div>
 
-    <aside class="side-col">
-      <!-- Projects box -->
-      <div class="note-box" style="margin-bottom:12px;">
-        <h4 style="font-weight:700;">保存しているプロジェクト</h4>
-        <select id="projectSelect" style="width:100%; margin-bottom:8px;"></select>
+    <div id="textModal" class="modal hidden" role="dialog" aria-modal="true">
+      <div class="modal-content">
+        <h3 style="margin-top:0;">テキスト挿入</h3>
+
         <div style="display:flex; gap:8px; margin-bottom:8px;">
-          <button id="btnLoad" class="secondary-btn">読み込み</button>
-          <button id="btnDeleteProject" class="secondary-btn">削除</button>
+          <div style="flex:1;">
+            <label style="font-size:0.9rem;">キャンバス幅 (px)</label>
+            <input id="textCanvasWidth" type="number" value="1200" min="200" max="4096" style="width:100%; margin-top:4px;" />
+          </div>
+          <div style="width:160px;">
+            <label style="font-size:0.9rem;">キャンバス高さ (px)</label>
+            <input id="textCanvasHeight" type="number" value="400" min="100" max="4096" style="width:100%; margin-top:4px;" />
+          </div>
         </div>
-      </div>
 
-      <!-- Categories box (separated) -->
-      <div class="note-box" id="categoryBox" style="display:none;">
-        <h4 style="font-weight:700;">カテゴリを選択（複数可）</h4>
-        <!-- categoryList will be filled with checkbox items by JS -->
-        <div id="categoryList" style="display:flex; flex-direction:column; gap:6px; max-height:220px; overflow:auto; margin-bottom:8px;"></div>
-        <div style="display:flex; flex-direction:column; gap:8px;">
-          <button id="btnNewCategory" class="secondary-btn" style="width:100%;">新たなカテゴリ</button>
+        <label style="font-size:0.9rem;">フォントサイズ (px)</label>
+        <input id="textFontSize" type="number" value="32" min="8" max="200" style="width:100%; margin-bottom:8px;" />
+
+        <label style="font-size:0.9rem;">文字色</label>
+        <input id="textColorPicker" type="color" value="#000000" style="width:100%; margin-bottom:8px; height:40px;" />
+
+        <label style="font-size:0.9rem;">テキスト（改行可）</label>
+        <textarea id="textInputArea" rows="6" style="width:100%; margin-bottom:8px;"></textarea>
+        <div style="display:flex; gap:8px; justify-content:flex-end;">
+          <button id="btnInsertCancel" class="secondary-btn" type="button">キャンセル</button>
+          <button id="btnInsertConfirm" class="big-btn" type="button">挿入</button>
         </div>
-      </div>
-    </aside>
-  </div>
-
-  <input type="file" id="imageInput" accept="image/*" class="hidden" />
-
-  <div id="textModal" class="modal hidden" role="dialog" aria-modal="true">
-    <div class="modal-content">
-      <h3 style="margin-top:0;">テキスト挿入</h3>
-
-      <div style="display:flex; gap:8px; margin-bottom:8px;">
-        <div style="flex:1;">
-          <label style="font-size:0.9rem;">キャンバス幅 (px)</label>
-          <input id="textCanvasWidth" type="number" value="1200" min="200" max="4096" style="width:100%; margin-top:4px;" />
-        </div>
-        <div style="width:160px;">
-          <label style="font-size:0.9rem;">キャンバス高さ (px)</label>
-          <input id="textCanvasHeight" type="number" value="400" min="100" max="4096" style="width:100%; margin-top:4px;" />
-        </div>
-      </div>
-
-      <label style="font-size:0.9rem;">フォントサイズ (px)</label>
-      <input id="textFontSize" type="number" value="32" min="8" max="200" style="width:100%; margin-bottom:8px;" />
-
-      <label style="font-size:0.9rem;">文字色</label>
-      <input id="textColorPicker" type="color" value="#000000" style="width:100%; margin-bottom:8px; height:40px;" />
-
-      <label style="font-size:0.9rem;">テキスト（改行可）</label>
-      <textarea id="textInputArea" rows="6" style="width:100%; margin-bottom:8px;"></textarea>
-      <div style="display:flex; gap:8px; justify-content:flex-end;">
-        <button id="btnInsertCancel" class="secondary-btn">キャンセル</button>
-        <button id="btnInsertConfirm" class="big-btn">挿入</button>
       </div>
     </div>
   </div>
+
+  <script>
+  (() => {
+    const nativeAlert = window.alert.bind(window);
+    window.alert = (message) => {
+      if (message === '保存しました') {
+        nativeAlert('保存しました。');
+        return;
+      }
+      nativeAlert(message);
+    };
+
+    const colorInput = document.getElementById('colorPicker');
+    const shapeSelect = document.getElementById('shapeSelect');
+    const colorButtons = Array.from(document.querySelectorAll('[data-color]'));
+    const shapeButtons = Array.from(document.querySelectorAll('[data-shape]'));
+
+    function syncButtons(buttons, attrName, value, selectedClass) {
+      const normalizedValue = String(value || '').toLowerCase();
+      buttons.forEach((btn) => {
+        const target = String(btn.dataset[attrName] || '').toLowerCase();
+        const active = target === normalizedValue;
+        btn.classList.toggle(selectedClass, active);
+        btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+    }
+
+    function syncColorButtons(value) {
+      syncButtons(colorButtons, 'color', value, 'is-selected');
+    }
+
+    function syncShapeButtons(value) {
+      syncButtons(shapeButtons, 'shape', value, 'is-selected');
+    }
+
+    colorButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        if (!colorInput) return;
+        colorInput.value = btn.dataset.color || '#000000';
+        colorInput.dispatchEvent(new Event('input', { bubbles: true }));
+        syncColorButtons(colorInput.value);
+      });
+    });
+
+    shapeButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        if (!shapeSelect) return;
+        shapeSelect.value = btn.dataset.shape || 'rect';
+        shapeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+        syncShapeButtons(shapeSelect.value);
+      });
+    });
+
+    let lastColor = colorInput ? colorInput.value : '';
+    let lastShape = shapeSelect ? shapeSelect.value : '';
+
+    if (colorInput) {
+      colorInput.addEventListener('input', () => {
+        syncColorButtons(colorInput.value);
+        lastColor = colorInput.value;
+      });
+      syncColorButtons(colorInput.value || '#000000');
+    }
+
+    if (shapeSelect) {
+      shapeSelect.addEventListener('change', () => {
+        syncShapeButtons(shapeSelect.value);
+        lastShape = shapeSelect.value;
+      });
+      syncShapeButtons(shapeSelect.value || 'rect');
+    }
+
+    setInterval(() => {
+      if (colorInput && colorInput.value !== lastColor) {
+        lastColor = colorInput.value;
+        syncColorButtons(lastColor);
+      }
+      if (shapeSelect && shapeSelect.value !== lastShape) {
+        lastShape = shapeSelect.value;
+        syncShapeButtons(lastShape);
+      }
+    }, 120);
+  })();
+  </script>
 
   <script src="edit.js"></script>
 </body>
