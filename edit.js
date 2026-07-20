@@ -52,39 +52,6 @@
   function markDirty(flag = true) { isDirty = !!flag; }
   function clearDirty() { isDirty = false; }
 
-  const REVIEW_INTERVAL_DAYS = [1, 7, 30, 90];
-  const DAY_MS = 24 * 60 * 60 * 1000;
-
-  function buildInitialReview(createdAt){
-    const base = Number(createdAt) || Date.now();
-    return {
-      stage: 0,
-      nextReviewAt: base + REVIEW_INTERVAL_DAYS[0] * DAY_MS,
-      completed: false
-    };
-  }
-
-  function normalizeReviewForSave(review, createdAt){
-    const base = Number(createdAt) || Date.now();
-    const fallback = buildInitialReview(base);
-    if (!review || typeof review !== 'object') return fallback;
-    const stageRaw = Number(review.stage);
-    const stage = Number.isFinite(stageRaw) ? Math.max(0, Math.min(4, Math.floor(stageRaw))) : 0;
-    const completed = !!review.completed || stage >= REVIEW_INTERVAL_DAYS.length;
-    const stepIndex = Math.min(stage, REVIEW_INTERVAL_DAYS.length - 1);
-    const nextReviewAt = Number.isFinite(Number(review.nextReviewAt))
-      ? Number(review.nextReviewAt)
-      : (completed ? null : base + REVIEW_INTERVAL_DAYS[stepIndex] * DAY_MS);
-    if (completed) {
-      return { stage: REVIEW_INTERVAL_DAYS.length, nextReviewAt: null, completed: true };
-    }
-    return { stage, nextReviewAt, completed: false };
-  }
-
-  function refreshCurrentProjectReviewDefaults(){
-    if (!currentProject) return;
-    currentProject.review = normalizeReviewForSave(currentProject.review, currentProject.createdAt);
-  }
 
   let activePointerInteractions = 0;
   let previousBodyOverflow = '';
@@ -502,6 +469,7 @@
       markDirty(true); // duplication => dirty
     });
   }
+      });
 
   if (btnAddMask) {
     btnAddMask.addEventListener('click', ()=>{
@@ -989,13 +957,6 @@
     });
   }
 
-  // NOTE: btnDeleteCategory removed from UI; function kept for backward compatibility but not wired
-  // if (btnDeleteCategory) { btnDeleteCategory.addEventListener('click', ()=> { deleteCategoryBySelection(); }); }
-
-  // categoryList already wires checkbox change to mark dirty in refreshCategoryOptions
-  // (no additional listener needed here)
-
   refreshProjectSelect();
   refreshCategoryOptions();
   updateCategoryVisibility();
-})();
