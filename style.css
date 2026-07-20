@@ -979,9 +979,9 @@ body.edit-page .edit-topbar-btn:active{
 }
 
 body.edit-page .edit-topbar-btn--back{
-  justify-self:start;
-  border-radius:999px;
-  min-width:112px;
+    min-width:46px;
+    width:46px;
+    padding:0;
 }
 
 body.edit-page .edit-topbar-btn--save{
@@ -1003,7 +1003,7 @@ body.edit-page .edit-main{
   min-width:0;
   display:flex;
   flex-direction:column;
-  gap:14px;
+  gap:24px;
 }
 
 body.edit-page .edit-sidebar{
