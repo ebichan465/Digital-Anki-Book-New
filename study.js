@@ -1,685 +1,572 @@
 (() => {
   const STORAGE_KEY = 'digital-anki-projects-v1';
   const CATS_KEY = 'digital-anki-categories-v1';
-  const DEFAULT_CAT = '未分類';
 
-  const projectsList = document.getElementById('projectsList');
   const btnBackHome = document.getElementById('btnBackHome');
-  const sortSelect = document.getElementById('sortSelect');
-  const displayFilterSelect = document.getElementById('displayFilterSelect');
-  const btnToggleReviewView = document.getElementById('btnToggleReviewView');
-  const reviewSummary = document.getElementById('reviewSummary');
+  const btnDisplayMenu = document.getElementById('btnDisplayMenu');
+  const btnSortMenu = document.getElementById('btnSortMenu');
+  const btnDeleteMode = document.getElementById('btnDeleteMode');
+  const displayLabel = document.getElementById('displayLabel');
+  const sortLabel = document.getElementById('sortLabel');
 
-  function loadAllProjects(){ 
+  const deleteModePanel = document.getElementById('deleteModePanel');
+  const deleteModeCount = document.getElementById('deleteModeCount');
+  const btnCancelDeleteMode = document.getElementById('btnCancelDeleteMode');
+  const btnConfirmDeleteMode = document.getElementById('btnConfirmDeleteMode');
+
+  const booksList = document.getElementById('booksList');
+  const emptyState = document.getElementById('emptyState');
+
+  const displaySheet = document.getElementById('displaySheet');
+  const sortSheet = document.getElementById('sortSheet');
+  const displayOptions = document.getElementById('displayOptions');
+  const sortOptions = document.getElementById('sortOptions');
+
+  const state = {
+    displayFilter: 'all',
+    sortOrder: 'new',
+    deleteMode: false,
+    selectedDeleteIds: new Set(),
+  };
+
+  const DISPLAY_LABELS = {
+    all: 'すべて表示',
+    checked: 'チェックがついた画像のみ',
+  };
+
+  const SORT_LABELS = {
+    new: '新しい順',
+    old: '古い順',
+  };
+
+  function uid(prefix = 'id') {
+    return `${prefix}-${Math.random().toString(36).slice(2, 9)}`;
+  }
+
+  function loadAllProjects() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
-    try { return JSON.parse(raw).projects || []; } catch(e){ return []; }
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed.projects) ? parsed.projects : [];
+    } catch (e) {
+      return [];
+    }
   }
-  function saveAllProjects(arr){ localStorage.setItem(STORAGE_KEY, JSON.stringify({projects: arr})); }
 
-  function loadAllCategories(){
+  function saveAllProjects(projects) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ projects }));
+  }
+
+  function loadAllCategories() {
     const raw = localStorage.getItem(CATS_KEY);
     if (!raw) return [];
-    try { return JSON.parse(raw).categories || []; } catch(e){ return []; }
-  }
-  function saveAllCategories(arr){ localStorage.setItem(CATS_KEY, JSON.stringify({categories: arr})); }
-
-  const REVIEW_INTERVAL_DAYS = [1, 7, 30, 90];
-  const DAY_MS = 24 * 60 * 60 * 1000;
-  let reviewViewActive = false;
-
-  function buildReviewState(createdAt){
-    const base = Number(createdAt) || Date.now();
-    return {
-      stage: 0,
-      nextReviewAt: base + REVIEW_INTERVAL_DAYS[0] * DAY_MS,
-      completed: false
-    };
-  }
-
-  function normalizeReviewState(project){
-    const createdAt = Number(project && project.createdAt) || Date.now();
-    const existing = project && project.review && typeof project.review === 'object' ? project.review : null;
-    if (!existing) {
-      project.review = buildReviewState(createdAt);
-      return true;
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed.categories) ? parsed.categories : [];
+    } catch (e) {
+      return [];
     }
-
-    const stageRaw = Number(existing.stage);
-    const stage = Number.isFinite(stageRaw) ? Math.max(0, Math.min(4, Math.floor(stageRaw))) : 0;
-    const completed = !!existing.completed || stage >= REVIEW_INTERVAL_DAYS.length;
-    const stepIndex = Math.min(stage, REVIEW_INTERVAL_DAYS.length - 1);
-    const nextReviewAt = Number.isFinite(Number(existing.nextReviewAt))
-      ? Number(existing.nextReviewAt)
-      : (completed ? null : createdAt + REVIEW_INTERVAL_DAYS[stepIndex] * DAY_MS);
-
-    const normalized = {
-      stage: completed ? REVIEW_INTERVAL_DAYS.length : stage,
-      nextReviewAt: completed ? null : nextReviewAt,
-      completed
-    };
-
-    const prev = JSON.stringify(existing);
-    const next = JSON.stringify(normalized);
-    project.review = normalized;
-    return prev !== next;
   }
 
-  function normalizeAllReviews(projects){
-    let changed = false;
-    projects.forEach(p => {
-      if (normalizeReviewState(p)) changed = true;
-    });
-    return changed;
+  function formatDate(value) {
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}/${m}/${d}`;
   }
 
-  function isReviewDue(project, now = Date.now()){
-    if (!project) return false;
-    if (!project.review || typeof project.review !== 'object') normalizeReviewState(project);
-    const review = project.review;
-    return !!review && !review.completed && Number.isFinite(Number(review.nextReviewAt)) && Number(review.nextReviewAt) <= now;
-  }
+  function normalizeBook(record) {
+    const base = record && typeof record === 'object' ? record : {};
+    const copy = JSON.parse(JSON.stringify(base));
 
-  function countDueProjects(projects){
-    const now = Date.now();
-    return projects.filter(p => isReviewDue(p, now)).length;
-  }
-
-  function advanceReview(project){
-    if (!project) return;
-    if (!project.review || typeof project.review !== 'object') normalizeReviewState(project);
-    const review = project.review || buildReviewState(project.createdAt);
-    const currentStage = Number.isFinite(Number(review.stage)) ? Math.max(0, Math.floor(Number(review.stage))) : 0;
-    const nextStage = currentStage + 1;
-    if (nextStage >= REVIEW_INTERVAL_DAYS.length) {
-      project.review = {
-        stage: REVIEW_INTERVAL_DAYS.length,
-        nextReviewAt: null,
-        completed: true
-      };
-      return;
-    }
-    project.review = {
-      stage: nextStage,
-      nextReviewAt: Date.now() + REVIEW_INTERVAL_DAYS[nextStage] * DAY_MS,
-      completed: false
-    };
-  }
-
-  function getReviewLabel(project){
-    if (!project) return '';
-    const review = project.review && typeof project.review === 'object' ? project.review : buildReviewState(project.createdAt);
-    if (review.completed) return '完了';
-    const stage = Number.isFinite(Number(review.stage)) ? Math.max(0, Math.floor(Number(review.stage))) : 0;
-    const labels = ['1日後', '1週間後', '1ヶ月後', '3ヶ月後'];
-    return labels[Math.min(stage, labels.length - 1)] || '';
-  }
-
-  function populateDisplayFilterOptions(){
-    if (!displayFilterSelect) return;
-    displayFilterSelect.innerHTML = '';
-    const optAll = document.createElement('option');
-    optAll.value = 'all';
-    optAll.textContent = 'すべて表示';
-    displayFilterSelect.appendChild(optAll);
-
-    const optChecked = document.createElement('option');
-    optChecked.value = 'checked';
-    optChecked.textContent = 'チェックがついた画像のみ';
-    displayFilterSelect.appendChild(optChecked);
-
-    const cats = loadAllCategories();
-    cats.forEach(cat => {
-      const opt = document.createElement('option');
-      opt.value = `cat::${cat}`;
-      opt.textContent = cat;
-      displayFilterSelect.appendChild(opt);
-    });
-  }
-
-  function syncReviewDefaults(projects){
-    const changed = normalizeAllReviews(projects);
-    if (changed) saveAllProjects(projects);
-    return projects;
-  }
-
-  function waitForImageLayout(imgEl, timeout=800){
-    return new Promise((res) => {
-      const start = Date.now();
-      function check(){
-        const r = imgEl.getBoundingClientRect();
-        if (r.width > 2 && r.height > 2) return res();
-        if (Date.now() - start > timeout) return res();
-        setTimeout(check, 40);
-      }
-      check();
-    });
-  }
-
-  function closeAnyCategoryEditor(){
-    const existing = document.querySelectorAll('.category-editor-panel');
-    existing.forEach(e => e.remove());
-  }
-
-  // createCategoryEditorPanel: panel will be centered over the provided anchorElement (image wrapper),
-  // and placement accounts for page scroll. Existing panels are closed before creation.
-  function createCategoryEditorPanel(proj, anchorElement, onSave, onCancel){
-    closeAnyCategoryEditor();
-
-    const panel = document.createElement('div');
-    panel.className = 'category-editor-panel';
-    panel.style.position = 'absolute';
-    panel.style.zIndex = 9999;
-    panel.style.minWidth = '220px';
-    panel.style.maxWidth = '420px';
-    panel.style.background = '#fff';
-    panel.style.border = '1px solid #ddd';
-    panel.style.padding = '10px';
-    panel.style.borderRadius = '8px';
-    panel.style.boxShadow = '0 6px 18px rgba(0,0,0,0.12)';
-    panel.style.display = 'flex';
-    panel.style.flexDirection = 'column';
-    panel.style.gap = '8px';
-
-    const title = document.createElement('div');
-    title.textContent = 'カテゴリを選択';
-    title.style.fontWeight = '600';
-    panel.appendChild(title);
-
-    const listWrap = document.createElement('div');
-    listWrap.style.display = 'flex';
-    listWrap.style.flexDirection = 'column';
-    listWrap.style.maxHeight = '240px';
-    listWrap.style.overflow = 'auto';
-    listWrap.style.gap = '6px';
-
-    const cats = loadAllCategories();
-    cats.forEach(cat => {
-      const row = document.createElement('label');
-      row.style.display = 'flex';
-      row.style.alignItems = 'center';
-      row.style.gap = '8px';
-      row.style.cursor = 'pointer';
-      const chk = document.createElement('input');
-      chk.type = 'checkbox';
-      chk.value = cat;
-      chk.style.margin = '0';
-      if (Array.isArray(proj.categories) && proj.categories.includes(cat)) chk.checked = true;
-      const span = document.createElement('span');
-      span.textContent = cat;
-      row.appendChild(chk);
-      row.appendChild(span);
-      listWrap.appendChild(row);
-    });
-
-    panel.appendChild(listWrap);
-
-    const actionRow = document.createElement('div');
-    actionRow.style.display = 'flex';
-    actionRow.style.gap = '8px';
-    actionRow.style.justifyContent = 'flex-end';
-
-    const btnAddNew = document.createElement('button');
-    btnAddNew.textContent = '新たなカテゴリ';
-    btnAddNew.className = 'secondary-btn';
-    btnAddNew.style.flex = '1';
-    const btnOK = document.createElement('button');
-    btnOK.textContent = 'OK';
-    btnOK.className = 'big-btn';
-    const btnCancel = document.createElement('button');
-    btnCancel.textContent = 'キャンセル';
-    btnCancel.className = 'secondary-btn';
-
-    btnAddNew.addEventListener('click', ()=>{
-      const name = prompt('カテゴリ名を入力してください（例: 英語）');
-      if (!name) return;
-      const global = loadAllCategories();
-      if (!global.includes(name)) {
-        global.push(name);
-        saveAllCategories(global);
-      }
-      const row = document.createElement('label');
-      row.style.display = 'flex';
-      row.style.alignItems = 'center';
-      row.style.gap = '8px';
-      row.style.cursor = 'pointer';
-      const chk = document.createElement('input');
-      chk.type = 'checkbox';
-      chk.value = name;
-      chk.style.margin = '0';
-      chk.checked = true;
-      const span = document.createElement('span');
-      span.textContent = name;
-      row.appendChild(chk);
-      row.appendChild(span);
-      listWrap.appendChild(row);
-    });
-
-    btnOK.addEventListener('click', ()=>{
-      const checked = Array.from(listWrap.querySelectorAll('input[type="checkbox"]:checked')).map(i=>i.value);
-      const final = checked.length ? Array.from(new Set(checked)) : [];
-      onSave(final);
-      panel.remove();
-    });
-    btnCancel.addEventListener('click', ()=>{
-      onCancel && onCancel();
-      panel.remove();
-    });
-
-    actionRow.appendChild(btnAddNew);
-    actionRow.appendChild(btnCancel);
-    actionRow.appendChild(btnOK);
-    panel.appendChild(actionRow);
-
-    document.body.appendChild(panel);
-
-    // position panel centered over anchorElement, taking scroll into account
-    const rect = anchorElement.getBoundingClientRect();
-    // ensure offsets are available after append
-    const pw = panel.offsetWidth || 300;
-    const ph = panel.offsetHeight || 180;
-    const leftPos = (rect.left + window.scrollX) + (rect.width / 2) - (pw / 2);
-    const topPos = (rect.top + window.scrollY) + (rect.height / 2) - (ph / 2);
-    panel.style.left = Math.max(8, leftPos) + 'px';
-    panel.style.top = Math.max(8, topPos) + 'px';
-
-    return panel;
-  }
-
-  function render(){
-    let all = loadAllProjects() || [];
-    const order = sortSelect && sortSelect.value ? sortSelect.value : 'new';
-    if (order === 'new') {
-      all.sort((a,b)=> (b.createdAt || 0) - (a.createdAt || 0));
-    } else {
-      all.sort((a,b)=> (a.createdAt || 0) - (b.createdAt || 0));
-    }
-
-    const filterVal = displayFilterSelect ? displayFilterSelect.value : 'all';
-    let filtered = all.slice();
-    if (filterVal === 'checked') {
-      filtered = all.filter(p => !!p.checked);
-    } else if (filterVal && filterVal.startsWith('cat::')) {
-      const catName = filterVal.replace('cat::','');
-      filtered = all.filter(p => Array.isArray(p.categories) ? p.categories.includes(catName) : (p.categories === catName));
-    }
-
-    projectsList.innerHTML = '';
-    if (!filtered.length) {
-      projectsList.innerHTML = '<p>保存されたプロジェクトがありません。先に「マスクをつくる」で作成してください。</p>';
-      return;
-    }
-
-    filtered.forEach(proj => {
-      const card = document.createElement('div');
-      card.className = 'project-card';
-
-      const header = document.createElement('div');
-      header.className = 'project-header';
-      const titleDiv = document.createElement('div');
-      titleDiv.className = 'title';
-      titleDiv.textContent = `${proj.name || '無題'}`;
-
-      const catNames = Array.isArray(proj.categories) ? proj.categories.filter(c => c) : [];
-      const catText = document.createElement('span');
-      catText.className = 'meta';
-      catText.style.marginLeft = '8px';
-      catText.style.color = '#666';
-      catText.style.fontSize = '0.9rem';
-      catText.style.opacity = '0.85';
-      catText.textContent = catNames.length ? `カテゴリ: ${catNames.join(', ')}` : '';
-
-      const rightControls = document.createElement('div');
-      rightControls.style.display = 'flex';
-      rightControls.style.alignItems = 'center';
-      rightControls.style.gap = '8px';
-
-      const metaDiv = document.createElement('div');
-      metaDiv.className = 'meta';
-      metaDiv.style.color = '#666';
-      metaDiv.style.fontSize = '0.9rem';
-      metaDiv.textContent = `${new Date(proj.createdAt).toLocaleString()}`;
-
-      const chk = document.createElement('input');
-      chk.type = 'checkbox';
-      chk.title = 'チェック';
-      chk.checked = !!proj.checked;
-      chk.addEventListener('click', (ev)=>{
-        ev.stopPropagation();
-        const allProjects = loadAllProjects();
-        const idx = allProjects.findIndex(p => p.id === proj.id);
-        if (idx >= 0) {
-          allProjects[idx].checked = chk.checked;
-          saveAllProjects(allProjects);
+    const fallbackImage = copy.imageDataUrl
+      ? {
+          id: `${copy.id || uid('book')}-image`,
+          title: copy.name || '無題',
+          imageDataUrl: copy.imageDataUrl,
+          masks: Array.isArray(copy.masks) ? copy.masks : [],
+          createdAt: copy.createdAt || Date.now(),
         }
-      });
+      : null;
 
-      const btnHeaderDelete = document.createElement('button');
-      btnHeaderDelete.innerHTML = '🗑️';
-      btnHeaderDelete.className = 'delete-icon';
-      btnHeaderDelete.title = '画像を削除';
-
-      const leftWrap = document.createElement('div');
-      leftWrap.style.display = 'flex';
-      leftWrap.style.alignItems = 'center';
-      leftWrap.appendChild(titleDiv);
-      leftWrap.appendChild(catText);
-
-      header.appendChild(leftWrap);
-      rightControls.appendChild(metaDiv);
-      rightControls.appendChild(chk);
-      rightControls.appendChild(btnHeaderDelete);
-      header.appendChild(rightControls);
-
-      card.appendChild(header);
-
-      const content = document.createElement('div');
-      content.className = 'project-content';
-      content.style.minHeight = '240px';
-      content.style.position = 'relative';
-
-      const wrapper = document.createElement('div');
-      wrapper.className = 'image-area';
-      wrapper.style.minHeight = '240px';
-      wrapper.style.position = 'relative';
-      const img = document.createElement('img');
-      img.src = proj.imageDataUrl;
-      img.style.maxWidth = '100%';
-      wrapper.appendChild(img);
-      content.appendChild(wrapper);
-      card.appendChild(content);
-
-      const ctrl = document.createElement('div');
-      ctrl.style.marginTop = '8px';
-      ctrl.style.display = 'flex';
-      ctrl.style.gap = '8px';
-
-      const btnReset = document.createElement('button');
-      btnReset.textContent = 'リセット';
-      btnReset.className = 'secondary-btn';
-      ctrl.appendChild(btnReset);
-
-      const btnDelete = document.createElement('button');
-      btnDelete.textContent = '画像を削除';
-      btnDelete.className = 'secondary-btn';
-      ctrl.appendChild(btnDelete);
-
-      const btnRename = document.createElement('button');
-      btnRename.textContent = '名前を変更';
-      btnRename.className = 'secondary-btn';
-      ctrl.appendChild(btnRename);
-
-      const btnChangeCategory = document.createElement('button');
-      btnChangeCategory.textContent = 'カテゴリ変更';
-      btnChangeCategory.className = 'secondary-btn';
-      ctrl.appendChild(btnChangeCategory);
-
-      const btnFullscreen = document.createElement('button');
-      btnFullscreen.textContent = '全画面';
-      btnFullscreen.className = 'fullscreen-btn';
-      ctrl.appendChild(btnFullscreen);
-
-      content.appendChild(ctrl);
-
-      let maskObjs = [];
-
-      async function renderMasks() {
-        maskObjs.forEach(o => o.el && o.el.remove());
-        maskObjs = [];
-
-        await waitForImageLayout(img, 600);
-
-        requestAnimationFrame(() => {
-          const rect = img.getBoundingClientRect();
-          const wrapperRect = wrapper.getBoundingClientRect();
-          if (!rect.width || !rect.height) return;
-
-          let needsPersist = false;
-          const allProjects = loadAllProjects();
-          const projInStoreIdx = allProjects.findIndex(p => p.id === proj.id);
-          const baseW_candidate = proj.imageBaseWidth || img.naturalWidth || rect.width;
-          const baseH_candidate = proj.imageBaseHeight || img.naturalHeight || rect.height;
-
-          proj.masks.forEach(mm => {
-            if (!mm) return;
-            if (mm.x > 1 || mm.w > 1 || mm.y > 1 || mm.h > 1) {
-              const baseW = proj.imageBaseWidth || img.naturalWidth || baseW_candidate || rect.width;
-              const baseH = proj.imageBaseHeight || img.naturalHeight || baseH_candidate || rect.height;
-              mm.x = Math.min(1, mm.x / baseW);
-              mm.y = Math.min(1, mm.y / baseH);
-              mm.w = Math.min(1, mm.w / baseW);
-              mm.h = Math.min(1, mm.h / baseH);
-              needsPersist = true;
-            }
-            if (mm.visible === undefined || mm.visible === null) mm.visible = true;
-          });
-
-          if (needsPersist && projInStoreIdx >= 0) {
-            allProjects[projInStoreIdx].masks = proj.masks;
-            if (!allProjects[projInStoreIdx].imageBaseWidth && img.naturalWidth) allProjects[projInStoreIdx].imageBaseWidth = img.naturalWidth;
-            if (!allProjects[projInStoreIdx].imageBaseHeight && img.naturalHeight) allProjects[projInStoreIdx].imageBaseHeight = img.naturalHeight;
-            saveAllProjects(allProjects);
-          }
-
-          proj.masks.forEach(mm => {
-            const mEl = document.createElement('div');
-            mEl.className = 'mask study-mask';
-            mEl.classList.add(mm.shape === 'circle' ? 'circle' : 'rect');
-            const left = (mm.x * rect.width) + (rect.left - wrapperRect.left);
-            const top = (mm.y * rect.height) + (rect.top - wrapperRect.top);
-            mEl.style.left = left + 'px';
-            mEl.style.top = top + 'px';
-            mEl.style.width = (mm.w * rect.width) + 'px';
-            mEl.style.height = (mm.h * rect.height) + 'px';
-            const updateStudyMask = () => {
-              if (mm.visible) {
-                mEl.classList.remove('is-hidden');
-                mEl.classList.add('is-visible');
-                mEl.style.background = mm.color || '#000000';
-              } else {
-                mEl.classList.add('is-hidden');
-                mEl.classList.remove('is-visible');
-                mEl.style.background = 'transparent';
-              }
+    const normalizedImages = Array.isArray(copy.images) && copy.images.length
+      ? copy.images
+          .map((img, index) => {
+            if (!img || typeof img !== 'object') return null;
+            const imageDataUrl = img.imageDataUrl || img.dataUrl || '';
+            if (!imageDataUrl) return null;
+            return {
+              id: img.id || `${copy.id || uid('book')}-image-${index}`,
+              title: img.title || copy.name || '無題',
+              imageDataUrl,
+              masks: Array.isArray(img.masks) ? img.masks : [],
+              createdAt: img.createdAt || copy.createdAt || Date.now(),
             };
-            updateStudyMask();
-            mEl.addEventListener('click', (ev)=>{
-              ev.stopPropagation();
-              mm.visible = !mm.visible;
-              updateStudyMask();
-            });
-            wrapper.appendChild(mEl);
-            maskObjs.push({ el: mEl, model: mm, updateStudyMask });
-          });
-        });
-      }
+          })
+          .filter(Boolean)
+      : (fallbackImage ? [fallbackImage] : []);
 
-      function updateMaskPositions() {
-        if (!maskObjs || !maskObjs.length) return;
-        requestAnimationFrame(() => {
-          const rect = img.getBoundingClientRect();
-          const wrapperRect = wrapper.getBoundingClientRect();
-          if (!rect.width || !rect.height) return;
-          maskObjs.forEach(o => {
-            const mm = o.model;
-            const left = (mm.x * rect.width) + (rect.left - wrapperRect.left);
-            const top = (mm.y * rect.height) + (rect.top - wrapperRect.top);
-            o.el.style.left = left + 'px';
-            o.el.style.top = top + 'px';
-            o.el.style.width = (mm.w * rect.width) + 'px';
-            o.el.style.height = (mm.h * rect.height) + 'px';
-            if (typeof o.updateStudyMask === 'function') o.updateStudyMask();
-          });
-        });
-      }
+    return {
+      ...copy,
+      id: copy.id || uid('book'),
+      name: copy.name || '無題',
+      createdAt: copy.createdAt || Date.now(),
+      categories: Array.isArray(copy.categories) ? copy.categories.filter(Boolean) : [],
+      images: normalizedImages,
+    };
+  }
 
-      img.addEventListener('load', ()=>{
-        if (card.classList.contains('open')) {
-          renderMasks();
-        }
-      });
+  function getBookCoverDataUrl(book) {
+    if (!book) return '';
+    const firstImage = Array.isArray(book.images) && book.images.length ? book.images[0] : null;
+    return firstImage && firstImage.imageDataUrl ? firstImage.imageDataUrl : (book.imageDataUrl || '');
+  }
 
-      btnReset.addEventListener('click', ()=>{
-        proj.masks.forEach(mm => mm.visible = true);
-        if (maskObjs.length) {
-          maskObjs.forEach(o => {
-            o.el.style.background = o.model.color || '#000000';
-            o.el.classList.remove('is-hidden');
-            o.el.classList.add('is-visible');
-          });
-        }
-      });
+  function getDisplayLabel(value) {
+    if (value === 'all') return DISPLAY_LABELS.all;
+    if (value === 'checked') return DISPLAY_LABELS.checked;
+    if (String(value).startsWith('cat::')) {
+      const catName = String(value).replace('cat::', '');
+      return `カテゴリ: ${catName}`;
+    }
+    return DISPLAY_LABELS.all;
+  }
 
-      btnDelete.addEventListener('click', ()=>{
-        if (!confirm('本当に画像を削除しますか？')) return;
-        const allProjects = loadAllProjects();
-        const filtered = allProjects.filter(p => p.id !== proj.id);
-        saveAllProjects(filtered);
-        card.remove();
-      });
+  function getSortLabel(value) {
+    return SORT_LABELS[value] || SORT_LABELS.new;
+  }
 
-      btnHeaderDelete.addEventListener('click', (ev) => {
-        ev.stopPropagation();
-        if (!confirm('本当に画像を削除しますか？')) return;
-        const allProjects = loadAllProjects();
-        const filtered = allProjects.filter(p => p.id !== proj.id);
-        saveAllProjects(filtered);
-        card.remove();
-      });
+  function setDisplayFilter(value) {
+    state.displayFilter = value;
+    displayLabel.textContent = getDisplayLabel(value);
+    closeSheets();
+    renderBooks();
+  }
 
-      btnRename.addEventListener('click', ()=>{
-        const newName = prompt('新しい名前を入力してください', proj.name || '');
-        if (newName === null) return;
-        const allProjects = loadAllProjects();
-        const idx = allProjects.findIndex(p=>p.id === proj.id);
-        if (idx < 0) return;
-        allProjects[idx].name = newName || allProjects[idx].name;
-        saveAllProjects(allProjects);
-        titleDiv.textContent = allProjects[idx].name;
-      });
+  function setSortOrder(value) {
+    state.sortOrder = value;
+    sortLabel.textContent = getSortLabel(value);
+    closeSheets();
+    renderBooks();
+  }
 
-      // category change handler: show panel centered over the image wrapper
-      btnChangeCategory.addEventListener('click', (ev) => {
-        ev.stopPropagation();
-        closeAnyCategoryEditor();
-        // anchorElement: wrapper (image area) -> panel centered over this wrapper
-        const panel = createCategoryEditorPanel(proj, wrapper, (finalCats)=>{
-          const allProjects = loadAllProjects();
-          const idx = allProjects.findIndex(p => p.id === proj.id);
-          if (idx >= 0) {
-            allProjects[idx].categories = finalCats;
-            saveAllProjects(allProjects);
-          }
-          proj.categories = finalCats;
-          const catNamesNow = Array.isArray(proj.categories) ? proj.categories.filter(c => c) : [];
-          const catSpan = header.querySelector('.meta');
-          if (catSpan) {
-            catSpan.textContent = catNamesNow.length ? `カテゴリ: ${catNamesNow.join(', ')}` : '';
-          }
-        }, ()=>{
-          // cancel - do nothing
-        });
-      });
+  function openSheet(sheetEl) {
+    closeSheets();
+    if (sheetEl) sheetEl.classList.remove('hidden');
+  }
 
-      let isFullscreen = false;
-      btnFullscreen.addEventListener('click', async (ev) => {
-        ev.stopPropagation();
-        try {
-          if (!isFullscreen) {
-            if (wrapper.requestFullscreen) {
-              await wrapper.requestFullscreen();
-            } else if (wrapper.webkitRequestFullscreen) {
-              await wrapper.webkitRequestFullscreen();
-            }
-            isFullscreen = true;
-            btnFullscreen.textContent = '全画面終了';
-          } else {
-            if (document.exitFullscreen) {
-              await document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) {
-              await document.webkitExitFullscreen();
-            }
-            isFullscreen = false;
-            btnFullscreen.textContent = '全画面';
-            setTimeout(updateMaskPositions, 50);
-          }
-        } catch(e){}
-      });
-
-      document.addEventListener('fullscreenchange', ()=>{
-        if (document.fullscreenElement === wrapper) {
-          isFullscreen = true;
-          btnFullscreen.textContent = '全画面終了';
-          setTimeout(updateMaskPositions, 60);
-        } else {
-          if (isFullscreen) {
-            isFullscreen = false;
-            btnFullscreen.textContent = '全画面';
-            setTimeout(updateMaskPositions, 60);
-          } else {
-            btnFullscreen.textContent = '全画面';
-          }
-        }
-      });
-
-      window.addEventListener('resize', ()=>{
-        if (card.classList.contains('open')) {
-          updateMaskPositions();
-        }
-      });
-
-      header.addEventListener('click', ()=>{
-        closeAnyCategoryEditor();
-        const isOpen = card.classList.contains('open');
-        if (isOpen) {
-          card.classList.remove('open');
-          maskObjs.forEach(o => o.el && o.el.remove());
-          maskObjs = [];
-        } else {
-          card.classList.add('open');
-          proj.masks.forEach(mm => { if (mm.visible === undefined || mm.visible === null) mm.visible = true; });
-          renderMasks();
-          setTimeout(updateMaskPositions, 60);
-        }
-      });
-
-      projectsList.appendChild(card);
+  function closeSheets() {
+    [displaySheet, sortSheet].forEach((sheet) => {
+      if (sheet) sheet.classList.add('hidden');
     });
   }
 
-  function persistMaskVisibility(projId, maskId, visible){
-    // intentionally do not persist study-mode visibility to storage per spec
+  function renderDisplayOptions() {
+    if (!displayOptions) return;
+    displayOptions.innerHTML = '';
+
+    const allBtn = document.createElement('button');
+    allBtn.type = 'button';
+    allBtn.className = 'study-sheet__option';
+    allBtn.textContent = 'すべて表示';
+    allBtn.addEventListener('click', () => setDisplayFilter('all'));
+    displayOptions.appendChild(allBtn);
+
+    const checkedBtn = document.createElement('button');
+    checkedBtn.type = 'button';
+    checkedBtn.className = 'study-sheet__option';
+    checkedBtn.textContent = 'チェックがついた画像のみ';
+    checkedBtn.addEventListener('click', () => setDisplayFilter('checked'));
+    displayOptions.appendChild(checkedBtn);
+
+    const cats = loadAllCategories();
+    cats.forEach((cat) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'study-sheet__option';
+      btn.textContent = cat;
+      btn.addEventListener('click', () => setDisplayFilter(`cat::${cat}`));
+      displayOptions.appendChild(btn);
+    });
+  }
+
+  function renderSortOptions() {
+    if (!sortOptions) return;
+    sortOptions.innerHTML = '';
+
+    const newBtn = document.createElement('button');
+    newBtn.type = 'button';
+    newBtn.className = 'study-sheet__option';
+    newBtn.textContent = '新しい順';
+    newBtn.addEventListener('click', () => setSortOrder('new'));
+    sortOptions.appendChild(newBtn);
+
+    const oldBtn = document.createElement('button');
+    oldBtn.type = 'button';
+    oldBtn.className = 'study-sheet__option';
+    oldBtn.textContent = '古い順';
+    oldBtn.addEventListener('click', () => setSortOrder('old'));
+    sortOptions.appendChild(oldBtn);
+  }
+
+  function updateDeletePanel() {
+    const count = state.selectedDeleteIds.size;
+    if (deleteModePanel) {
+      deleteModePanel.classList.toggle('hidden', !state.deleteMode);
+    }
+    if (deleteModeCount) {
+      deleteModeCount.textContent = String(count);
+    }
+    if (btnDeleteMode) {
+      btnDeleteMode.textContent = state.deleteMode ? '選択中' : '選択して削除';
+      btnDeleteMode.disabled = state.deleteMode;
+    }
+    if (btnConfirmDeleteMode) {
+      btnConfirmDeleteMode.disabled = count === 0;
+    }
+  }
+
+  function enterDeleteMode() {
+    state.deleteMode = true;
+    state.selectedDeleteIds.clear();
+    closeSheets();
+    updateDeletePanel();
+    renderBooks();
+  }
+
+  function cancelDeleteMode() {
+    state.deleteMode = false;
+    state.selectedDeleteIds.clear();
+    updateDeletePanel();
+    renderBooks();
+  }
+
+  function toggleDeleteSelection(bookId, nextState) {
+    if (nextState) {
+      state.selectedDeleteIds.add(bookId);
+    } else {
+      state.selectedDeleteIds.delete(bookId);
+    }
+    updateDeletePanel();
+    renderBooks();
+  }
+
+  function updateProjectField(projectId, updater) {
     const all = loadAllProjects();
-    const p = all.find(x=>x.id===projId);
-    if (!p) return;
-    const mm = p.masks.find(m => m.id === maskId);
-    if (!mm) return;
-    mm.visible = visible; // update in-memory for this page (not saved)
+    const idx = all.findIndex((project) => project.id === projectId);
+    if (idx < 0) return false;
+    updater(all[idx]);
+    saveAllProjects(all);
+    return true;
   }
 
-  if (btnBackHome) btnBackHome.addEventListener('click', ()=> location.href='index.html');
-  if (sortSelect) sortSelect.addEventListener('change', ()=> {
-    render();
+  function navigateToBook(bookId) {
+    location.href = `book.html?id=${encodeURIComponent(bookId)}`;
+  }
+
+  function renderBooks() {
+    if (!booksList || !emptyState) return;
+
+    const allBooks = loadAllProjects().map(normalizeBook);
+
+    let filteredBooks = allBooks.slice();
+    const filterVal = state.displayFilter;
+
+    if (filterVal === 'checked') {
+      filteredBooks = filteredBooks.filter((book) => !!book.checked);
+    } else if (String(filterVal).startsWith('cat::')) {
+      const catName = String(filterVal).replace('cat::', '');
+      filteredBooks = filteredBooks.filter((book) => Array.isArray(book.categories) && book.categories.includes(catName));
+    }
+
+    filteredBooks.sort((a, b) => {
+      const aTime = Number(a.createdAt) || 0;
+      const bTime = Number(b.createdAt) || 0;
+      return state.sortOrder === 'old' ? aTime - bTime : bTime - aTime;
+    });
+
+    booksList.innerHTML = '';
+
+    const hasAnyBooks = allBooks.length > 0;
+    const hasAnyFilteredBooks = filteredBooks.length > 0;
+
+    if (!hasAnyFilteredBooks) {
+      emptyState.classList.remove('hidden');
+      emptyState.textContent = hasAnyBooks
+        ? '条件に合うBookがありません。'
+        : '新しくBookを作りましょう。';
+      return;
+    }
+
+    emptyState.classList.add('hidden');
+
+    filteredBooks.forEach((book) => {
+      const card = document.createElement('article');
+      card.className = 'book-card';
+      card.dataset.bookId = book.id;
+      card.classList.toggle('is-delete-mode', state.deleteMode);
+      card.classList.toggle('is-selected-for-delete', state.selectedDeleteIds.has(book.id));
+
+      const openButton = document.createElement('button');
+      openButton.type = 'button';
+      openButton.className = 'book-card__open';
+      openButton.setAttribute('aria-label', `${book.name} を開く`);
+
+      const coverWrap = document.createElement('div');
+      coverWrap.className = 'book-card__cover';
+
+      const coverUrl = getBookCoverDataUrl(book);
+      if (coverUrl) {
+        const img = document.createElement('img');
+        img.src = coverUrl;
+        img.alt = '';
+        img.className = 'book-card__cover-image';
+        coverWrap.appendChild(img);
+      } else {
+        const fallback = document.createElement('div');
+        fallback.className = 'book-card__cover-placeholder';
+        fallback.textContent = 'BOOK';
+        coverWrap.appendChild(fallback);
+      }
+
+      const body = document.createElement('div');
+      body.className = 'book-card__body';
+
+      const title = document.createElement('h2');
+      title.className = 'book-card__title';
+      title.textContent = book.name || '無題';
+
+      const date = document.createElement('div');
+      date.className = 'book-card__date';
+      date.textContent = formatDate(book.createdAt);
+
+      body.appendChild(title);
+      body.appendChild(date);
+
+      openButton.appendChild(coverWrap);
+      openButton.appendChild(body);
+
+      openButton.addEventListener('click', () => {
+        if (state.deleteMode) {
+          toggleDeleteSelection(book.id, !state.selectedDeleteIds.has(book.id));
+          return;
+        }
+        navigateToBook(book.id);
+      });
+
+      const controls = document.createElement('div');
+      controls.className = 'book-card__controls';
+
+      const weakLabel = document.createElement('label');
+      weakLabel.className = 'book-card__weak-toggle';
+
+      const weakInput = document.createElement('input');
+      weakInput.type = 'checkbox';
+      weakInput.checked = !!book.checked;
+      weakInput.title = '苦手Book';
+      weakInput.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+      });
+      weakInput.addEventListener('change', () => {
+        updateProjectField(book.id, (project) => {
+          project.checked = weakInput.checked;
+        });
+      });
+
+      const weakText = document.createElement('span');
+      weakText.textContent = '苦手';
+
+      weakLabel.appendChild(weakInput);
+      weakLabel.appendChild(weakText);
+
+      const deleteLabel = document.createElement('label');
+      deleteLabel.className = 'book-card__delete-toggle';
+      if (!state.deleteMode) deleteLabel.hidden = true;
+
+      const deleteInput = document.createElement('input');
+      deleteInput.type = 'checkbox';
+      deleteInput.checked = state.selectedDeleteIds.has(book.id);
+      deleteInput.title = '削除対象';
+      deleteInput.addEventListener('click', (ev) => {
+        ev.stopPropagation();
+      });
+      deleteInput.addEventListener('change', () => {
+        toggleDeleteSelection(book.id, deleteInput.checked);
+      });
+
+      const deleteText = document.createElement('span');
+      deleteText.textContent = '削除';
+
+      deleteLabel.appendChild(deleteInput);
+      deleteLabel.appendChild(deleteText);
+
+      const categoryText = document.createElement('div');
+      categoryText.className = 'book-card__categories';
+      categoryText.textContent = Array.isArray(book.categories) && book.categories.length
+        ? `カテゴリ: ${book.categories.join(', ')}`
+        : '';
+
+      controls.appendChild(weakLabel);
+      controls.appendChild(deleteLabel);
+      controls.appendChild(categoryText);
+
+      card.appendChild(openButton);
+      card.appendChild(controls);
+
+      booksList.appendChild(card);
+    });
+
+    updateDeletePanel();
+  }
+
+  function confirmDeleteSelectedBooks() {
+    const ids = Array.from(state.selectedDeleteIds);
+    if (!ids.length) {
+      alert('削除するBookを選んでください');
+      return;
+    }
+
+    const ok = confirm(`選択した ${ids.length} 冊を削除しますか？`);
+    if (!ok) return;
+
+    const remaining = loadAllProjects().filter((project) => !state.selectedDeleteIds.has(project.id));
+    saveAllProjects(remaining);
+    cancelDeleteMode();
+    renderBooks();
+  }
+
+  function wireSheet(sheetEl) {
+    if (!sheetEl) return;
+    sheetEl.addEventListener('click', (ev) => {
+      const target = ev.target;
+      if (target && target.matches('[data-sheet-close]')) {
+        closeSheets();
+      }
+    });
+  }
+
+  if (btnBackHome) {
+    btnBackHome.addEventListener('click', () => {
+      location.href = 'index.html';
+    });
+  }
+
+  if (btnDisplayMenu) {
+    btnDisplayMenu.addEventListener('click', () => {
+      renderDisplayOptions();
+      openSheet(displaySheet);
+    });
+  }
+
+  if (btnSortMenu) {
+    btnSortMenu.addEventListener('click', () => {
+      renderSortOptions();
+      openSheet(sortSheet);
+    });
+  }
+
+  if (btnDeleteMode) {
+    btnDeleteMode.addEventListener('click', () => {
+      enterDeleteMode();
+    });
+  }
+
+  if (btnCancelDeleteMode) {
+    btnCancelDeleteMode.addEventListener('click', () => {
+      cancelDeleteMode();
+    });
+  }
+
+  if (btnConfirmDeleteMode) {
+    btnConfirmDeleteMode.addEventListener('click', () => {
+      confirmDeleteSelectedBooks();
+    });
+  }
+
+  if (displayOptions) {
+    displayOptions.addEventListener('click', (ev) => {
+      const button = ev.target.closest('button[data-value]');
+      if (!button) return;
+      setDisplayFilter(button.dataset.value || 'all');
+    });
+  }
+
+  if (sortOptions) {
+    sortOptions.addEventListener('click', (ev) => {
+      const button = ev.target.closest('button[data-value]');
+      if (!button) return;
+      setSortOrder(button.dataset.value || 'new');
+    });
+  }
+
+  wireSheet(displaySheet);
+  wireSheet(sortSheet);
+
+  document.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Escape') {
+      closeSheets();
+      if (state.deleteMode) cancelDeleteMode();
+    }
   });
-  if (displayFilterSelect) {
-    displayFilterSelect.addEventListener('change', ()=> {
-      const openCards = document.querySelectorAll('.project-card.open');
-      openCards.forEach(c => c.classList.remove('open'));
-      closeAnyCategoryEditor();
-      render();
-    });
-  }
-  if (btnToggleReviewView) {
-    btnToggleReviewView.addEventListener('click', ()=> {
-      reviewViewActive = !reviewViewActive;
-      const openCards = document.querySelectorAll('.project-card.open');
-      openCards.forEach(c => c.classList.remove('open'));
-      closeAnyCategoryEditor();
-      render();
-    });
+
+  function prepareSheetOptions() {
+    if (displayOptions) {
+      displayOptions.innerHTML = '';
+      const baseOptions = [
+        { value: 'all', label: 'すべて表示' },
+        { value: 'checked', label: 'チェックがついた画像のみ' },
+      ];
+
+      baseOptions.forEach((option) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'study-sheet__option';
+        btn.dataset.value = option.value;
+        btn.textContent = option.label;
+        displayOptions.appendChild(btn);
+      });
+
+      loadAllCategories().forEach((cat) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'study-sheet__option';
+        btn.dataset.value = `cat::${cat}`;
+        btn.textContent = cat;
+        displayOptions.appendChild(btn);
+      });
+    }
+
+    if (sortOptions) {
+      sortOptions.innerHTML = '';
+
+      [
+        { value: 'new', label: '新しい順' },
+        { value: 'old', label: '古い順' },
+      ].forEach((option) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'study-sheet__option';
+        btn.dataset.value = option.value;
+        btn.textContent = option.label;
+        sortOptions.appendChild(btn);
+      });
+    }
   }
 
-  populateDisplayFilterOptions();
-  render();
+  function syncToolbarLabels() {
+    if (displayLabel) displayLabel.textContent = getDisplayLabel(state.displayFilter);
+    if (sortLabel) sortLabel.textContent = getSortLabel(state.sortOrder);
+  }
 
+  function init() {
+    prepareSheetOptions();
+    syncToolbarLabels();
+    updateDeletePanel();
+    renderBooks();
+  }
+
+  init();
 })();

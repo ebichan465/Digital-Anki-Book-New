@@ -1,0 +1,53 @@
+<!-- book.html -->
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#fbf7ed" />
+  <title>Digital Anki Book - Book</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="book-page">
+  <div class="book-scene">
+    <header class="book-topbar" aria-label="Bookページトップバー">
+      <button id="btnBackStudy" class="book-topbar-btn book-topbar-btn--back" type="button" aria-label="暗記するページへ戻る">〈</button>
+
+      <div class="book-topbar__title">
+        <h1 id="bookTitle">Book</h1>
+        <p id="bookMeta" class="book-topbar__meta"></p>
+      </div>
+
+      <div class="book-topbar__spacer" aria-hidden="true"></div>
+    </header>
+
+    <main class="book-layout">
+      <section class="book-main" aria-label="Bookの内容">
+        <div class="book-paper-shell">
+          <div class="book-hole-strip" aria-hidden="true"></div>
+
+          <div class="book-paper">
+            <div id="bookCanvas" class="book-canvas">
+              <img id="bookMainImage" alt="Bookの画像" class="hidden" />
+              <p id="bookEmpty" class="book-empty hidden">Bookが見つかりませんでした。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="book-toolbar" aria-label="Book操作">
+        <button id="btnResetMasks" class="book-toolbar-btn" type="button">リセット</button>
+        <button id="btnRenameBook" class="book-toolbar-btn" type="button">名前を変更</button>
+        <button id="btnChangeCategory" class="book-toolbar-btn" type="button">カテゴリ変更</button>
+        <button id="btnDeleteImage" class="book-toolbar-btn" type="button">画像削除</button>
+        <label class="book-toolbar-check">
+          <input id="bookWeakCheckbox" type="checkbox" />
+          <span>苦手</span>
+        </label>
+      </section>
+    </main>
+  </div>
+
+  <script src="book.js"></script>
+</body>
+</html>

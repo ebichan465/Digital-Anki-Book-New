@@ -1,49 +1,75 @@
+<!-- study.html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Digital Anki Book - 暗記モード</title>
+  <meta name="theme-color" content="#fbf7ed" />
+  <title>Digital Anki Book - 暗記する</title>
   <link rel="stylesheet" href="style.css" />
 </head>
-<body>
-  <header>
-    <h1>Digital Anki Book</h1>
-  </header>
+<body class="study-page">
+  <div class="study-scene">
+    <header class="study-topbar" aria-label="暗記するトップバー">
+      <button id="btnBackHome" class="study-topbar-btn study-topbar-btn--back" type="button" aria-label="トップページへ戻る">〈</button>
 
-  <div class="container">
-    <div class="main-col">
-      <div style="margin-bottom:12px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
-        <button id="btnBackHome" class="big-btn">トップに戻る</button>
-        <label for="sortSelect" style="margin-left:12px;">並び順</label>
-        <select id="sortSelect" style="padding:8px; border-radius:6px;">
-          <option value="new">新しい順</option>
-          <option value="old">古い順</option>
-        </select>
-
-        <!-- 新: 表示する画像フィルタ -->
-        <label for="displayFilterSelect" style="margin-left:12px;">表示する画像</label>
-        <select id="displayFilterSelect" style="padding:8px; border-radius:6px;">
-          <!-- options populated dynamically by study.js -->
-        </select>
-
-        <button id="btnToggleReviewView" class="secondary-btn">復習画像の一覧を見る</button>
+      <div class="study-topbar__title">
+        <h1>暗記する</h1>
       </div>
 
-      <div id="reviewSummary" class="review-summary hidden"></div>
-      <div id="projectsList"></div>
-    </div>
+      <div class="study-topbar__spacer" aria-hidden="true"></div>
+    </header>
 
-    <aside class="side-col">
-      <div class="note-box">
-        <h3>使い方</h3>
-        <ol>
-          <li>開きたい画像の枠をクリック→画像が表示される</li>
-          <li>画像内のマスクをクリックすると、答えが表示。</li>
-          <li>「リセット」ボタンで、その画像のマスクをすべて初期状態に戻せる。</li>
-        </ol>
+    <main class="study-main">
+      <section class="study-toolbar" aria-label="Book一覧の操作">
+        <button id="btnDisplayMenu" class="study-toolbar-btn" type="button">
+          <span class="study-toolbar-btn__label">表示</span>
+          <span id="displayLabel" class="study-toolbar-btn__value">すべて表示</span>
+        </button>
+
+        <button id="btnSortMenu" class="study-toolbar-btn" type="button">
+          <span class="study-toolbar-btn__label">並び替え</span>
+          <span id="sortLabel" class="study-toolbar-btn__value">新しい順</span>
+        </button>
+
+        <button id="btnDeleteMode" class="study-toolbar-btn" type="button">選択して削除</button>
+      </section>
+
+      <section id="deleteModePanel" class="study-delete-panel hidden" aria-label="選択して削除の操作">
+        <div class="study-delete-panel__info">
+          <span id="deleteModeCount">0</span>冊選択中
+        </div>
+        <div class="study-delete-panel__actions">
+          <button id="btnCancelDeleteMode" class="study-delete-panel__button" type="button">キャンセル</button>
+          <button id="btnConfirmDeleteMode" class="study-delete-panel__button" type="button">削除する</button>
+        </div>
+      </section>
+
+      <section id="booksList" class="study-books" aria-label="Book一覧"></section>
+      <p id="emptyState" class="study-empty">新しくBookを作りましょう。</p>
+    </main>
+
+    <section id="displaySheet" class="study-sheet hidden" aria-label="表示方法">
+      <div class="study-sheet__backdrop" data-sheet-close></div>
+      <div class="study-sheet__panel" role="dialog" aria-modal="true" aria-labelledby="displaySheetTitle">
+        <h2 id="displaySheetTitle" class="study-sheet__title">表示</h2>
+        <div id="displayOptions" class="study-sheet__options"></div>
+        <div class="study-sheet__footer">
+          <button type="button" class="study-sheet__close" data-sheet-close>閉じる</button>
+        </div>
       </div>
-    </aside>
+    </section>
+
+    <section id="sortSheet" class="study-sheet hidden" aria-label="並び替え">
+      <div class="study-sheet__backdrop" data-sheet-close></div>
+      <div class="study-sheet__panel" role="dialog" aria-modal="true" aria-labelledby="sortSheetTitle">
+        <h2 id="sortSheetTitle" class="study-sheet__title">並び替え</h2>
+        <div id="sortOptions" class="study-sheet__options"></div>
+        <div class="study-sheet__footer">
+          <button type="button" class="study-sheet__close" data-sheet-close>閉じる</button>
+        </div>
+      </div>
+    </section>
   </div>
 
   <script src="study.js"></script>
