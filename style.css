@@ -1440,6 +1440,7 @@ body.edit-page .hidden{
   body.edit-page .edit-paper{
     padding:16px 12px 18px 24px;
     border-radius:24px;
+    margin-bottom:24px;
   }
 
   body.edit-page .edit-canvas{
