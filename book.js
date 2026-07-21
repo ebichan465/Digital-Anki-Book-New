@@ -228,7 +228,9 @@
     entry.el.classList.remove('rect', 'circle');
     entry.el.classList.add(mask.shape === 'circle' ? 'circle' : 'rect');
     entry.el.style.background = mask.color || '#000000';
-    entry.el.style.opacity = mask.visible ? '0.5' : '0';
+    entry.el.style.background = mask.visible
+  ? (mask.color || '#000000')
+  : 'transparent';
   }
 
   function waitForImageLayout(imgEl, timeout = 700) {
@@ -290,7 +292,6 @@
       el.style.touchAction = 'none';
       el.style.cursor = 'pointer';
       el.style.boxSizing = 'border-box';
-      el.style.border = 'none';
 
       el.addEventListener('click', (ev) => {
         ev.stopPropagation();
