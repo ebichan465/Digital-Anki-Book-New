@@ -1404,12 +1404,6 @@ body.edit-page .hidden{
     padding:14px 10px 22px;
   }
 
-  body.edit-page .edit-topbar{
-    grid-template-columns:1fr auto 1fr;
-    padding:10px 10px;
-    gap:8px;
-  }
-
   body.edit-page .edit-topbar__title h1{
     font-size:clamp(18px, 5vw, 23px);
   }
@@ -1420,7 +1414,6 @@ body.edit-page .hidden{
     font-size:14px;
   }
 
-  body.edit-page .edit-topbar-btn--back,
   body.edit-page .edit-topbar-btn--save{
     min-width:88px;
   }
