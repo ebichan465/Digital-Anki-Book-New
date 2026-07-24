@@ -635,7 +635,7 @@ body.book-page{
   position:relative;
 
   background:
-    url("../assets/desk.svg") center center / cover no-repeat fixed;
+    url("../assets/desk.jpg") center center / cover no-repeat fixed;
 }
 
 body.study-page button,
