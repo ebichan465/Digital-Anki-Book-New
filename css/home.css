@@ -96,9 +96,8 @@ body.home-page .home-action-btn{
   font-size:clamp(0.88rem, 2.9vw, 0.99rem);
   letter-spacing:.04em;
   box-shadow:
-    0 24px 30px -22px rgba(74, 58, 36, .70),
-    0 10px 14px -12px rgba(74, 58, 36, .18),
-    inset 0 1px 0 rgba(255,255,255,.42);
+    0 10px 20px rgba(74,58,36,.24),
+    0 20px 34px rgba(74,58,36,.18);
   overflow:visible;
   transform:rotate(var(--note-tilt));
   transition:
@@ -120,19 +119,6 @@ body.home-page .home-action-btn::before{
   background:url("../assets/tape.svg") center / contain no-repeat;
   pointer-events:none;
   opacity:.56;
-}
-
-body.home-page .home-action-btn::after{
-  content:'';
-  position:absolute;
-  left:10%;
-  right:10%;
-  bottom:-16px;
-  height:20px;
-  background:radial-gradient(circle at center, rgba(0,0,0,.20), transparent 72%);
-  filter:blur(10px);
-  opacity:.28;
-  pointer-events:none;
 }
 
 body.home-page .home-action-btn--blue{
@@ -175,16 +161,11 @@ body.home-page .home-action-btn--red{
 }
 
 body.home-page .home-action-btn:hover{
-  transform:rotate(var(--note-tilt)) translateY(-3px);
-  filter:saturate(1.02) brightness(1.01);
-  box-shadow:
-    0 28px 34px -22px rgba(74,58,36,.78),
-    0 12px 16px -12px rgba(74,58,36,.20),
-    inset 0 1px 0 rgba(255,255,255,.45);
+  transform:rotate(var(--note-tilt));
 }
 
 body.home-page .home-action-btn:active{
-  transform:rotate(var(--note-tilt)) translateY(4px) scale(.98);
+  transform:rotate(var(--note-tilt)) scale(.98);
 }
 
 body.home-page .home-study-wrap{
