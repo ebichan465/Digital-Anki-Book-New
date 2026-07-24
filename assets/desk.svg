@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" fill="none" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="woodBase" x1="0" y1="0" x2="0" y2="900" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ccb084"/>
+      <stop offset=".28" stop-color="#c2a06f"/>
+      <stop offset=".58" stop-color="#b9915e"/>
+      <stop offset="1" stop-color="#ae8250"/>
+    </linearGradient>
+
+    <linearGradient id="toneSoft" x1="0" y1="0" x2="1600" y2="0" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#8d6841" stop-opacity=".10"/>
+      <stop offset=".18" stop-color="#ffffff" stop-opacity=".03"/>
+      <stop offset=".50" stop-color="#ffffff" stop-opacity=".00"/>
+      <stop offset=".82" stop-color="#ffffff" stop-opacity=".03"/>
+      <stop offset="1" stop-color="#8d6841" stop-opacity=".12"/>
+    </linearGradient>
+
+    <radialGradient id="cornerShade" cx="50%" cy="50%" r="75%">
+      <stop offset="0" stop-color="#000000" stop-opacity="0"/>
+      <stop offset=".72" stop-color="#000000" stop-opacity=".03"/>
+      <stop offset="1" stop-color="#000000" stop-opacity=".14"/>
+    </radialGradient>
+
+    <filter id="grainBlur" x="-5%" y="-5%" width="110%" height="110%">
+      <feGaussianBlur stdDeviation="0.35"/>
+    </filter>
+
+    <filter id="softBlur" x="-10%" y="-10%" width="120%" height="120%">
+      <feGaussianBlur stdDeviation="1.8"/>
+    </filter>
+  </defs>
+
+  <!-- Base wood -->
+  <rect width="1600" height="900" fill="url(#woodBase)"/>
+
+  <!-- Subtle color variation bands -->
+  <path d="M0 110C220 86 380 130 560 112C740 94 920 72 1100 98C1260 120 1410 90 1600 116V220H0Z" fill="#9f7348" fill-opacity=".08"/>
+  <path d="M0 330C210 292 396 356 570 330C760 302 926 280 1110 312C1280 342 1432 308 1600 330V440H0Z" fill="#7f5a37" fill-opacity=".07"/>
+  <path d="M0 560C190 538 360 590 560 566C750 542 960 508 1135 540C1310 570 1460 548 1600 560V670H0Z" fill="#ffffff" fill-opacity=".03"/>
+  <path d="M0 760C220 724 392 798 588 770C792 742 972 720 1160 752C1330 780 1468 764 1600 770V900H0Z" fill="#7b5737" fill-opacity=".06"/>
+
+  <!-- Wood grain -->
+  <g filter="url(#grainBlur)" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M-30 92C130 72 240 120 380 104C520 88 620 68 760 92C900 116 1030 132 1170 104C1300 78 1430 86 1630 110" stroke="#6f4f31" stroke-opacity=".12" stroke-width="5"/>
+    <path d="M-40 148C120 126 254 168 400 152C548 136 640 108 792 132C944 156 1070 178 1218 150C1350 126 1470 126 1640 144" stroke="#6b4b2f" stroke-opacity=".11" stroke-width="4"/>
+    <path d="M-20 204C140 186 250 228 392 212C536 196 628 172 772 194C920 218 1050 236 1202 210C1340 186 1468 188 1620 206" stroke="#805735" stroke-opacity=".10" stroke-width="4"/>
+    <path d="M-35 270C112 252 260 292 412 276C558 262 668 238 812 256C960 274 1082 298 1240 274C1388 252 1492 250 1635 270" stroke="#6f4f31" stroke-opacity=".10" stroke-width="5"/>
+    <path d="M-30 344C120 326 250 364 400 350C548 336 652 310 792 330C938 350 1064 370 1216 346C1364 322 1478 322 1630 342" stroke="#7a5635" stroke-opacity=".10" stroke-width="4"/>
+    <path d="M-25 420C128 396 250 446 404 426C556 408 660 384 810 406C960 428 1088 454 1238 428C1388 402 1496 402 1628 420" stroke="#67482d" stroke-opacity=".10" stroke-width="5"/>
+    <path d="M-30 500C130 480 262 524 412 506C560 488 668 462 820 484C972 506 1092 534 1246 508C1400 482 1500 482 1632 502" stroke="#7c5837" stroke-opacity=".10" stroke-width="4"/>
+    <path d="M-40 586C126 564 250 612 402 594C554 576 660 552 814 574C970 596 1100 624 1256 598C1408 574 1508 574 1640 592" stroke="#6c4b2f" stroke-opacity=".11" stroke-width="5"/>
+    <path d="M-30 676C132 654 260 700 420 682C578 664 684 640 836 662C990 684 1122 712 1276 686C1430 660 1510 660 1630 678" stroke="#805735" stroke-opacity=".10" stroke-width="4"/>
+    <path d="M-20 770C140 748 280 792 438 776C594 760 704 736 860 756C1016 776 1148 804 1300 780C1450 756 1528 756 1620 772" stroke="#69482c" stroke-opacity=".10" stroke-width="5"/>
+    <path d="M-25 854C150 832 278 876 450 860C620 844 732 820 888 842C1048 864 1172 890 1330 868C1478 846 1544 846 1635 856" stroke="#7a5635" stroke-opacity=".09" stroke-width="4"/>
+  </g>
+
+  <!-- More visible grain lines to give the desk a hand-finished look -->
+  <g opacity=".20" filter="url(#grainBlur)">
+    <path d="M0 58C170 44 314 72 470 60C632 48 778 30 944 52C1120 76 1280 70 1600 42" stroke="#8b6540" stroke-width="2.3"/>
+    <path d="M0 176C166 154 312 196 468 180C628 164 780 140 950 164C1126 192 1282 186 1600 162" stroke="#8b6540" stroke-width="2.1"/>
+    <path d="M0 296C168 276 312 320 470 304C630 290 784 262 950 286C1122 312 1284 308 1600 284" stroke="#8b6540" stroke-width="2.2"/>
+    <path d="M0 456C170 434 316 476 474 460C636 444 782 418 952 442C1128 468 1288 462 1600 438" stroke="#8b6540" stroke-width="2.2"/>
+    <path d="M0 626C168 606 314 648 472 632C634 616 786 590 954 614C1128 640 1288 636 1600 612" stroke="#8b6540" stroke-width="2.1"/>
+    <path d="M0 808C172 788 320 830 480 816C644 802 790 776 964 798C1138 822 1294 818 1600 794" stroke="#8b6540" stroke-width="2.2"/>
+  </g>
+
+  <!-- Knots -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round" opacity=".78">
+    <g transform="translate(260 226)">
+      <ellipse cx="0" cy="0" rx="48" ry="26" stroke="#7d5432" stroke-opacity=".28" stroke-width="4"/>
+      <ellipse cx="0" cy="0" rx="30" ry="16" stroke="#6a462a" stroke-opacity=".26" stroke-width="4"/>
+      <ellipse cx="0" cy="0" rx="15" ry="8" stroke="#4d311d" stroke-opacity=".28" stroke-width="4"/>
+      <path d="M-56 2C-28 -8 -10 -10 0 -2C12 8 28 8 56 -2" stroke="#9b7246" stroke-opacity=".18" stroke-width="3"/>
+    </g>
+
+    <g transform="translate(1216 482) rotate(-8)">
+      <ellipse cx="0" cy="0" rx="56" ry="30" stroke="#7d5432" stroke-opacity=".26" stroke-width="4"/>
+      <ellipse cx="0" cy="0" rx="34" ry="18" stroke="#6a462a" stroke-opacity=".24" stroke-width="4"/>
+      <ellipse cx="0" cy="0" rx="16" ry="9" stroke="#4d311d" stroke-opacity=".26" stroke-width="4"/>
+      <path d="M-64 3C-38 -10 -14 -10 0 -2C15 8 34 10 64 -1" stroke="#9b7246" stroke-opacity=".16" stroke-width="3"/>
+    </g>
+
+    <g transform="translate(860 690) rotate(12)">
+      <ellipse cx="0" cy="0" rx="38" ry="20" stroke="#7d5432" stroke-opacity=".22" stroke-width="4"/>
+      <ellipse cx="0" cy="0" rx="22" ry="11" stroke="#6a462a" stroke-opacity=".20" stroke-width="4"/>
+      <ellipse cx="0" cy="0" rx="10" ry="5" stroke="#4d311d" stroke-opacity=".20" stroke-width="4"/>
+    </g>
+  </g>
+
+  <!-- Gentle center highlight -->
+  <rect width="1600" height="900" fill="url(#toneSoft)"/>
+
+  <!-- Slight edge darkening for depth -->
+  <rect width="1600" height="900" fill="url(#cornerShade)" opacity=".85"/>
+</svg>

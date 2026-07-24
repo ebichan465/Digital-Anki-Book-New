@@ -633,41 +633,9 @@ body.book-page{
   color:#30404a;
   overflow-x:hidden;
   position:relative;
-  background-color:#ad7240;
-  background-image:
-    radial-gradient(circle at 18% 20%, rgba(255,236,198,.14), transparent 22%),
-    radial-gradient(circle at 82% 14%, rgba(81, 43, 18, .18), transparent 20%),
-    radial-gradient(circle at 52% 82%, rgba(255,255,255,.06), transparent 26%),
-    repeating-linear-gradient(
-      180deg,
-      rgba(98, 61, 28, .20) 0 1.1px,
-      rgba(186, 128, 74, .06) 1.1px 2.3px,
-      rgba(112, 69, 31, .18) 2.3px 4.1px,
-      rgba(173, 120, 69, .07) 4.1px 7.4px,
-      rgba(94, 57, 25, .14) 7.4px 8.7px,
-      rgba(198, 141, 86, .05) 8.7px 12.8px
-    ),
-    repeating-linear-gradient(
-      178deg,
-      rgba(255,255,255,.018) 0 34px,
-      rgba(0,0,0,.02) 34px 36px,
-      transparent 36px 88px
-    ),
-    linear-gradient(180deg, #bc8148 0%, #9e6435 100%);
-  background-blend-mode: soft-light, multiply, multiply, normal;
-}
 
-body.study-page::before,
-body.book-page::before{
-  content:'';
-  position:fixed;
-  inset:0;
-  pointer-events:none;
   background:
-    radial-gradient(circle at 35% 22%, rgba(255,255,255,.14), transparent 24%),
-    radial-gradient(circle at 68% 8%, rgba(255,255,255,.08), transparent 18%),
-    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0) 36%);
-  opacity:.9;
+    url("../assets/desk.svg") center center / cover no-repeat fixed;
 }
 
 body.study-page button,
