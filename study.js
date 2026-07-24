@@ -31,7 +31,7 @@
 
   const DISPLAY_LABELS = {
     all: 'すべて表示',
-    checked: 'チェックがついた画像のみ',
+    checked: 'お気に入りのみ',
   };
 
   const SORT_LABELS = {
@@ -178,7 +178,7 @@
     const checkedBtn = document.createElement('button');
     checkedBtn.type = 'button';
     checkedBtn.className = 'study-sheet__option';
-    checkedBtn.textContent = 'チェックがついた画像のみ';
+    checkedBtn.textContent = 'お気に入り画像のみ';
     checkedBtn.addEventListener('click', () => setDisplayFilter('checked'));
     displayOptions.appendChild(checkedBtn);
 
@@ -221,7 +221,7 @@
       deleteModeCount.textContent = String(count);
     }
     if (btnDeleteMode) {
-      btnDeleteMode.textContent = state.deleteMode ? '選択中' : '選択して削除';
+      btnDeleteMode.textContent = state.deleteMode ? '選択中' : '削除';
       btnDeleteMode.disabled = state.deleteMode;
     }
     if (btnConfirmDeleteMode) {
@@ -377,7 +377,7 @@
       });
 
       const weakText = document.createElement('span');
-      weakText.textContent = '苦手';
+      weakText.textContent = 'お気に入り';
 
       weakLabel.appendChild(weakInput);
       weakLabel.appendChild(weakText);
@@ -517,7 +517,7 @@
       displayOptions.innerHTML = '';
       const baseOptions = [
         { value: 'all', label: 'すべて表示' },
-        { value: 'checked', label: 'チェックがついた画像のみ' },
+        { value: 'checked', label: 'お気に入りのみ' },
       ];
 
       baseOptions.forEach((option) => {
