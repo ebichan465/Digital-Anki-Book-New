@@ -1,0 +1,817 @@
+:root{
+  --toolbar-bg: #f6f7fb;
+  --btn-bg: #2b6ef6;
+  --btn-fg: white;
+  --mask-color: #000;
+  --mask-opacity: 1;
+  --selected-border: 3px solid #ffd54d;
+}
+
+/* リセット */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  font-family: system-ui, "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
+  margin:0;
+  padding:0;
+  color:#111;
+  background:#fff;
+}
+
+/* ヘッダー */
+header{
+  padding:24px 30px;
+  border-bottom:1.5px solid #e6e9ef;
+  background:var(--toolbar-bg);
+  display:flex;
+  align-items:center;
+}
+header h1{
+  font-size:30px;
+  margin:0;
+}
+
+/* メインレイアウト */
+.container {
+  padding:20px;
+  display:flex;
+  gap:20px;
+  align-items:flex-start;
+}
+
+h2 {
+    font-size: 50px;
+}
+
+p {
+    font-size:25px;
+}
+
+.how-to-use {
+  margin-top: 40px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.how-to-use h2 {
+  text-align: center;
+  margin-bottom: 16px;
+  font-size:40px;
+}
+
+.how-to-use ol {
+  padding-left: 0;
+  margin-left: 0;
+  list-style-position: inside;
+  font-size:19px;
+}
+
+/* 左カラム（メイン領域） */
+.main-col{
+  flex:1;
+  min-width:640px;
+}
+
+/* 右カラム（説明） */
+.side-col{
+  width:320px;
+}
+
+/* ヘッダー下のボタン群 */
+.action-area{
+  margin:18px 0;
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+/* 用途ごとにボタンをまとめる */
+.tool-group {
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+
+/* 2つのtool-groupの間隔をさらに広げる */
+.tool-group + .tool-group {
+  margin-left:56px; /* was 28px, now doubled */
+}
+
+/* 28pxを2倍にした */
+.big-btn{
+  padding:12px 10px;
+  border-radius:10px;
+  font-size:16px;
+  background:var(--btn-bg);
+  color:var(--btn-fg);
+  border:none;
+  cursor:pointer;
+}
+
+.secondary-btn{
+  padding:10px 14px;
+  border-radius:8px;
+  font-size:0.95rem;
+  background:#fff;
+  border:1px solid #ccc;
+  cursor:pointer;
+}
+
+/* 図形選択をコンパクトにする（最小幅を120pxから80pxへ変更） */
+#shapeSelect {
+  min-width:80px;
+}
+
+/* 画像エリア */
+.image-area{
+  position:relative;
+  width:100%;
+  min-height:360px;
+  border:1px solid #ddd;
+  background:#fafafa;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:auto;
+  overscroll-behavior: contain;
+}
+
+/* 画像本体 */
+.image-area img{
+  display:block;
+  max-width:100%;
+  height:auto;
+}
+
+/* マスクの基本 */
+.mask{
+  position:absolute;
+  background:var(--mask-color);
+  opacity:var(--mask-opacity);
+  cursor:move;
+  box-sizing:border-box;
+  z-index: 60; /* 編集モードでマスクをテキストボックスより前面に出す */
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* 円形マスク */
+.mask.circle{
+  border-radius:50%;
+}
+
+/* 選択時の見た目 */
+.mask.selected{
+  outline: var(--selected-border);
+  outline-offset: -4px;
+}
+
+/* リサイズ用ハンドル */
+.resize-handle{
+  position:absolute;
+  width:12px;
+  height:12px;
+  right:0;
+  bottom:0;
+  background:#fff;
+  border:1px solid #333;
+  box-sizing:border-box;
+  cursor:se-resize;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* テキストボックスのスタイル */
+.text-box {
+  position:absolute;
+  background:#fff;
+  z-index: 50; /* 編集モードではマスクを文字より前面に見せる */
+}
+.text-box-inner {
+  pointer-events:none;
+}
+
+/* 編集ページのツールバー */
+.editor-tools{
+  margin-top:12px;
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+/* 学習ページのプロジェクト一覧 */
+.project-card{
+  border:1px solid #e6e9ef;
+  padding:8px;
+  margin-bottom:12px;
+  background:#fff;
+}
+
+/* アコーディオン見出し */
+.project-header {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:8px;
+  cursor:pointer;
+  user-select:none;
+  border:1px solid #e6e9ef;
+  border-radius:6px;
+  background:#fff;
+  margin-bottom:6px;
+}
+
+/* 見出しのタイトル/日時 */
+.project-header .title {
+  font-weight:600;
+}
+
+/* 見出し内のカテゴリチップ */
+.category-chip {
+  display:inline-block;
+  font-size:0.8rem;
+  padding:4px 8px;
+  border-radius:12px;
+  background:#eef6ff;
+  color:#0b66d1;
+  margin-left:8px;
+  border:1px solid #d6eaff;
+}
+
+/* カテゴリアイコン（小） */
+.category-icon {
+  display:inline-block;
+  width:20px;
+  height:20px;
+  line-height:20px;
+  text-align:center;
+  border-radius:50%;
+  background:#f0f6ff;
+  color:#0b66d1;
+  font-size:12px;
+  margin-left:8px;
+  cursor:help;
+}
+
+/* 見出し内の削除アイコン */
+.delete-icon{
+  background:transparent;
+  border:none;
+  cursor:pointer;
+  font-size:16px;
+  line-height:1;
+  padding:4px;
+  border-radius:6px;
+  color:#c44;
+}
+.delete-icon:hover{
+  background:rgba(200,100,100,0.08);
+}
+
+/* チェックボックスを大きくして押しやすくする */
+.project-header input[type="checkbox"]{
+  transform: scale(2); /* 見た目の拡大 */
+  transform-origin: center;
+  margin: 0 8px;
+  width: 18px;
+  height: 18px;
+  /* 周囲要素（見出し）のpaddingで押せる範囲を広げる */
+}
+
+/* 折りたたみ内容 */
+.project-content {
+  display:none;
+  padding:8px;
+  border:1px solid #eee;
+  background:#fafafa;
+  border-radius:6px;
+  margin-bottom:12px;
+}
+
+/* 開いたとき */
+.project-card.open .project-content {
+  display:block;
+}
+
+/* テキスト挿入用モーダル */
+.modal{
+  position:fixed;
+  left:0;
+  top:0;
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: rgba(0,0,0,0.4);
+  z-index: 1000;
+}
+.modal .modal-content{
+  background:#fff;
+  padding:16px;
+  border-radius:8px;
+  width: min(720px, 90%);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.2);
+}
+
+/* 全画面ボタン（学習） */
+.fullscreen-btn {
+  padding:8px 12px;
+  font-size:0.95rem;
+  border-radius:8px;
+  border:1px solid #ccc;
+  background:#fff;
+  cursor:pointer;
+}
+
+/* 補助用の小さなクラス */
+.hidden { display:none !important; }
+.note-box{
+  padding:12px;
+  border:1px dashed #ddd;
+  background:#fbfbff;
+  border-radius:8px;
+}
+
+.footer-note{
+  margin-top:18px;
+  color:#666;
+  font-size:0.9rem;
+}
+
+/* ===== 復習・スマホ向け追加 ===== */
+button,
+.big-btn,
+.secondary-btn,
+.home-action-btn,
+.fullscreen-btn{
+  white-space:nowrap;
+}
+
+input[type="color"]{
+  -webkit-appearance:none;
+  appearance:none;
+  border:1px solid #ccc;
+  background:#fff;
+  padding:0;
+  border-radius:6px;
+  overflow:hidden;
+  display:inline-block;
+  vertical-align:middle;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper{
+  padding:0;
+}
+
+input[type="color"]::-webkit-color-swatch{
+  border:none;
+  border-radius:4px;
+}
+
+input[type="color"]::-moz-color-swatch{
+  border:none;
+  border-radius:4px;
+}
+
+.home-study-wrap{
+  position:relative;
+  display:inline-flex;
+  align-items:flex-start;
+}
+
+.review-bubble{
+  position:absolute;
+  top:-18px;
+  right:-8px;
+  transform: translateY(-100%);
+  background:#fff7d1;
+  color:#7a5a00;
+  border:1px solid #f2d36b;
+  border-radius:999px;
+  padding:8px 12px;
+  font-size:0.95rem;
+  font-weight:700;
+  box-shadow:0 6px 16px rgba(0,0,0,0.12);
+  white-space:nowrap;
+  z-index:3;
+}
+.review-bubble::after{
+  content:'';
+  position:absolute;
+  right:18px;
+  bottom:-8px;
+  width:14px;
+  height:14px;
+  background:#fff7d1;
+  border-right:1px solid #f2d36b;
+  border-bottom:1px solid #f2d36b;
+  transform:rotate(45deg);
+}
+.review-summary{
+  margin: 0 0 12px 0;
+  padding: 12px 14px;
+  border:1px solid #f2d36b;
+  background:#fffdf0;
+  border-radius:10px;
+  font-weight:600;
+}
+.review-chip{
+  display:inline-block;
+  margin-left:8px;
+  padding:3px 8px;
+  border-radius:999px;
+  border:1px solid #f2d36b;
+  background:#fff7d1;
+  color:#7a5a00;
+  font-size:0.78rem;
+  font-weight:700;
+}
+.review-panel-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:8px;
+}
+.review-complete-btn{
+  padding:8px 12px;
+  border-radius:8px;
+  border:1px solid #d9b600;
+  background:#fff7a8;
+  color:#5f4a00;
+  cursor:pointer;
+  font-weight:700;
+}
+.review-complete-btn:hover{
+  background:#fff18a;
+}
+.study-mask{
+  border:2px dashed #ffeb3b;
+  box-sizing:border-box;
+}
+.study-mask.is-hidden{
+  background: transparent !important;
+  opacity: 1 !important;
+}
+.study-mask.is-visible{
+  opacity: 1 !important;
+}
+
+/* スマホ向け調整 */
+@media (max-width: 768px){
+  header{
+    padding:16px 18px;
+  }
+  header h1{
+    font-size:22px;
+  }
+
+  .container{
+    padding:12px;
+    gap:14px;
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .main-col,
+  .side-col{
+    width:100%;
+    min-width:0;
+  }
+
+  .main-col > div[style*="display:flex"]{
+    flex-wrap:wrap;
+  }
+
+  .home-action-btn{
+    padding:15px 16px;
+    font-size:1.08rem;
+    min-width:0;
+    max-width:46vw;
+  }
+
+  .home-study-wrap{
+    display:block;
+  }
+
+  .review-bubble{
+    right:0;
+    left:50%;
+    transform: translate(-50%, -100%);
+  }
+
+  h2{
+    font-size:30px;
+  }
+
+  p{
+    font-size:16px;
+  }
+
+  .how-to-use{
+    margin-top:24px;
+    max-width:100%;
+  }
+  .how-to-use h2{
+    font-size:22px;
+  }
+  .how-to-use ol{
+    font-size:15px;
+    line-height:1.6;
+  }
+
+  .action-area{
+    margin:14px 0;
+    gap:8px;
+  }
+
+  .tool-group{
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  .tool-group + .tool-group{
+    margin-left:0;
+    margin-top:8px;
+  }
+
+  .big-btn{
+    padding:11px 12px;
+    font-size:15px;
+  }
+
+  .secondary-btn{
+    padding:10px 12px;
+    font-size:14px;
+  }
+
+  .image-area{
+    min-height:280px;
+  }
+
+  .note-box{
+    padding:10px;
+  }
+
+  .project-header{
+    flex-wrap:wrap;
+    gap:8px;
+  }
+
+  .project-header .title{
+    font-size:1rem;
+  }
+
+  .project-header .meta{
+    font-size:0.82rem;
+  }
+
+  .project-header input[type="checkbox"]{
+    transform:scale(1.6);
+    margin:0 4px;
+  }
+
+  .project-content{
+    min-height:220px;
+  }
+
+  .project-content > div{
+    flex-wrap:wrap;
+  }
+
+  .project-content .fullscreen-btn{
+    padding:8px 10px;
+    font-size:0.9rem;
+  }
+
+  .modal .modal-content{
+    width:min(92vw, 720px);
+    padding:14px;
+  }
+
+  #shapeSelect{
+    min-width:0;
+    max-width:100%;
+  }
+
+  #sortSelect,
+  #displayFilterSelect{
+    min-width:0;
+    flex:1 1 160px;
+    max-width:100%;
+  }
+
+  input,
+  select,
+  textarea{
+    font-size:16px;
+  }
+
+  input[type="color"]{
+    width:48px;
+    height:40px;
+  }
+
+  input[type="color"]::-webkit-color-swatch{
+    border-radius:4px;
+  }
+
+  input[type="color"]::-moz-color-swatch{
+    border-radius:4px;
+  }
+}
+
+/* ===== study / book pages ===== */
+body.study-page,
+body.book-page{
+  min-height:100%;
+  font-family: "Klee One", "Yuji Syuku", "Yomogi", "Hannotate SC", "Segoe Print", "Bradley Hand", cursive;
+  color:#30404a;
+  overflow-x:hidden;
+  position:relative;
+  background-color:#ad7240;
+  background-image:
+    radial-gradient(circle at 18% 20%, rgba(255,236,198,.14), transparent 22%),
+    radial-gradient(circle at 82% 14%, rgba(81, 43, 18, .18), transparent 20%),
+    radial-gradient(circle at 52% 82%, rgba(255,255,255,.06), transparent 26%),
+    repeating-linear-gradient(
+      180deg,
+      rgba(98, 61, 28, .20) 0 1.1px,
+      rgba(186, 128, 74, .06) 1.1px 2.3px,
+      rgba(112, 69, 31, .18) 2.3px 4.1px,
+      rgba(173, 120, 69, .07) 4.1px 7.4px,
+      rgba(94, 57, 25, .14) 7.4px 8.7px,
+      rgba(198, 141, 86, .05) 8.7px 12.8px
+    ),
+    repeating-linear-gradient(
+      178deg,
+      rgba(255,255,255,.018) 0 34px,
+      rgba(0,0,0,.02) 34px 36px,
+      transparent 36px 88px
+    ),
+    linear-gradient(180deg, #bc8148 0%, #9e6435 100%);
+  background-blend-mode: soft-light, multiply, multiply, normal;
+}
+
+body.study-page::before,
+body.book-page::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 35% 22%, rgba(255,255,255,.14), transparent 24%),
+    radial-gradient(circle at 68% 8%, rgba(255,255,255,.08), transparent 18%),
+    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0) 36%);
+  opacity:.9;
+}
+
+body.study-page button,
+body.study-page .study-toolbar-btn,
+body.study-page .study-delete-panel__button,
+body.study-page .study-sheet__option,
+body.study-page .study-sheet__close,
+body.book-page button,
+body.book-page .book-toolbar-btn{
+  font-family: inherit;
+}
+
+body.study-page .study-scene,
+body.book-page .book-scene{
+  min-height:100svh;
+  width:min(100%, 1120px);
+  margin:0 auto;
+  padding:clamp(14px, 3.6vw, 28px) clamp(10px, 3vw, 20px) 24px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  position:relative;
+  z-index:1;
+}
+
+body.study-page .study-topbar,
+body.book-page .book-topbar{
+  display:grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items:center;
+  gap:12px;
+  padding:12px 14px;
+  border-radius:22px;
+  border:1px solid rgba(81, 90, 98, .12);
+  background:rgba(251, 247, 237, .90);
+  box-shadow:0 18px 28px -24px rgba(74, 58, 36, .35), inset 0 1px 0 rgba(255,255,255,.42);
+  backdrop-filter: blur(4px);
+}
+
+body.study-page .study-topbar__title,
+body.book-page .book-topbar__title{
+  justify-self:center;
+  text-align:center;
+  min-width:0;
+}
+
+body.study-page .study-topbar__title h1,
+body.book-page .book-topbar__title h1{
+  margin:0;
+  font-size:clamp(20px, 4.2vw, 28px);
+  font-weight:700;
+  letter-spacing:.06em;
+  color:#41515a;
+  text-shadow:0 1px 0 rgba(255,255,255,.45);
+}
+
+body.study-page .study-topbar-btn,
+body.book-page .book-topbar-btn{
+  appearance:none;
+  border:1px solid rgba(68, 78, 88, .12);
+  background:linear-gradient(180deg, #ffffff 0%, #f0eadf 100%);
+  color:#29404f;
+  box-shadow:0 8px 18px -14px rgba(74,58,36,.28), inset 0 1px 0 rgba(255,255,255,.55);
+  cursor:pointer;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  min-height:46px;
+  padding:10px 14px;
+  font-weight:700;
+  letter-spacing:.03em;
+  transition:transform .15s ease, filter .15s ease, box-shadow .15s ease;
+}
+
+body.study-page .study-topbar-btn:hover,
+body.book-page .book-topbar-btn:hover{
+  transform:translateY(-1px);
+  filter:saturate(1.02) brightness(1.01);
+}
+
+body.study-page .study-topbar-btn:active,
+body.book-page .book-topbar-btn:active{
+  transform:translateY(1px) scale(.99);
+}
+
+body.study-page .study-topbar-btn--back,
+body.book-page .book-topbar-btn--back{
+  justify-self:start;
+  width:48px;
+  height:48px;
+  min-width:48px;
+  min-height:48px;
+  padding:0;
+  border-radius:50%;
+  aspect-ratio:1 / 1;
+}
+
+body.study-page .study-topbar-btn__icon {
+    font-size: 27px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    transform: translateX(-1px);
+}
+
+body.book-page .book-topbar-btn__icon {
+    font-size: 27px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    transform: translateX(-1px);
+}
+
+body.study-page .study-topbar__spacer,
+body.book-page .book-topbar__spacer{
+  justify-self:end;
+  width:48px;
+  height:48px;
+}
+
+@media (max-width: 768px){
+  body.study-page .study-scene,
+  body.book-page .book-scene{
+    padding:14px 10px 22px;
+  }
+
+  body.study-page .study-topbar,
+  body.book-page .book-topbar{
+    grid-template-columns:1fr auto 1fr;
+    padding:10px 10px;
+    gap:8px;
+  }
+
+  body.study-page .study-topbar__title h1,
+  body.book-page .book-topbar__title h1{
+    font-size:clamp(18px, 5vw, 23px);
+  }
+
+  
+}
