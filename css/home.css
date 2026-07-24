@@ -1,3 +1,4 @@
+/* ===== トップページ再デザイン ===== */
 body.home-page{
   min-height:100%;
   font-family: "Klee One", "Yuji Syuku", "Yomogi", "Hannotate SC", "Segoe Print", "Bradley Hand", cursive;
@@ -53,15 +54,16 @@ body.home-page::before{
   margin:0;
   font-size:clamp(34px, 8.1vw, 37px);
   font-weight:700;
+  font-family: "Noto Sans JP", "Yu Gothic", "Hiragino Sans", sans-serif;
   letter-spacing:.05em;
-  color:#41515a;
+  color:#041888;
   text-shadow:0 1px 0 rgba(255,255,255,.55);
 }
 
 .home-subtitle{
   margin:2px 0 0;
   font-size:clamp(14px, 4vw, 18px);
-  color:#667983;
+  color:#041888;
   font-weight:600;
   letter-spacing:.04em;
 }
@@ -95,8 +97,9 @@ body.home-page .home-action-btn{
   font-size:clamp(0.88rem, 2.9vw, 0.99rem);
   letter-spacing:.04em;
   box-shadow:
-    0 10px 20px rgba(74,58,36,.24),
-    0 20px 34px rgba(74,58,36,.18);
+    0 24px 30px -22px rgba(74, 58, 36, .70),
+    0 10px 14px -12px rgba(74, 58, 36, .18),
+    inset 0 1px 0 rgba(255,255,255,.42);
   overflow:visible;
   transform:rotate(var(--note-tilt));
   transition:
@@ -110,14 +113,27 @@ body.home-page .home-action-btn{
 body.home-page .home-action-btn::before{
   content:'';
   position:absolute;
-  top:8px;
+  top:0;
   left:var(--tape-left);
   transform:translate(-50%, -55%) rotate(var(--tape-rotate));
-  width:60%;
-  height:200px;
-  background:url("../assets/tape.svg") center / contain no-repeat;
+  width:40%;
+  height:108px;
+  background:url("assets/tape.svg") center / contain no-repeat;
   pointer-events:none;
   opacity:.56;
+}
+
+body.home-page .home-action-btn::after{
+  content:'';
+  position:absolute;
+  left:10%;
+  right:10%;
+  bottom:-16px;
+  height:20px;
+  background:radial-gradient(circle at center, rgba(0,0,0,.20), transparent 72%);
+  filter:blur(10px);
+  opacity:.28;
+  pointer-events:none;
 }
 
 body.home-page .home-action-btn--blue{
@@ -160,11 +176,16 @@ body.home-page .home-action-btn--red{
 }
 
 body.home-page .home-action-btn:hover{
-  transform:rotate(var(--note-tilt));
+  transform:rotate(var(--note-tilt)) translateY(-3px);
+  filter:saturate(1.02) brightness(1.01);
+  box-shadow:
+    0 28px 34px -22px rgba(74,58,36,.78),
+    0 12px 16px -12px rgba(74,58,36,.20),
+    inset 0 1px 0 rgba(255,255,255,.45);
 }
 
 body.home-page .home-action-btn:active{
-  transform:rotate(var(--note-tilt)) scale(.98);
+  transform:rotate(var(--note-tilt)) translateY(4px) scale(.98);
 }
 
 body.home-page .home-study-wrap{
