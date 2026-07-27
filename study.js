@@ -337,9 +337,6 @@
 
       openButton.appendChild(coverWrap);
 
-      const body = document.createElement('div');
-      body.className = 'book-card__body';
-
       const title = document.createElement('h2');
       title.className = 'book-card__title';
       title.textContent = book.name || '無題';
@@ -348,9 +345,8 @@
       date.className = 'book-card__date';
       date.textContent = formatDate(book.createdAt);
 
-      body.appendChild(title);
-      body.appendChild(date);
-      openButton.appendChild(body);
+      coverWrap.appendChild(title);
+      coverWrap.appendChild(date);
 
       openButton.addEventListener('click', () => {
         if (state.deleteMode) {
