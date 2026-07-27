@@ -1,6 +1,7 @@
 (() => {
   const STORAGE_KEY = 'digital-anki-projects-v1';
   const CATS_KEY = 'digital-anki-categories-v1';
+  const BOOK_COVER_SVG = 'assets/bookcover.svg';
 
   const btnBackHome = document.getElementById('btnBackHome');
   const btnDisplayMenu = document.getElementById('btnDisplayMenu');
@@ -117,12 +118,6 @@
       categories: Array.isArray(copy.categories) ? copy.categories.filter(Boolean) : [],
       images: normalizedImages,
     };
-  }
-
-  function getBookCoverDataUrl(book) {
-    if (!book) return '';
-    const firstImage = Array.isArray(book.images) && book.images.length ? book.images[0] : null;
-    return firstImage && firstImage.imageDataUrl ? firstImage.imageDataUrl : (book.imageDataUrl || '');
   }
 
   function getDisplayLabel(value) {
@@ -267,6 +262,29 @@
     location.href = `book.html?id=${encodeURIComponent(bookId)}`;
   }
 
+  function createCoverElement() {
+    const coverWrap = document.createElement('div');
+    coverWrap.className = 'book-card__cover';
+
+    const img = document.createElement('img');
+    img.src = BOOK_COVER_SVG;
+    img.alt = '';
+    img.className = 'book-card__cover-image';
+    img.loading = 'lazy';
+    img.draggable = false;
+
+    img.addEventListener('error', () => {
+      if (!coverWrap.isConnected) return;
+      const fallback = document.createElement('div');
+      fallback.className = 'book-card__cover-placeholder';
+      fallback.textContent = 'BOOK';
+      coverWrap.replaceChildren(fallback);
+    });
+
+    coverWrap.appendChild(img);
+    return coverWrap;
+  }
+
   function renderBooks() {
     if (!booksList || !emptyState) return;
 
@@ -315,22 +333,9 @@
       openButton.className = 'book-card__open';
       openButton.setAttribute('aria-label', `${book.name} を開く`);
 
-      const coverWrap = document.createElement('div');
-      coverWrap.className = 'book-card__cover';
+      const coverWrap = createCoverElement();
 
-      const coverUrl = getBookCoverDataUrl(book);
-      if (coverUrl) {
-        const img = document.createElement('img');
-        img.src = coverUrl;
-        img.alt = '';
-        img.className = 'book-card__cover-image';
-        coverWrap.appendChild(img);
-      } else {
-        const fallback = document.createElement('div');
-        fallback.className = 'book-card__cover-placeholder';
-        fallback.textContent = 'BOOK';
-        coverWrap.appendChild(fallback);
-      }
+      openButton.appendChild(coverWrap);
 
       const body = document.createElement('div');
       body.className = 'book-card__body';
@@ -345,8 +350,6 @@
 
       body.appendChild(title);
       body.appendChild(date);
-
-      openButton.appendChild(coverWrap);
       openButton.appendChild(body);
 
       openButton.addEventListener('click', () => {
@@ -366,7 +369,7 @@
       const weakInput = document.createElement('input');
       weakInput.type = 'checkbox';
       weakInput.checked = !!book.checked;
-      weakInput.title = '苦手Book';
+      weakInput.title = 'お気に入りBook';
       weakInput.addEventListener('click', (ev) => {
         ev.stopPropagation();
       });
@@ -382,36 +385,7 @@
       weakLabel.appendChild(weakInput);
       weakLabel.appendChild(weakText);
 
-      const deleteLabel = document.createElement('label');
-      deleteLabel.className = 'book-card__delete-toggle';
-      if (!state.deleteMode) deleteLabel.hidden = true;
-
-      const deleteInput = document.createElement('input');
-      deleteInput.type = 'checkbox';
-      deleteInput.checked = state.selectedDeleteIds.has(book.id);
-      deleteInput.title = '削除対象';
-      deleteInput.addEventListener('click', (ev) => {
-        ev.stopPropagation();
-      });
-      deleteInput.addEventListener('change', () => {
-        toggleDeleteSelection(book.id, deleteInput.checked);
-      });
-
-      const deleteText = document.createElement('span');
-      deleteText.textContent = '削除';
-
-      deleteLabel.appendChild(deleteInput);
-      deleteLabel.appendChild(deleteText);
-
-      const categoryText = document.createElement('div');
-      categoryText.className = 'book-card__categories';
-      categoryText.textContent = Array.isArray(book.categories) && book.categories.length
-        ? `カテゴリ: ${book.categories.join(', ')}`
-        : '';
-
       controls.appendChild(weakLabel);
-      controls.appendChild(deleteLabel);
-      controls.appendChild(categoryText);
 
       card.appendChild(openButton);
       card.appendChild(controls);
