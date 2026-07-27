@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400" fill="none">
+
+  <!-- 表紙 -->
+  <rect
+    x="0"
+    y="0"
+    width="300"
+    height="400"
+    fill="#8F8F8F"/>
+
+  <!-- 左の綴じ部分（単色） -->
+  <rect
+    x="0"
+    y="0"
+    width="22"
+    height="400"
+    fill="#767676"/>
+
+  <!-- 折り目 -->
+  <rect
+    x="22"
+    y="0"
+    width="2"
+    height="400"
+    fill="#6B6B6B"
+    opacity="0.55"/>
+
+  <!-- タイトル記入欄 -->
+  <line
+    x1="58"
+    y1="72"
+    x2="255"
+    y2="72"
+    stroke="#727272"
+    stroke-width="2.2"
+    stroke-linecap="round"/>
+
+  <line
+    x1="58"
+    y1="108"
+    x2="255"
+    y2="108"
+    stroke="#727272"
+    stroke-width="2.2"
+    stroke-linecap="round"/>
+
+</svg>
