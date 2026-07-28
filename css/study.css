@@ -169,10 +169,8 @@ body.study-page .book-card__cover{
   position:relative;
   aspect-ratio: 0.95;
   background:
-    linear-gradient(180deg, rgba(255,255,255,.68) 0%, rgba(246,239,227,.94) 100%);
-  display:flex;
+  linear-gradient(180deg, rgba(255,255,255,.68) 0%, rgba(246,239,227,.94) 100%);
   align-items:center;
-  justify-content:center;
   overflow:hidden;
 }
 body.study-page .book-card__cover::before{
@@ -261,6 +259,14 @@ body.study-page .book-card__controls{
 }
 body.study-page .book-card__weak-toggle,
 body.study-page .book-card__delete-toggle{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 8px;
+  z-index: 2;
+  background: transparent;
+  border: none;
+  padding: 0;
   display:inline-flex;
   align-items:center;
   gap:6px;
@@ -384,23 +390,6 @@ body.study-page .study-toolbar{
 
   body.study-page .book-card{
     border-radius:20px;
-  }
-
-  body.study-page .book-card__open{
-    flex-direction:row;
-    align-items:stretch;
-  }
-
-  body.study-page .book-card__cover{
-    width:38%;
-    aspect-ratio:auto;
-    min-height:130px;
-    position:relative;
-  }
-
-  body.study-page .book-card__body{
-    width:62%;
-    min-height:130px;
   }
 
   body.study-page .book-card__controls{
