@@ -135,12 +135,7 @@ body.study-page .book-card{
   backdrop-filter: blur(2px);
   transition:transform .16s ease, box-shadow .16s ease, filter .16s ease;
 }
-body.study-page .book-card:hover{
-  transform:translateY(-2px);
-  box-shadow:
-    0 22px 30px -20px rgba(74,58,36,.55),
-    inset 0 1px 0 rgba(255,255,255,.34);
-}
+
 body.study-page .book-card.is-selected-for-delete{
   outline:3px solid #ffd45c;
   outline-offset:2px;
@@ -182,15 +177,7 @@ body.study-page .book-card__cover::before{
   pointer-events:none;
 }
 body.study-page .book-card__cover::after{
-  content:'';
-  position:absolute;
-  left:10px;
-  top:10px;
-  bottom:10px;
-  width:8px;
-  border-radius:999px;
-  background:linear-gradient(180deg, rgba(128,85,42,.36), rgba(128,85,42,.18));
-  opacity:.8;
+  content:none;
 }
 
 body.study-page .book-card__cover-image{
@@ -221,7 +208,7 @@ body.study-page .book-card__title{
   position:absolute;
   left:50%;
   transform:translateX(-50%);
-  top:36%;
+  top:10%;
   width:72%;
   margin:0;
 
@@ -241,14 +228,14 @@ body.study-page .book-card__date{
   position:absolute;
   left:50%;
   transform:translateX(-50%);
-  bottom:12px;
+  bottom:28px;
 
   margin:0;
 
-  font-size:10px;
+  font-size:15px;
   font-weight:700;
 
-color:#6b6d70;
+color:#353638;
 }
 
 body.study-page .book-card__controls{
