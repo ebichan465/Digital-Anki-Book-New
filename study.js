@@ -381,7 +381,7 @@
       weakLabel.appendChild(weakInput);
       weakLabel.appendChild(weakText);
 
-      controls.appendChild(weakLabel);
+      coverWrap.appendChild(weakLabel);
 
       card.appendChild(openButton);
       card.appendChild(controls);
