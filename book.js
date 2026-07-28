@@ -59,6 +59,12 @@
   }
 
   function formatDate(value) {
+    const DEFAULT_MASK_ROTATION = 0;
+
+    function normalizeRotation(value) {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : DEFAULT_MASK_ROTATION;
+    }
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return '';
     const y = date.getFullYear();
@@ -209,18 +215,19 @@
   }
 
   function normalizeMaskModel(mask) {
-    const safe = mask && typeof mask === 'object' ? mask : {};
-    return {
-      id: safe.id || uid('mask'),
-      x: Number.isFinite(Number(safe.x)) ? Number(safe.x) : 0,
-      y: Number.isFinite(Number(safe.y)) ? Number(safe.y) : 0,
-      w: Number.isFinite(Number(safe.w)) ? Number(safe.w) : 0.2,
-      h: Number.isFinite(Number(safe.h)) ? Number(safe.h) : 0.12,
-      visible: safe.visible === undefined || safe.visible === null ? true : !!safe.visible,
-      color: safe.color || '#000000',
-      shape: safe.shape === 'circle' ? 'circle' : 'rect',
-    };
-  }
+  const safe = mask && typeof mask === 'object' ? mask : {};
+  return {
+    id: safe.id || uid('mask'),
+    x: Number.isFinite(Number(safe.x)) ? Number(safe.x) : 0,
+    y: Number.isFinite(Number(safe.y)) ? Number(safe.y) : 0,
+    w: Number.isFinite(Number(safe.w)) ? Number(safe.w) : 0.2,
+    h: Number.isFinite(Number(safe.h)) ? Number(safe.h) : 0.12,
+    rotation: normalizeRotation(safe.rotation),
+    visible: safe.visible === undefined || safe.visible === null ? true : !!safe.visible,
+    color: safe.color || '#000000',
+    shape: safe.shape === 'circle' ? 'circle' : 'rect',
+  };
+}
 
   function applyMaskVisual(entry) {
     if (!entry || !entry.el || !entry.model) return;
@@ -255,25 +262,27 @@
   }
 
   function updateMaskPositions() {
-    if (!maskEntries.length || !bookCanvas || !bookMainImage) return;
+  if (!maskEntries.length || !bookCanvas || !bookMainImage) return;
 
-    requestAnimationFrame(() => {
-      const imgRect = bookMainImage.getBoundingClientRect();
-      const canvasRect = bookCanvas.getBoundingClientRect();
-      if (!imgRect.width || !imgRect.height) return;
+  requestAnimationFrame(() => {
+    const imgRect = bookMainImage.getBoundingClientRect();
+    const canvasRect = bookCanvas.getBoundingClientRect();
+    if (!imgRect.width || !imgRect.height) return;
 
-      maskEntries.forEach((entry) => {
-        const mask = entry.model;
-        const left = (mask.x * imgRect.width) + (imgRect.left - canvasRect.left);
-        const top = (mask.y * imgRect.height) + (imgRect.top - canvasRect.top);
-        entry.el.style.left = `${left}px`;
-        entry.el.style.top = `${top}px`;
-        entry.el.style.width = `${mask.w * imgRect.width}px`;
-        entry.el.style.height = `${mask.h * imgRect.height}px`;
-        applyMaskVisual(entry);
-      });
+    maskEntries.forEach((entry) => {
+      const mask = entry.model;
+      const left = (mask.x * imgRect.width) + (imgRect.left - canvasRect.left);
+      const top = (mask.y * imgRect.height) + (imgRect.top - canvasRect.top);
+      entry.el.style.left = `${left}px`;
+      entry.el.style.top = `${top}px`;
+      entry.el.style.width = `${mask.w * imgRect.width}px`;
+      entry.el.style.height = `${mask.h * imgRect.height}px`;
+      entry.el.style.transformOrigin = 'center center';
+      entry.el.style.transform = `rotate(${normalizeRotation(mask.rotation)}deg)`;
+      applyMaskVisual(entry);
     });
-  }
+  });
+}
 
   function renderMasks() {
     clearMaskElements();
@@ -292,6 +301,7 @@
       el.style.touchAction = 'none';
       el.style.cursor = 'pointer';
       el.style.boxSizing = 'border-box';
+      el.style.transformOrigin = 'center center';
 
       el.addEventListener('click', (ev) => {
         ev.stopPropagation();

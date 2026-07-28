@@ -252,14 +252,32 @@
   }
 
   function syncCategoriesFromUIToCurrentProject(){
-    if (!currentProject) {
-      // if no current project, create a placeholder so category selection persists in UI but considered unsaved
-      currentProject = { id: uid('proj'), name: 'project-untitled', imageDataUrl: mainImage.src || '', imageBaseWidth: mainImage.naturalWidth || undefined, imageBaseHeight: mainImage.naturalHeight || undefined, masks: masks.map(m => ({ id: m.id, x: m.x, y: m.y, w: m.w, h: m.h, visible: m.visible, color: m.color, shape: m.shape })), categories: [], createdAt: Date.now() };
-    }
-    const checked = Array.from(categoryList.querySelectorAll('input[type="checkbox"]:checked')).map(i=>i.value);
-    currentProject.categories = checked.length ? Array.from(new Set(checked)) : [];
-    markDirty(true);
+  if (!currentProject) {
+    currentProject = {
+      id: uid('proj'),
+      name: 'project-untitled',
+      imageDataUrl: mainImage.src || '',
+      imageBaseWidth: mainImage.naturalWidth || undefined,
+      imageBaseHeight: mainImage.naturalHeight || undefined,
+      masks: masks.map(m => ({
+        id: m.id,
+        x: m.x,
+        y: m.y,
+        w: m.w,
+        h: m.h,
+        rotation: normalizeRotation(m.rotation),
+        visible: m.visible,
+        color: m.color,
+        shape: m.shape
+      })),
+      categories: [],
+      createdAt: Date.now()
+    };
   }
+  const checked = Array.from(categoryList.querySelectorAll('input[type="checkbox"]:checked')).map(i=>i.value);
+  currentProject.categories = checked.length ? Array.from(new Set(checked)) : [];
+  markDirty(true);
+}
 
   function deleteCategoryBySelection(){
     const selected = Array.from(categoryList.querySelectorAll('input[type="checkbox"]:checked')).map(i=>i.value);
@@ -312,7 +330,7 @@
   }
 
   // ===== mask rendering and interactions (unchanged except default visible handling) =====
-  function updateMaskDOMFromModel(m){
+    function updateMaskDOMFromModel(m){
     if (!m.el) return;
     const imgRect = mainImage.getBoundingClientRect();
     const wrapperRect = imageArea.getBoundingClientRect();
@@ -320,45 +338,92 @@
       setTimeout(()=> updateMaskDOMFromModel(m), 40);
       return;
     }
+
+    const rotation = normalizeRotation(m.rotation);
+    m.rotation = rotation;
+
     const left = (m.x * imgRect.width) + (imgRect.left - wrapperRect.left);
     const top = (m.y * imgRect.height) + (imgRect.top - wrapperRect.top);
+
     m.el.style.left = left + 'px';
     m.el.style.top = top + 'px';
     m.el.style.width = (m.w * imgRect.width) + 'px';
     m.el.style.height = (m.h * imgRect.height) + 'px';
+    m.el.style.transformOrigin = 'center center';
+    m.el.style.transform = `rotate(${rotation}deg)`;
+    m.el.style.overflow = 'visible';
+
     m.el.classList.remove('rect','circle');
     m.el.classList.add(m.shape || 'rect');
     m.el.style.background = m.color || '#000000';
+
     const isVisible = (m.visible === undefined) ? true : Boolean(m.visible);
     m.el.style.opacity = isVisible ? '0.5' : '0';
     m.el.classList.toggle('selected', selectedMaskId === m.id);
+
+    if (m.rotateHandle) {
+      m.rotateHandle.style.display = selectedMaskId === m.id ? 'block' : 'none';
+    }
   }
 
   function refreshAllMasks(){
     masks.forEach(updateMaskDOMFromModel);
   }
 
-  function renderMask(m){
+    function renderMask(m){
     const el = document.createElement('div');
     el.className = 'mask';
     el.classList.add(m.shape || 'rect');
     el.dataset.id = m.id;
     el.style.touchAction = 'none';
-    const handle = document.createElement('div');
-    handle.className = 'resize-handle';
-    handle.style.touchAction = 'none';
-    el.appendChild(handle);
+    el.style.overflow = 'visible';
+    el.style.transformOrigin = 'center center';
+
+    const resizeHandle = document.createElement('div');
+    resizeHandle.className = 'resize-handle';
+    resizeHandle.style.touchAction = 'none';
+
+    const rotateHandle = document.createElement('div');
+    rotateHandle.className = 'rotate-handle';
+    rotateHandle.style.position = 'absolute';
+    rotateHandle.style.left = '50%';
+    rotateHandle.style.top = 'calc(100% + 10px)';
+    rotateHandle.style.transform = 'translateX(-50%)';
+    rotateHandle.style.width = '12px';
+    rotateHandle.style.height = '12px';
+    rotateHandle.style.borderRadius = '50%';
+    rotateHandle.style.background = '#fff';
+    rotateHandle.style.border = '1px solid #333';
+    rotateHandle.style.boxShadow = '0 1px 3px rgba(0,0,0,.2)';
+    rotateHandle.style.cursor = 'grab';
+    rotateHandle.style.touchAction = 'none';
+    rotateHandle.style.userSelect = 'none';
+    rotateHandle.style.zIndex = '2';
+    rotateHandle.style.display = 'none';
+
+    el.appendChild(resizeHandle);
+    el.appendChild(rotateHandle);
     imageArea.appendChild(el);
+
     m.el = el;
+    m.resizeHandle = resizeHandle;
+    m.rotateHandle = rotateHandle;
+
     updateMaskDOMFromModel(m);
-    setupInteractions(m, handle);
+    setupInteractions(m, resizeHandle, rotateHandle);
   }
 
-  function setupInteractions(m, handle){
+  function setupInteractions(m, resizeHandle, rotateHandle){
     const el = m.el;
-    let dragging=false, resizing=false;
+    let dragging = false;
+    let resizing = false;
+    let rotating = false;
     let startClient = null;
     let startBox = null;
+    let startRotation = 0;
+    let startAngle = 0;
+    let centerX = 0;
+    let centerY = 0;
 
     function commit(){
       const wrapperRect = imageArea.getBoundingClientRect();
@@ -371,12 +436,15 @@
       const relY = (top - (imgRect.top - wrapperRect.top)) / imgRect.height;
       const relW = width / imgRect.width;
       const relH = height / imgRect.height;
+
       m.x = Math.max(0, Math.min(1 - relW, relX));
       m.y = Math.max(0, Math.min(1 - relH, relY));
-      m.w = Math.max(20 / imgRect.width, Math.min(1, relW));
-      m.h = Math.max(20 / imgRect.height, Math.min(1, relH));
+      m.w = Math.max(MIN_MASK_PX / imgRect.width, Math.min(1, relW));
+      m.h = Math.max(MIN_MASK_PX / imgRect.height, Math.min(1, relH));
+      m.rotation = normalizeRotation(m.rotation);
+
       updateMaskDOMFromModel(m);
-      markDirty(true); // moving/resizing a mask => unsaved
+      markDirty(true);
     }
 
     const preventTouchScroll = (ev) => {
@@ -385,58 +453,97 @@
 
     el.addEventListener('touchstart', preventTouchScroll, { passive: false });
     el.addEventListener('touchmove', preventTouchScroll, { passive: false });
-    handle.addEventListener('touchstart', preventTouchScroll, { passive: false });
-    handle.addEventListener('touchmove', preventTouchScroll, { passive: false });
+    resizeHandle.addEventListener('touchstart', preventTouchScroll, { passive: false });
+    resizeHandle.addEventListener('touchmove', preventTouchScroll, { passive: false });
+    rotateHandle.addEventListener('touchstart', preventTouchScroll, { passive: false });
+    rotateHandle.addEventListener('touchmove', preventTouchScroll, { passive: false });
 
     el.addEventListener('pointerdown', (ev)=>{
       ev.preventDefault();
       lockPageScroll();
       selectMask(m.id);
+
       startClient = { x: ev.clientX, y: ev.clientY };
-      startBox = { left: el.offsetLeft, top: el.offsetTop, width: el.offsetWidth, height: el.offsetHeight };
-      if (ev.target === handle) resizing = true; else dragging = true;
+      startBox = {
+        left: el.offsetLeft,
+        top: el.offsetTop,
+        width: el.offsetWidth,
+        height: el.offsetHeight
+      };
+
+      if (ev.target === rotateHandle) {
+        rotating = true;
+        resizing = false;
+        dragging = false;
+        startRotation = normalizeRotation(m.rotation);
+        centerX = startBox.left + startBox.width / 2;
+        centerY = startBox.top + startBox.height / 2;
+        startAngle = Math.atan2(ev.clientY - centerY, ev.clientX - centerX);
+      } else if (ev.target === resizeHandle) {
+        resizing = true;
+        rotating = false;
+        dragging = false;
+      } else {
+        dragging = true;
+        rotating = false;
+        resizing = false;
+      }
+
       el.setPointerCapture && el.setPointerCapture(ev.pointerId);
     });
 
     window.addEventListener('pointermove', (ev)=>{
-      if (!dragging && !resizing) return;
+      if (!dragging && !resizing && !rotating) return;
       ev.preventDefault();
+
+      if (rotating) {
+        const currentAngle = Math.atan2(ev.clientY - centerY, ev.clientX - centerX);
+        const delta = (currentAngle - startAngle) * 180 / Math.PI;
+        m.rotation = startRotation + delta;
+        updateMaskDOMFromModel(m);
+        return;
+      }
+
       const dx = ev.clientX - startClient.x;
       const dy = ev.clientY - startClient.y;
+
       if (dragging){
         el.style.left = (startBox.left + dx) + 'px';
         el.style.top = (startBox.top + dy) + 'px';
       } else if (resizing){
-        el.style.width = Math.max(20, startBox.width + dx) + 'px';
-        el.style.height = Math.max(20, startBox.height + dy) + 'px';
+        el.style.width = Math.max(MIN_MASK_PX, startBox.width + dx) + 'px';
+        el.style.height = Math.max(MIN_MASK_PX, startBox.height + dy) + 'px';
       }
     });
 
     window.addEventListener('pointerup', (ev)=>{
-      if (!dragging && !resizing) {
+      if (!dragging && !resizing && !rotating) {
         unlockPageScroll();
         return;
       }
       try{ el.releasePointerCapture && el.releasePointerCapture(ev.pointerId);}catch(e){}
-      dragging=false; resizing=false;
+      dragging = false;
+      resizing = false;
+      rotating = false;
       commit();
       unlockPageScroll();
     });
 
     window.addEventListener('pointercancel', ()=>{
-      if (!dragging && !resizing) {
+      if (!dragging && !resizing && !rotating) {
         unlockPageScroll();
         return;
       }
-      dragging=false;
-      resizing=false;
+      dragging = false;
+      resizing = false;
+      rotating = false;
       unlockPageScroll();
     });
 
     el.addEventListener('dblclick', (ev)=>{
       m.visible = !m.visible;
       el.style.opacity = m.visible ? '0.5' : '0';
-      markDirty(true); // visibility toggle in edit mode is considered a change (user may want to save)
+      markDirty(true);
     });
   }
 
@@ -486,12 +593,13 @@
       const imgRect = mainImage.getBoundingClientRect();
       const offsetX = Math.min(20, imgRect.width * 0.05) / imgRect.width;
       const offsetY = Math.min(20, imgRect.height * 0.05) / imgRect.height;
-      const copy = {
+            const copy = {
         id: uid('m'),
         x: Math.min(1 - orig.w, orig.x + offsetX),
         y: Math.min(1 - orig.h, orig.y + offsetY),
         w: orig.w,
         h: orig.h,
+        rotation: normalizeRotation(orig.rotation),
         visible: (orig.visible === undefined) ? true : orig.visible,
         color: orig.color,
         shape: orig.shape
@@ -513,7 +621,17 @@
       const relY = 0.5 - (h / rect.height) / 2;
       const color = colorPicker ? (colorPicker.value || '#000000') : '#000000';
       const shape = defaultShape || 'rect';
-      const m = { id: uid('m'), x: relX, y: relY, w: w / rect.width, h: h / rect.height, visible: true, color: color, shape: shape };
+            const m = {
+        id: uid('m'),
+        x: relX,
+        y: relY,
+        w: w / rect.width,
+        h: h / rect.height,
+        rotation: 0,
+        visible: true,
+        color: color,
+        shape: shape
+      };
       masks.push(m);
       renderMask(m);
       selectMask(m.id);
@@ -643,6 +761,7 @@
     masks = [];
     selectedMaskId = null;
     mainImage.onload = () => {
+
       setTimeout(refreshAllMasks, 40);
       updateCategoryVisibility();
     };
@@ -786,8 +905,8 @@
           const relH = height / imgRect.height;
           m.x = Math.max(0, Math.min(1, relX));
           m.y = Math.max(0, Math.min(1, relY));
-          m.w = Math.max(20 / imgRect.width, Math.min(1, relW));
-          m.h = Math.max(20 / imgRect.height, Math.min(1, relH));
+          m.w = Math.max(MIN_MASK_PX / imgRect.width, Math.min(1, relW));
+          m.h = Math.max(MIN_MASK_PX / imgRect.height, Math.min(1, relH));
         });
 
         syncCategoriesFromUIToCurrentProject();
@@ -807,12 +926,13 @@
           baseH = mainImage.naturalHeight || undefined;
         }
 
-        const normalizedMasks = masks.map(m => ({
+                const normalizedMasks = masks.map(m => ({
           id: m.id,
           x: Number(m.x || 0),
           y: Number(m.y || 0),
           w: Number(m.w || 0),
           h: Number(m.h || 0),
+          rotation: normalizeRotation(m.rotation),
           visible: (m.visible === undefined) ? true : Boolean(m.visible),
           color: m.color,
           shape: m.shape
@@ -910,7 +1030,17 @@
         }
 
         currentProject.masks.forEach(mm=>{
-          const m = { id: mm.id || uid('m'), x: mm.x, y: mm.y, w: mm.w, h: mm.h, visible: (mm.visible === undefined) ? true : Boolean(mm.visible), color: mm.color || '#000000', shape: mm.shape || 'rect' };
+                    const m = {
+            id: mm.id || uid('m'),
+            x: mm.x,
+            y: mm.y,
+            w: mm.w,
+            h: mm.h,
+            rotation: normalizeRotation(mm.rotation),
+            visible: (mm.visible === undefined) ? true : Boolean(mm.visible),
+            color: mm.color || '#000000',
+            shape: mm.shape || 'rect'
+          };
           masks.push(m);
           renderMask(m);
         });
@@ -921,6 +1051,15 @@
         updateCategoryVisibility();
         // loaded saved project => clear dirty flag
         clearDirty();
+        
+        const MIN_MASK_PX = 8;
+        const DEFAULT_MASK_ROTATION = 0;
+
+        function normalizeRotation(value){
+        const n = Number(value);
+        return Number.isFinite(n) ? n : DEFAULT_MASK_ROTATION;
+}
+
       };
     });
   }
