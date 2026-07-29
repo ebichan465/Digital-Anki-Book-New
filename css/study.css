@@ -217,9 +217,10 @@ body.study-page .book-card__title{
   font-weight:800;
   line-height:1.25;
 
-  overflow:hidden;
   display:-webkit-box;
   -webkit-box-orient:vertical;
+  -webkit-line-clamp: 2;
+  overflow:hidden;
 
   color:#2d3b45;
 }

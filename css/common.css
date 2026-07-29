@@ -252,9 +252,8 @@ p {
   background:rgba(200,100,100,0.08);
 }
 
-/* チェックボックスを大きくして押しやすくする */
 .project-header input[type="checkbox"]{
-  transform: scale(2); /* 見た目の拡大 */
+  transform: scale(2); 
   transform-origin: center;
   margin: 0 8px;
   width: 18px;
@@ -323,14 +322,10 @@ p {
   font-size:0.9rem;
 }
 
-/* ===== 復習・スマホ向け追加 ===== */
 button,
 .big-btn,
 .secondary-btn,
 .home-action-btn,
-.fullscreen-btn{
-  white-space:nowrap;
-}
 
 input[type="color"]{
   -webkit-appearance:none;
