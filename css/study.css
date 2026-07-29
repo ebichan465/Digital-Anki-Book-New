@@ -217,6 +217,7 @@ body.study-page .book-card__title{
   font-weight:800;
   line-height:1.25;
 
+
   display:-webkit-box;
   -webkit-box-orient:vertical;
   -webkit-line-clamp: 2;
@@ -229,7 +230,7 @@ body.study-page .book-card__date{
   position:absolute;
   left:50%;
   transform:translateX(-50%);
-  bottom:28px;
+  bottom:32px;
 
   margin:0;
 
@@ -248,7 +249,7 @@ body.study-page .book-card__controls{
 body.study-page .book-card__weak-toggle,
 body.study-page .book-card__delete-toggle{
   position: absolute;
-  left: 50%;
+  left: 40%;
   transform: translateX(-50%);
   bottom: 8px;
   z-index: 2;
