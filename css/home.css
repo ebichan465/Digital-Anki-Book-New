@@ -222,7 +222,7 @@ body.home-page .review-bubble{
 
   .home-actions{
     gap:clamp(110px, 22vw, 150px);
-    margin-top:clamp(52px, 12vw, 84px);
+    margin-top:clamp(100px, 30vw, 150px);
   }
 
   body.home-page .home-action-btn{
