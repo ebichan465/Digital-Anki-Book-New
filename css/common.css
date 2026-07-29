@@ -4,7 +4,7 @@
   --btn-fg: white;
   --mask-color: #000;
   --mask-opacity: 1;
-  --selected-border: 3px solid #ffd54d;
+  --selected-border: 2px solid #ffd54d;
 }
 
 /* リセット */
@@ -146,7 +146,7 @@ p {
 /* 選択時の見た目 */
 .mask.selected{
   outline: var(--selected-border);
-  outline-offset: -4px;
+  outline-offset: 0px;
 }
 
 /* リサイズ用ハンドル */
