@@ -32,6 +32,13 @@
     return `${prefix}-${Math.random().toString(36).slice(2, 9)}`;
   }
 
+  const DEFAULT_MASK_ROTATION = 0;
+
+  function normalizeRotation(value) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n : DEFAULT_MASK_ROTATION;
+  }
+
   function loadAllProjects() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
@@ -59,12 +66,6 @@
   }
 
   function formatDate(value) {
-    const DEFAULT_MASK_ROTATION = 0;
-
-    function normalizeRotation(value) {
-    const n = Number(value);
-    return Number.isFinite(n) ? n : DEFAULT_MASK_ROTATION;
-    }
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return '';
     const y = date.getFullYear();

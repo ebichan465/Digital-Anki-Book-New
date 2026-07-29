@@ -51,6 +51,13 @@
   let isDirty = false;
   function markDirty(flag = true) { isDirty = !!flag; }
   function clearDirty() { isDirty = false; }
+  const MIN_MASK_PX = 8;
+  const DEFAULT_MASK_ROTATION = 0;
+
+  function normalizeRotation(value){
+  const n = Number(value);
+  return Number.isFinite(n) ? n : DEFAULT_MASK_ROTATION;
+}
 
   const REVIEW_INTERVAL_DAYS = [1, 7, 30, 90];
   const DAY_MS = 24 * 60 * 60 * 1000;
@@ -926,7 +933,7 @@
           baseH = mainImage.naturalHeight || undefined;
         }
 
-                const normalizedMasks = masks.map(m => ({
+        const normalizedMasks = masks.map(m => ({
           id: m.id,
           x: Number(m.x || 0),
           y: Number(m.y || 0),
@@ -1054,12 +1061,6 @@
         
         const MIN_MASK_PX = 8;
         const DEFAULT_MASK_ROTATION = 0;
-
-        function normalizeRotation(value){
-        const n = Number(value);
-        return Number.isFinite(n) ? n : DEFAULT_MASK_ROTATION;
-}
-
       };
     });
   }
