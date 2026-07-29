@@ -187,19 +187,27 @@ body.home-page .home-action-btn:active{
 }
 
 body.home-page .home-study-wrap{
-  position:relative;
-  display:inline-flex;
-  align-items:flex-start;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
 }
 
 body.home-page .review-bubble{
-  top:-18px;
-  right:-8px;
-  transform:translateY(-100%);
-}
+  margin-top:10px;
 
-body.home-page .review-bubble::after{
-  right:18px;
+  padding:6px 12px;
+
+  border-radius:999px;
+  background:#fff7d8;
+  border:1px solid #e5d39a;
+
+  font-size:13px;
+  font-weight:700;
+  color:#6a5322;
+
+  white-space:nowrap;
+
+  box-shadow:0 4px 10px rgba(0,0,0,.08);
 }
 
 @media (max-width: 768px){
@@ -239,12 +247,6 @@ body.home-page .review-bubble::after{
 
   .home-subtitle{
     font-size:clamp(13px, 3.6vw, 16px);
-  }
-
-  body.home-page .review-bubble{
-    left:50%;
-    right:50%;
-    transform:translate(-50%, -100%);
   }
 }
 

@@ -36,6 +36,10 @@
               <img id="bookMainImage" alt="Bookの画像" class="hidden" />
               <p id="bookEmpty" class="book-empty hidden">Bookが見つかりませんでした。</p>
             </div>
+            <label class="book-favorite-toggle">
+              <input id="bookWeakCheckbox" type="checkbox">
+              <span>お気に入り</span>
+            </label>
           </div>
         </div>
       </section>
@@ -45,10 +49,6 @@
         <button id="btnRenameBook" class="book-toolbar-btn" type="button">名前を変更</button>
         <button id="btnChangeCategory" class="book-toolbar-btn" type="button">カテゴリ変更</button>
         <button id="btnDeleteImage" class="book-toolbar-btn" type="button">画像削除</button>
-        <label class="book-toolbar-check">
-          <input id="bookWeakCheckbox" type="checkbox" />
-          <span>苦手</span>
-        </label>
       </section>
       <button id="btnReviewComplete" class="book-review-complete-btn hidden" type="button">
         復習完了

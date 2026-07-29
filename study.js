@@ -6,10 +6,10 @@
   const btnBackHome = document.getElementById('btnBackHome');
   const btnDisplayMenu = document.getElementById('btnDisplayMenu');
   const btnSortMenu = document.getElementById('btnSortMenu');
-  const btnDeleteMode = document.getElementById('btnDeleteMode');
+  const btnDeleteMode = document.getElementById('btnSelectDelete');
   const btnTodayReview = document.getElementById('btnTodayReview');
-  const displayLabel = document.getElementById('displayLabel');
-  const sortLabel = document.getElementById('sortLabel');
+  const displayLabel = document.getElementById('displayCurrentLabel');
+  const sortLabel = document.getElementById('sortCurrentLabel');
 
   const deleteModePanel = document.getElementById('deleteModePanel');
   const deleteModeCount = document.getElementById('deleteModeCount');
@@ -189,19 +189,19 @@ function isTodayReviewTarget(book, now = Date.now()) {
     return SORT_LABELS[value] || SORT_LABELS.new;
   }
 
-  function setDisplayFilter(value) {
-    state.displayFilter = value;
-    displayLabel.textContent = getDisplayLabel(value);
-    closeSheets();
-    renderBooks();
-  }
+function setDisplayFilter(value) {
+  state.displayFilter = value;
+  if (displayLabel) displayLabel.textContent = getDisplayLabel(value);
+  closeSheets();
+  renderBooks();
+}
 
-  function setSortOrder(value) {
-    state.sortOrder = value;
-    sortLabel.textContent = getSortLabel(value);
-    closeSheets();
-    renderBooks();
-  }
+function setSortOrder(value) {
+  state.sortOrder = value;
+  if (sortLabel) sortLabel.textContent = getSortLabel(value);
+  closeSheets();
+  renderBooks();
+}
 
   function openSheet(sheetEl) {
     closeSheets();

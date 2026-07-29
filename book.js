@@ -16,6 +16,7 @@
   const btnRenameBook = document.getElementById('btnRenameBook');
   const btnChangeCategory = document.getElementById('btnChangeCategory');
   const btnDeleteImage = document.getElementById('btnDeleteImage');
+  const btnReviewComplete = document.getElementById('btnReviewComplete');
   const bookWeakCheckbox = document.getElementById('bookWeakCheckbox');
   
 
