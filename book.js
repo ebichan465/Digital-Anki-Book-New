@@ -17,6 +17,7 @@
   const btnChangeCategory = document.getElementById('btnChangeCategory');
   const btnDeleteImage = document.getElementById('btnDeleteImage');
   const bookWeakCheckbox = document.getElementById('bookWeakCheckbox');
+  
 
   let currentBook = null;
   let currentImageIndex = 0;
@@ -38,6 +39,49 @@
   const n = Number(value);
   return Number.isFinite(n) ? n : DEFAULT_MASK_ROTATION;
   }
+
+  function unique(values) {
+  return Array.from(new Set(values.filter(Boolean)));
+}
+
+const REVIEW_WINDOWS = [
+  { stage: 1, minDays: 1, maxDays: 3 },
+  { stage: 2, minDays: 7, maxDays: 14 },
+  { stage: 3, minDays: 30, maxDays: 60 },
+];
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+function startOfDayMs(value) {
+  const d = new Date(value);
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
+}
+
+function diffDays(from, to = Date.now()) {
+  return Math.floor((startOfDayMs(to) - startOfDayMs(from)) / DAY_MS);
+}
+
+function getReviewStage(createdAt, now = Date.now()) {
+  const days = diffDays(createdAt, now);
+  const matched = REVIEW_WINDOWS.find((item) => days >= item.minDays && days <= item.maxDays);
+  return matched ? matched.stage : 0;
+}
+
+function normalizeReview(review, createdAt) {
+  const baseCreatedAt = Number(createdAt) || Date.now();
+  const safe = review && typeof review === 'object' ? review : {};
+  return {
+    createdAt: Number.isFinite(Number(safe.createdAt)) ? Number(safe.createdAt) : baseCreatedAt,
+    currentStage: Number.isFinite(Number(safe.currentStage))
+      ? Number(safe.currentStage)
+      : getReviewStage(baseCreatedAt),
+    completedStages: Array.isArray(safe.completedStages)
+      ? unique(safe.completedStages.map((n) => Number(n)).filter((n) => Number.isFinite(n)))
+      : [],
+    lastCompletedStage: Number.isFinite(Number(safe.lastCompletedStage)) ? Number(safe.lastCompletedStage) : 0,
+  };
+}
 
   function loadAllProjects() {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -122,6 +166,7 @@
       checked: !!base.checked,
       categories: Array.isArray(base.categories) ? base.categories.filter(Boolean) : [],
       images: normalizedImages,
+      review: normalizeReview(base.review, base.createdAt),
     };
   }
 
@@ -204,8 +249,46 @@
         bookEmpty.classList.add('hidden');
       }
     }
+    updateReviewButton();
   }
 
+  function updateReviewButton() {
+  if (!btnReviewComplete) return;
+
+  if (!currentBook) {
+    btnReviewComplete.classList.add('hidden');
+    btnReviewComplete.disabled = true;
+    return;
+  }
+
+  const activeImage = getActiveImageRecord();
+  const review = normalizeReview(currentBook.review, currentBook.createdAt);
+  const stage = getReviewStage(review.createdAt || (activeImage && activeImage.createdAt) || currentBook.createdAt);
+  const shouldShow = !!(activeImage && activeImage.imageDataUrl) && stage > 0 && !review.completedStages.includes(stage);
+
+  btnReviewComplete.classList.toggle('hidden', !shouldShow);
+  btnReviewComplete.disabled = !shouldShow;
+}
+
+function completeReviewStage() {
+  if (!currentBook) return;
+
+  const activeImage = getActiveImageRecord();
+  const review = normalizeReview(currentBook.review, currentBook.createdAt);
+  const stage = getReviewStage(review.createdAt || (activeImage && activeImage.createdAt) || currentBook.createdAt);
+
+  if (stage <= 0) return;
+
+  currentBook.review = {
+    ...review,
+    currentStage: stage,
+    lastCompletedStage: stage,
+    completedStages: unique([...review.completedStages, stage]).sort((a, b) => a - b),
+  };
+
+  persistCurrentBook();
+  updateReviewButton();
+}  
   function clearMaskElements() {
     maskEntries.forEach((entry) => {
       if (entry.el && entry.el.parentNode) {
@@ -505,6 +588,10 @@
     if (btnRenameBook) btnRenameBook.disabled = true;
     if (btnChangeCategory) btnChangeCategory.disabled = true;
     if (btnDeleteImage) btnDeleteImage.disabled = true;
+    if (btnReviewComplete) {
+      btnReviewComplete.classList.add('hidden');
+      btnReviewComplete.disabled = true;
+    }
     if (bookWeakCheckbox) {
       bookWeakCheckbox.disabled = true;
       bookWeakCheckbox.checked = false;
@@ -538,6 +625,10 @@
 
     if (btnDeleteImage) {
       btnDeleteImage.addEventListener('click', deleteCurrentImage);
+    }
+
+    if (btnReviewComplete) {
+      btnReviewComplete.addEventListener('click', completeReviewStage);
     }
 
     if (bookWeakCheckbox) {

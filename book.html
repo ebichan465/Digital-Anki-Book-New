@@ -13,10 +13,10 @@
     <header class="book-topbar" aria-label="Bookページトップバー">
       <button id="btnBackStudy" class="book-topbar-btn book-topbar-btn--back" type="button" aria-label="Book一覧へ戻る">
         <img
-        src="assets/back.svg"
-        alt="戻る"
-        class="book-topbar-btn__icon">
-</button>
+          src="assets/back.svg"
+          alt="戻る"
+          class="book-topbar-btn__icon">
+      </button>
 
       <div class="book-topbar__title">
         <h1 id="bookTitle">Book</h1>
@@ -38,11 +38,6 @@
             </div>
           </div>
         </div>
-
-        <label class="book-toolbar-check book-toolbar-check--floating">
-          <input id="bookWeakCheckbox" type="checkbox" />
-          <span>お気に入り</span>
-        </label>
       </section>
 
       <section class="book-toolbar" aria-label="Book操作">
@@ -50,7 +45,14 @@
         <button id="btnRenameBook" class="book-toolbar-btn" type="button">名前を変更</button>
         <button id="btnChangeCategory" class="book-toolbar-btn" type="button">カテゴリ変更</button>
         <button id="btnDeleteImage" class="book-toolbar-btn" type="button">画像削除</button>
+        <label class="book-toolbar-check">
+          <input id="bookWeakCheckbox" type="checkbox" />
+          <span>苦手</span>
+        </label>
       </section>
+      <button id="btnReviewComplete" class="book-review-complete-btn hidden" type="button">
+        復習完了
+      </button>
     </main>
   </div>
 

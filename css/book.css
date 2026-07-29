@@ -143,6 +143,50 @@ body.book-page .book-toolbar-check{
   font-size:14px;
   font-weight:700;
 }
+
+body.book-page .book-review-complete-btn{
+  appearance:none;
+  width:100%;
+  border:1px solid rgba(93, 133, 92, .18);
+  border-radius:18px;
+  min-height:52px;
+  padding:12px 16px;
+  background:linear-gradient(180deg, #edf5e8 0%, #d6e6ce 100%);
+  color:#3f5a40;
+  box-shadow:
+    0 18px 28px -24px rgba(74, 58, 36, .35),
+    inset 0 1px 0 rgba(255,255,255,.55);
+  font-family:inherit;
+  font-size:15px;
+  font-weight:800;
+  cursor:pointer;
+  transition:transform .15s ease, filter .15s ease, box-shadow .15s ease;
+}
+
+body.book-page .book-review-complete-btn:hover{
+  transform:translateY(-1px);
+  filter:saturate(.96) brightness(1.01);
+}
+
+body.book-page .book-review-complete-btn:active{
+  transform:translateY(1px);
+}
+
+body.book-page .book-review-complete-btn:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+  transform:none;
+}
+
+@media (max-width: 768px){
+  body.book-page .book-review-complete-btn{
+    min-height:48px;
+    padding:10px 14px;
+    font-size:14px;
+    border-radius:16px;
+  }
+}
+
 body.book-page .book-toolbar-check--floating{
   align-self:flex-start;
   margin-left:clamp(18px, 2vw, 28px);
@@ -219,5 +263,64 @@ body.book-page .book-layout{
     min-height:44px;
     margin-left:18px;
     font-size:13px;
+  }
+}
+
+/* ===== review feature ===== */
+body.book-page #btnReviewComplete,
+body.book-page .book-review-complete-btn,
+body.book-page .book-review-button{
+  appearance:none;
+  border:1px solid rgba(84, 142, 89, .18);
+  background:linear-gradient(180deg, #dbe8d5 0%, #bfd4bb 100%);
+  color:#36533b;
+  box-shadow:0 10px 20px -16px rgba(74,58,36,.28), inset 0 1px 0 rgba(255,255,255,.55);
+  cursor:pointer;
+  width:100%;
+  min-height:52px;
+  margin-top:12px;
+  border-radius:22px;
+  padding:11px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  font-size:15px;
+  font-weight:800;
+  letter-spacing:.04em;
+  transition:transform .15s ease, filter .15s ease, box-shadow .15s ease, background .15s ease;
+}
+
+body.book-page #btnReviewComplete:hover,
+body.book-page .book-review-complete-btn:hover,
+body.book-page .book-review-button:hover{
+  transform:translateY(-1px);
+  filter:saturate(.98) brightness(1.01);
+  background:linear-gradient(180deg, #e0ecd9 0%, #c7d9c3 100%);
+}
+
+body.book-page #btnReviewComplete:active,
+body.book-page .book-review-complete-btn:active,
+body.book-page .book-review-button:active{
+  transform:translateY(1px);
+}
+
+body.book-page #btnReviewComplete:disabled,
+body.book-page .book-review-complete-btn:disabled,
+body.book-page .book-review-button:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+  transform:none;
+}
+
+@media (max-width: 768px){
+  body.book-page #btnReviewComplete,
+  body.book-page .book-review-complete-btn,
+  body.book-page .book-review-button{
+    min-height:48px;
+    margin-top:10px;
+    border-radius:20px;
+    padding:10px 14px;
+    font-size:14px;
   }
 }

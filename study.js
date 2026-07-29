@@ -7,6 +7,7 @@
   const btnDisplayMenu = document.getElementById('btnDisplayMenu');
   const btnSortMenu = document.getElementById('btnSortMenu');
   const btnDeleteMode = document.getElementById('btnDeleteMode');
+  const btnTodayReview = document.getElementById('btnTodayReview');
   const displayLabel = document.getElementById('displayLabel');
   const sortLabel = document.getElementById('sortLabel');
 
@@ -33,6 +34,7 @@
   const DISPLAY_LABELS = {
     all: 'すべて表示',
     checked: 'お気に入りのみ',
+    todayReview: '今日の復習',
   };
 
   const SORT_LABELS = {
@@ -69,6 +71,56 @@
       return [];
     }
   }
+
+  function unique(values) {
+  return Array.from(new Set(values.filter(Boolean)));
+}
+
+const REVIEW_WINDOWS = [
+  { stage: 1, minDays: 1, maxDays: 3 },
+  { stage: 2, minDays: 7, maxDays: 14 },
+  { stage: 3, minDays: 30, maxDays: 60 },
+];
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+function startOfDayMs(value) {
+  const d = new Date(value);
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
+}
+
+function diffDays(from, to = Date.now()) {
+  return Math.floor((startOfDayMs(to) - startOfDayMs(from)) / DAY_MS);
+}
+
+function getReviewStage(createdAt, now = Date.now()) {
+  const days = diffDays(createdAt, now);
+  const matched = REVIEW_WINDOWS.find((item) => days >= item.minDays && days <= item.maxDays);
+  return matched ? matched.stage : 0;
+}
+
+function normalizeReview(review, createdAt) {
+  const baseCreatedAt = Number(createdAt) || Date.now();
+  const safe = review && typeof review === 'object' ? review : {};
+  return {
+    createdAt: Number.isFinite(Number(safe.createdAt)) ? Number(safe.createdAt) : baseCreatedAt,
+    currentStage: Number.isFinite(Number(safe.currentStage))
+      ? Number(safe.currentStage)
+      : getReviewStage(baseCreatedAt),
+    completedStages: Array.isArray(safe.completedStages)
+      ? unique(safe.completedStages.map((n) => Number(n)).filter((n) => Number.isFinite(n)))
+      : [],
+    lastCompletedStage: Number.isFinite(Number(safe.lastCompletedStage)) ? Number(safe.lastCompletedStage) : 0,
+  };
+}
+
+function isTodayReviewTarget(book, now = Date.now()) {
+  if (!book) return false;
+  const review = normalizeReview(book.review, book.createdAt);
+  const stage = getReviewStage(review.createdAt, now);
+  return stage > 0 && !review.completedStages.includes(stage);
+}
 
   function formatDate(value) {
     const date = new Date(value);
@@ -117,12 +169,15 @@
       createdAt: copy.createdAt || Date.now(),
       categories: Array.isArray(copy.categories) ? copy.categories.filter(Boolean) : [],
       images: normalizedImages,
+      review: normalizeReview(copy.review, copy.createdAt),
     };
+
   }
 
   function getDisplayLabel(value) {
     if (value === 'all') return DISPLAY_LABELS.all;
     if (value === 'checked') return DISPLAY_LABELS.checked;
+    if (value === 'todayReview') return DISPLAY_LABELS.todayReview;
     if (String(value).startsWith('cat::')) {
       const catName = String(value).replace('cat::', '');
       return `カテゴリ: ${catName}`;
@@ -176,6 +231,13 @@
     checkedBtn.textContent = 'お気に入り画像のみ';
     checkedBtn.addEventListener('click', () => setDisplayFilter('checked'));
     displayOptions.appendChild(checkedBtn);
+
+    const todayReviewBtn = document.createElement('button');
+    todayReviewBtn.type = 'button';
+    todayReviewBtn.className = 'study-sheet__option';
+    todayReviewBtn.textContent = '今日の復習';
+    todayReviewBtn.addEventListener('click', () => setDisplayFilter('todayReview'));
+    displayOptions.appendChild(todayReviewBtn);
 
     const cats = loadAllCategories();
     cats.forEach((cat) => {
@@ -295,6 +357,8 @@
 
     if (filterVal === 'checked') {
       filteredBooks = filteredBooks.filter((book) => !!book.checked);
+    } else if (filterVal === 'todayReview') {
+      filteredBooks = filteredBooks.filter((book) => isTodayReviewTarget(book));
     } else if (String(filterVal).startsWith('cat::')) {
       const catName = String(filterVal).replace('cat::', '');
       filteredBooks = filteredBooks.filter((book) => Array.isArray(book.categories) && book.categories.includes(catName));
@@ -311,13 +375,15 @@
     const hasAnyBooks = allBooks.length > 0;
     const hasAnyFilteredBooks = filteredBooks.length > 0;
 
-    if (!hasAnyFilteredBooks) {
-      emptyState.classList.remove('hidden');
-      emptyState.textContent = hasAnyBooks
-        ? '条件に合うBookがありません。'
-        : '新しくBookを作りましょう。';
-      return;
-    }
+if (!hasAnyFilteredBooks) {
+  emptyState.classList.remove('hidden');
+  emptyState.textContent = filterVal === 'todayReview'
+    ? '今日は復習するものがありません。'
+    : hasAnyBooks
+      ? '条件に合うBookがありません。'
+      : '新しくBookを作りましょう。';
+  return;
+}
 
     emptyState.classList.add('hidden');
 
@@ -531,12 +597,19 @@
     if (sortLabel) sortLabel.textContent = getSortLabel(state.sortOrder);
   }
 
-  function init() {
-    prepareSheetOptions();
-    syncToolbarLabels();
-    updateDeletePanel();
-    renderBooks();
+function init() {
+  prepareSheetOptions();
+  syncToolbarLabels();
+  updateDeletePanel();
+
+  if (btnTodayReview) {
+    btnTodayReview.addEventListener('click', () => {
+      setDisplayFilter('todayReview');
+    });
   }
+
+  renderBooks();
+}
 
   init();
 })();

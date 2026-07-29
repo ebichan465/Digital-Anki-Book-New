@@ -1,4 +1,3 @@
-<!-- study.html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -14,10 +13,10 @@
     <header class="study-topbar" aria-label="暗記するトップバー">
       <button id="btnBackHome" class="study-topbar-btn study-topbar-btn--back" type="button" aria-label="トップページへ戻る">
         <img
-        src="assets/back.svg"
-        alt="戻る"
-        class="study-topbar-btn__icon">
-</button>
+          src="assets/back.svg"
+          alt="戻る"
+          class="study-topbar-btn__icon">
+      </button>
 
       <div class="study-topbar__title">
         <h1>暗記する</h1>
@@ -30,16 +29,22 @@
       <section class="study-toolbar" aria-label="Book一覧の操作">
         <button id="btnDisplayMenu" class="study-toolbar-btn" type="button">
           <span class="study-toolbar-btn__label">表示</span>
-          <span id="displayLabel" class="study-toolbar-btn__value">すべて表示</span>
+          <span id="displayCurrentLabel" class="study-toolbar-btn__value">すべて表示</span>
         </button>
 
         <button id="btnSortMenu" class="study-toolbar-btn" type="button">
           <span class="study-toolbar-btn__label">並び替え</span>
-          <span id="sortLabel" class="study-toolbar-btn__value">新しい順</span>
+          <span id="sortCurrentLabel" class="study-toolbar-btn__value">新しい順</span>
         </button>
 
-        <button id="btnDeleteMode" class="study-toolbar-btn" type="button">画像削除</button>
+        <button id="btnSelectDelete" class="study-toolbar-btn" type="button">
+          <span class="study-toolbar-btn__label">選択して削除</span>
+        </button>
       </section>
+
+      <button id="btnTodayReview" class="study-review-btn" type="button">
+        今日の復習
+      </button>
 
       <section id="deleteModePanel" class="study-delete-panel hidden" aria-label="選択して削除の操作">
         <div class="study-delete-panel__info">
@@ -54,28 +59,31 @@
       <section id="booksList" class="study-books" aria-label="Book一覧"></section>
       <p id="emptyState" class="study-empty">新しくBookを作りましょう。</p>
     </main>
+  </div>
 
-    <section id="displaySheet" class="study-sheet hidden" aria-label="表示方法">
-      <div class="study-sheet__backdrop" data-sheet-close></div>
-      <div class="study-sheet__panel" role="dialog" aria-modal="true" aria-labelledby="displaySheetTitle">
-        <h2 id="displaySheetTitle" class="study-sheet__title">表示</h2>
-        <div id="displayOptions" class="study-sheet__options"></div>
-        <div class="study-sheet__footer">
-          <button type="button" class="study-sheet__close" data-sheet-close>閉じる</button>
-        </div>
+  <div id="sheetBackdrop" class="study-sheet-backdrop hidden" aria-hidden="true">
+    <div class="study-sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+      <div class="study-sheet__handle" aria-hidden="true"></div>
+      <div class="study-sheet__head">
+        <h2 id="sheetTitle" class="study-sheet__title">表示</h2>
+        <p id="sheetDescription" class="study-sheet__description">選択してください。</p>
       </div>
-    </section>
+      <div id="sheetOptions" class="study-sheet__options"></div>
+      <div class="study-sheet__footer">
+        <button id="sheetCancel" class="study-sheet__button study-sheet__button--cancel" type="button">キャンセル</button>
+      </div>
+    </div>
+  </div>
 
-    <section id="sortSheet" class="study-sheet hidden" aria-label="並び替え">
-      <div class="study-sheet__backdrop" data-sheet-close></div>
-      <div class="study-sheet__panel" role="dialog" aria-modal="true" aria-labelledby="sortSheetTitle">
-        <h2 id="sortSheetTitle" class="study-sheet__title">並び替え</h2>
-        <div id="sortOptions" class="study-sheet__options"></div>
-        <div class="study-sheet__footer">
-          <button type="button" class="study-sheet__close" data-sheet-close>閉じる</button>
-        </div>
-      </div>
-    </section>
+  <div id="selectionBar" class="study-selection-bar hidden" aria-live="polite">
+    <div class="study-selection-bar__info">
+      <span class="study-selection-bar__label">削除対象</span>
+      <span id="selectionCount" class="study-selection-bar__count">0冊</span>
+    </div>
+    <div class="study-selection-bar__actions">
+      <button id="selectionCancel" class="study-selection-bar__button study-selection-bar__button--cancel" type="button">キャンセル</button>
+      <button id="selectionDelete" class="study-selection-bar__button study-selection-bar__button--delete" type="button">削除する</button>
+    </div>
   </div>
 
   <script src="study.js"></script>
