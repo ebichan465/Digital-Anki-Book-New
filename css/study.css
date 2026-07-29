@@ -259,7 +259,7 @@ body.study-page .book-card__delete-toggle{
   display:inline-flex;
   align-items:center;
   gap:6px;
-  font-size:9px;
+  font-size:4px;
   font-weight:700;
   color:#40525c;
 }
