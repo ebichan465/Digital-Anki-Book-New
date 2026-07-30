@@ -76,7 +76,7 @@ body.book-page .book-mask{
   position:absolute;
   background:var(--mask-color, #000);
   box-sizing:border-box;
-  border:2px dashed #ffeb3b;
+  border:2px dashed rgba(240, 231, 135, 0.4);
   z-index:5;
   touch-action:none;
   user-select:none;
@@ -113,7 +113,7 @@ body.book-page .book-mask.circle{
   border-radius:50%;
 }
 body.book-page .book-mask.rect{
-  border-radius:8px;
+  border-radius:0;
 }
 
 body.book-page .book-toolbar{
