@@ -92,7 +92,7 @@ body.home-page .home-action-btn{
   border-radius:0;
   border:1px solid rgba(68, 78, 88, .12);
   text-decoration:none;
-  color:#20303a;
+  color:#222222;
   font-weight:700;
   font-size:clamp(0.88rem, 2.9vw, 0.99rem);
   letter-spacing:.04em;
