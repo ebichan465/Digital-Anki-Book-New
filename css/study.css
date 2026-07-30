@@ -420,42 +420,26 @@ body.study-page .study-toolbar{
   }
 
   body.study-page .study-review-btn{
-  appearance:none;
-  width:100%;
-  border:none;
-  border-radius:22px;
-  min-height:58px;
-  padding:10px 14px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  background:linear-gradient(180deg, #f8e2bf 0%, #e2b975 100%);
-  color:#6a4700;
-  box-shadow:
-    0 18px 28px -24px rgba(74, 58, 36, .35),
-    inset 0 1px 0 rgba(255,255,255,.55);
-  font-family:inherit;
-  font-size:15px;
-  font-weight:800;
-  cursor:pointer;
-  transition:transform .15s ease, filter .15s ease, box-shadow .15s ease;
-}
+  min-height:50px;
+  padding:9px 12px;
+  font-size:14px;
+  border-radius:20px;
+  }
 
-body.study-page .study-review-btn:hover{
-  transform:translateY(-1px);
-  filter:saturate(.96) brightness(1.01);
-}
+  body.study-page .study-review-btn:hover{
+    transform:translateY(-1px);
+    filter:saturate(.96) brightness(1.01);
+  }
 
-body.study-page .study-review-btn:active{
-  transform:translateY(1px);
-}
+  body.study-page .study-review-btn:active{
+    transform:translateY(1px);
+  }
 
-body.study-page .study-review-btn:disabled{
-  opacity:.45;
-  cursor:not-allowed;
-  transform:none;
-}
+  body.study-page .study-review-btn:disabled{
+    opacity:.45;
+    cursor:not-allowed;
+    transform:none;
+  }
 
 @media (max-width: 768px){
   body.study-page .study-review-btn{
@@ -467,7 +451,8 @@ body.study-page .study-review-btn:disabled{
 }
 
   body.study-page .study-books{
-    grid-template-columns:repeat(3,1fr);
+    grid-template-columns:repeat(3, minmax(0, 0.9fr));
+    justify-content:center;
     gap:12px;
   }
 
