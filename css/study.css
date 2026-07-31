@@ -543,10 +543,9 @@ body.study-page .study-selection-bar__button--delete{
   }
 
   body.study-page .study-books{
-    grid-template-columns:repeat(3, minmax(0, 0.9fr));
-    justify-content:center;
+    grid-template-columns:repeat(3,1fr);
     gap:12px;
-    padding:0 6px;
+    padding:0 10px;
   }
 
   body.study-page .book-card{

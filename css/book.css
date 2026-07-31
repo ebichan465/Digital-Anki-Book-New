@@ -76,7 +76,7 @@ body.book-page .book-mask{
   position:absolute;
   background:var(--mask-color, #000);
   box-sizing:border-box;
-  border:3px dashed rgba(240, 231, 135, 0.7);
+  border:2px dashed rgba(245, 235, 124, 0.5);
   z-index:5;
   touch-action:none;
   user-select:none;
