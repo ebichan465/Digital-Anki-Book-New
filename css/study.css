@@ -323,46 +323,70 @@ body.study-page .book-card__categories{
   word-break:break-word;
 }
 
-body.study-page .study-sheet{
+body.study-page .study-sheet-backdrop{
   position:fixed;
   inset:0;
   z-index:1000;
   display:flex;
   align-items:flex-end;
   justify-content:center;
+  background:rgba(0,0,0,.35);
+  padding:16px 10px calc(10px + env(safe-area-inset-bottom));
 }
-body.study-page .study-sheet.hidden{
+
+body.study-page .study-sheet-backdrop.hidden{
   display:none !important;
 }
-body.study-page .study-sheet__backdrop{
-  position:absolute;
-  inset:0;
-  background:rgba(0,0,0,.35);
-}
-body.study-page .study-sheet__panel{
+
+body.study-page .study-sheet{
   position:relative;
   width:min(100%, 720px);
   max-height:min(82svh, 780px);
   border-radius:26px 26px 0 0;
   background:rgba(251,247,237,.98);
   box-shadow:0 -22px 42px rgba(0,0,0,.22);
-  padding:16px 16px 18px;
+  padding:12px 16px 18px;
   display:flex;
   flex-direction:column;
   gap:12px;
   overflow:auto;
 }
+
+body.study-page .study-sheet__handle{
+  align-self:center;
+  width:54px;
+  height:5px;
+  border-radius:999px;
+  background:rgba(64,82,92,.18);
+  flex:none;
+}
+
+body.study-page .study-sheet__head{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+
 body.study-page .study-sheet__title{
   margin:0;
   font-size:18px;
   font-weight:800;
   color:#40525c;
 }
+
+body.study-page .study-sheet__description{
+  margin:0;
+  font-size:13px;
+  line-height:1.5;
+  color:#6b6d70;
+}
+
 body.study-page .study-sheet__options{
   display:flex;
   flex-direction:column;
   gap:10px;
 }
+
 body.study-page .study-sheet__option{
   appearance:none;
   border:1px solid rgba(81, 90, 98, .16);
@@ -375,12 +399,43 @@ body.study-page .study-sheet__option{
   font-size:15px;
   font-weight:700;
   text-align:left;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
 }
+
+body.study-page .study-sheet__option.is-selected{
+  border-color:#ffd45c;
+  background:linear-gradient(180deg, #fffdf7 0%, #f7eadf 100%);
+}
+
+body.study-page .study-sheet__option__label{
+  min-width:0;
+  flex:1 1 auto;
+}
+
+body.study-page .study-sheet__option__mark{
+  font-size:14px;
+  font-weight:800;
+  color:#d39f00;
+  flex:none;
+}
+
+body.study-page .study-sheet-note{
+  padding:10px 12px;
+  border-radius:14px;
+  background:rgba(255,255,255,.55);
+  color:#6b6d70;
+  font-size:13px;
+}
+
 body.study-page .study-sheet__footer{
   display:flex;
   justify-content:flex-end;
 }
-body.study-page .study-sheet__close{
+
+body.study-page .study-sheet__button{
   appearance:none;
   border:1px solid rgba(81, 90, 98, .16);
   background:linear-gradient(180deg, #ffffff 0%, #f2ebdf 100%);
@@ -393,8 +448,67 @@ body.study-page .study-sheet__close{
   font-weight:700;
 }
 
+body.study-page .study-sheet__button--cancel{
+  min-width:104px;
+}
+
+body.study-page .study-selection-bar{
+  border:1px solid rgba(81, 90, 98, .12);
+  border-radius:22px;
+  background:rgba(255,255,255,.46);
+  box-shadow:0 18px 28px -24px rgba(74, 58, 36, .35);
+  padding:14px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+body.study-page .study-selection-bar__info{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+
+body.study-page .study-selection-bar__label{
+  font-size:12px;
+  font-weight:700;
+  color:#6b6d70;
+}
+
+body.study-page .study-selection-bar__count{
+  font-size:16px;
+  font-weight:800;
+  color:#40525c;
+}
+
+body.study-page .study-selection-bar__actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+body.study-page .study-selection-bar__button{
+  appearance:none;
+  border:1px solid rgba(81, 90, 98, .16);
+  background:linear-gradient(180deg, #ffffff 0%, #f2ebdf 100%);
+  color:#29404f;
+  box-shadow:0 8px 18px -14px rgba(74,58,36,.22), inset 0 1px 0 rgba(255,255,255,.55);
+  cursor:pointer;
+  padding:10px 14px;
+  border-radius:14px;
+  font-size:14px;
+  font-weight:700;
+}
+
+body.study-page .study-selection-bar__button--delete{
+  border-color:rgba(200, 104, 80, .22);
+  background:linear-gradient(180deg, #fff4f0 0%, #f7ddd5 100%);
+  color:#8a3f2f;
+}
+
 @media (max-width: 768px){
-body.study-page .study-toolbar{
+  body.study-page .study-toolbar{
     display:flex;
   }
 
@@ -406,9 +520,11 @@ body.study-page .study-toolbar{
     justify-content:center;
     padding:7px 6px;
   }
+
   body.study-page .study-toolbar-btn:last-child{
     border-right:none;
   }
+
   body.study-page .study-toolbar-btn__label,
   body.study-page .study-toolbar-btn__value{
     font-size:10.5px;
@@ -420,40 +536,17 @@ body.study-page .study-toolbar{
   }
 
   body.study-page .study-review-btn{
-  min-height:50px;
-  padding:9px 12px;
-  font-size:14px;
-  border-radius:20px;
-  }
-
-  body.study-page .study-review-btn:hover{
-    transform:translateY(-1px);
-    filter:saturate(.96) brightness(1.01);
-  }
-
-  body.study-page .study-review-btn:active{
-    transform:translateY(1px);
-  }
-
-  body.study-page .study-review-btn:disabled{
-    opacity:.45;
-    cursor:not-allowed;
-    transform:none;
-  }
-
-@media (max-width: 768px){
-  body.study-page .study-review-btn{
     min-height:50px;
     padding:9px 12px;
     font-size:14px;
     border-radius:20px;
   }
-}
 
   body.study-page .study-books{
     grid-template-columns:repeat(3, minmax(0, 0.9fr));
     justify-content:center;
     gap:12px;
+    padding:0 6px;
   }
 
   body.study-page .book-card{
@@ -464,11 +557,43 @@ body.study-page .study-toolbar{
     padding-top:0;
   }
 
-  body.study-page .study-sheet__panel{
-    width:100%;
-    border-radius:22px 22px 0 0;
-    max-height:84svh;
+  body.study-page .study-sheet-backdrop{
+    padding:10px 8px calc(8px + env(safe-area-inset-bottom));
+    align-items:flex-end;
   }
 
-  
+  body.study-page .study-sheet{
+    width:100%;
+    max-height:84svh;
+    border-radius:22px 22px 0 0;
+    padding:12px 12px 14px;
+    gap:10px;
+  }
+
+  body.study-page .study-sheet__title{
+    font-size:17px;
+  }
+
+  body.study-page .study-sheet__description{
+    font-size:12px;
+  }
+
+  body.study-page .study-sheet__option{
+    padding:12px 12px;
+    font-size:14px;
+  }
+
+  body.study-page .study-selection-bar{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  body.study-page .study-selection-bar__actions{
+    justify-content:flex-end;
+  }
+
+  body.study-page .study-selection-bar__button{
+    padding:9px 12px;
+    font-size:13px;
+  }
 }

@@ -15,20 +15,26 @@
   const deleteModeCount = document.getElementById('deleteModeCount');
   const btnCancelDeleteMode = document.getElementById('btnCancelDeleteMode');
   const btnConfirmDeleteMode = document.getElementById('btnConfirmDeleteMode');
+  const selectionBar = document.getElementById('selectionBar');
+  const selectionCount = document.getElementById('selectionCount');
+  const selectionCancel = document.getElementById('selectionCancel');
+  const selectionDelete = document.getElementById('selectionDelete');
 
   const booksList = document.getElementById('booksList');
   const emptyState = document.getElementById('emptyState');
 
-  const displaySheet = document.getElementById('displaySheet');
-  const sortSheet = document.getElementById('sortSheet');
-  const displayOptions = document.getElementById('displayOptions');
-  const sortOptions = document.getElementById('sortOptions');
+  const sheetBackdrop = document.getElementById('sheetBackdrop');
+  const sheetTitle = document.getElementById('sheetTitle');
+  const sheetDescription = document.getElementById('sheetDescription');
+  const sheetOptions = document.getElementById('sheetOptions');
+  const sheetCancel = document.getElementById('sheetCancel');
 
   const state = {
     displayFilter: 'all',
     sortOrder: 'new',
     deleteMode: false,
     selectedDeleteIds: new Set(),
+    sheetType: null,
   };
 
   const DISPLAY_LABELS = {
@@ -189,107 +195,120 @@ function isTodayReviewTarget(book, now = Date.now()) {
     return SORT_LABELS[value] || SORT_LABELS.new;
   }
 
-function setDisplayFilter(value) {
-  state.displayFilter = value;
-  if (displayLabel) displayLabel.textContent = getDisplayLabel(value);
-  closeSheets();
-  renderBooks();
-}
-
-function setSortOrder(value) {
-  state.sortOrder = value;
-  if (sortLabel) sortLabel.textContent = getSortLabel(value);
-  closeSheets();
-  renderBooks();
-}
-
-  function openSheet(sheetEl) {
-    closeSheets();
-    if (sheetEl) sheetEl.classList.remove('hidden');
+  function setDisplayFilter(value) {
+    state.displayFilter = value;
+    if (displayLabel) displayLabel.textContent = getDisplayLabel(value);
+    closeSheet();
+    renderBooks();
   }
 
-  function closeSheets() {
-    [displaySheet, sortSheet].forEach((sheet) => {
-      if (sheet) sheet.classList.add('hidden');
-    });
+  function setSortOrder(value) {
+    state.sortOrder = value;
+    if (sortLabel) sortLabel.textContent = getSortLabel(value);
+    closeSheet();
+    renderBooks();
   }
 
-  function renderDisplayOptions() {
-    if (!displayOptions) return;
-    displayOptions.innerHTML = '';
+  function openSheet(type) {
+    state.sheetType = type;
 
-    const allBtn = document.createElement('button');
-    allBtn.type = 'button';
-    allBtn.className = 'study-sheet__option';
-    allBtn.textContent = 'すべて表示';
-    allBtn.addEventListener('click', () => setDisplayFilter('all'));
-    displayOptions.appendChild(allBtn);
+    if (!sheetBackdrop || !sheetTitle || !sheetDescription || !sheetOptions) return;
 
-    const checkedBtn = document.createElement('button');
-    checkedBtn.type = 'button';
-    checkedBtn.className = 'study-sheet__option';
-    checkedBtn.textContent = 'お気に入り画像のみ';
-    checkedBtn.addEventListener('click', () => setDisplayFilter('checked'));
-    displayOptions.appendChild(checkedBtn);
+    sheetTitle.textContent = type === 'sort' ? '並び替え' : '表示';
+    sheetDescription.textContent = type === 'sort'
+      ? '並び順を選んでください。'
+      : '表示方法を選んでください。';
 
-    const todayReviewBtn = document.createElement('button');
-    todayReviewBtn.type = 'button';
-    todayReviewBtn.className = 'study-sheet__option';
-    todayReviewBtn.textContent = '今日の復習';
-    todayReviewBtn.addEventListener('click', () => setDisplayFilter('todayReview'));
-    displayOptions.appendChild(todayReviewBtn);
+    sheetOptions.innerHTML = '';
 
-    const cats = loadAllCategories();
-    cats.forEach((cat) => {
+    const makeOption = (label, value, active) => {
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'study-sheet__option';
-      btn.textContent = cat;
-      btn.addEventListener('click', () => setDisplayFilter(`cat::${cat}`));
-      displayOptions.appendChild(btn);
-    });
+      btn.className = 'study-sheet__option' + (active ? ' is-selected' : '');
+      btn.dataset.value = value;
+
+      const left = document.createElement('span');
+      left.className = 'study-sheet__option__label';
+      left.textContent = label;
+
+      const mark = document.createElement('span');
+      mark.className = 'study-sheet__option__mark';
+      mark.textContent = active ? '●' : '○';
+
+      btn.appendChild(left);
+      btn.appendChild(mark);
+      sheetOptions.appendChild(btn);
+    };
+
+    if (type === 'sort') {
+      makeOption('新しい順', 'new', state.sortOrder === 'new');
+      makeOption('古い順', 'old', state.sortOrder === 'old');
+    } else {
+      makeOption('すべて表示', 'all', state.displayFilter === 'all');
+      makeOption('お気に入り画像のみ', 'checked', state.displayFilter === 'checked');
+      makeOption('今日の復習', 'todayReview', state.displayFilter === 'todayReview');
+
+      const cats = loadAllCategories();
+      cats.forEach((cat) => {
+        makeOption(cat, `cat::${cat}`, state.displayFilter === `cat::${cat}`);
+      });
+
+      if (!cats.length) {
+        const note = document.createElement('div');
+        note.className = 'study-sheet-note';
+        note.textContent = 'カテゴリはまだありません。';
+        sheetOptions.appendChild(note);
+      }
+    }
+
+    sheetBackdrop.classList.remove('hidden');
+    sheetBackdrop.setAttribute('aria-hidden', 'false');
   }
 
-  function renderSortOptions() {
-    if (!sortOptions) return;
-    sortOptions.innerHTML = '';
-
-    const newBtn = document.createElement('button');
-    newBtn.type = 'button';
-    newBtn.className = 'study-sheet__option';
-    newBtn.textContent = '新しい順';
-    newBtn.addEventListener('click', () => setSortOrder('new'));
-    sortOptions.appendChild(newBtn);
-
-    const oldBtn = document.createElement('button');
-    oldBtn.type = 'button';
-    oldBtn.className = 'study-sheet__option';
-    oldBtn.textContent = '古い順';
-    oldBtn.addEventListener('click', () => setSortOrder('old'));
-    sortOptions.appendChild(oldBtn);
+  function closeSheet() {
+    state.sheetType = null;
+    if (!sheetBackdrop) return;
+    sheetBackdrop.classList.add('hidden');
+    sheetBackdrop.setAttribute('aria-hidden', 'true');
   }
 
   function updateDeletePanel() {
     const count = state.selectedDeleteIds.size;
+
     if (deleteModePanel) {
       deleteModePanel.classList.toggle('hidden', !state.deleteMode);
     }
+
+    if (selectionBar) {
+      selectionBar.classList.toggle('hidden', !state.deleteMode);
+    }
+
     if (deleteModeCount) {
       deleteModeCount.textContent = String(count);
     }
+
+    if (selectionCount) {
+      selectionCount.textContent = `${count}冊`;
+    }
+
     if (btnDeleteMode) {
       btnDeleteMode.textContent = state.deleteMode ? '選択中' : '削除';
-      btnDeleteMode.disabled = state.deleteMode;
+      btnDeleteMode.disabled = false;
     }
+
     if (btnConfirmDeleteMode) {
       btnConfirmDeleteMode.disabled = count === 0;
+    }
+
+    if (selectionDelete) {
+      selectionDelete.disabled = count === 0;
     }
   }
 
   function enterDeleteMode() {
     state.deleteMode = true;
     state.selectedDeleteIds.clear();
-    closeSheets();
+    closeSheet();
     updateDeletePanel();
     renderBooks();
   }
@@ -474,15 +493,17 @@ if (!hasAnyFilteredBooks) {
     renderBooks();
   }
 
-  function wireSheet(sheetEl) {
-    if (!sheetEl) return;
-    sheetEl.addEventListener('click', (ev) => {
-      const target = ev.target;
-      if (target && target.matches('[data-sheet-close]')) {
-        closeSheets();
-      }
-    });
-  }
+  if (sheetBackdrop) {
+  sheetBackdrop.addEventListener('click', (ev) => {
+    if (ev.target === sheetBackdrop) {
+      closeSheet();
+    }
+  });
+}
+
+if (sheetCancel) {
+  sheetCancel.addEventListener('click', closeSheet);
+}
 
   if (btnBackHome) {
     btnBackHome.addEventListener('click', () => {
@@ -492,21 +513,23 @@ if (!hasAnyFilteredBooks) {
 
   if (btnDisplayMenu) {
     btnDisplayMenu.addEventListener('click', () => {
-      renderDisplayOptions();
-      openSheet(displaySheet);
+      openSheet('display');
     });
   }
 
   if (btnSortMenu) {
     btnSortMenu.addEventListener('click', () => {
-      renderSortOptions();
-      openSheet(sortSheet);
+      openSheet('sort');
     });
   }
 
   if (btnDeleteMode) {
     btnDeleteMode.addEventListener('click', () => {
-      enterDeleteMode();
+      if (state.deleteMode) {
+        cancelDeleteMode();
+      } else {
+        enterDeleteMode();
+      }
     });
   }
 
@@ -522,75 +545,28 @@ if (!hasAnyFilteredBooks) {
     });
   }
 
-  if (displayOptions) {
-    displayOptions.addEventListener('click', (ev) => {
-      const button = ev.target.closest('button[data-value]');
-      if (!button) return;
-      setDisplayFilter(button.dataset.value || 'all');
+  if (selectionCancel) {
+    selectionCancel.addEventListener('click', () => {
+      cancelDeleteMode();
     });
   }
 
-  if (sortOptions) {
-    sortOptions.addEventListener('click', (ev) => {
-      const button = ev.target.closest('button[data-value]');
-      if (!button) return;
-      setSortOrder(button.dataset.value || 'new');
+  if (selectionDelete) {
+    selectionDelete.addEventListener('click', () => {
+      confirmDeleteSelectedBooks();
     });
   }
 
-  wireSheet(displaySheet);
-  wireSheet(sortSheet);
 
   document.addEventListener('keydown', (ev) => {
     if (ev.key === 'Escape') {
-      closeSheets();
+      if (!sheetBackdrop.classList.contains('hidden')) {
+        closeSheet();
+        return;
+      }
       if (state.deleteMode) cancelDeleteMode();
     }
   });
-
-  function prepareSheetOptions() {
-    if (displayOptions) {
-      displayOptions.innerHTML = '';
-      const baseOptions = [
-        { value: 'all', label: 'すべて表示' },
-        { value: 'checked', label: 'お気に入りのみ' },
-      ];
-
-      baseOptions.forEach((option) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'study-sheet__option';
-        btn.dataset.value = option.value;
-        btn.textContent = option.label;
-        displayOptions.appendChild(btn);
-      });
-
-      loadAllCategories().forEach((cat) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'study-sheet__option';
-        btn.dataset.value = `cat::${cat}`;
-        btn.textContent = cat;
-        displayOptions.appendChild(btn);
-      });
-    }
-
-    if (sortOptions) {
-      sortOptions.innerHTML = '';
-
-      [
-        { value: 'new', label: '新しい順' },
-        { value: 'old', label: '古い順' },
-      ].forEach((option) => {
-        const btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'study-sheet__option';
-        btn.dataset.value = option.value;
-        btn.textContent = option.label;
-        sortOptions.appendChild(btn);
-      });
-    }
-  }
 
   function syncToolbarLabels() {
     if (displayLabel) displayLabel.textContent = getDisplayLabel(state.displayFilter);
@@ -598,7 +574,6 @@ if (!hasAnyFilteredBooks) {
   }
 
 function init() {
-  prepareSheetOptions();
   syncToolbarLabels();
   updateDeletePanel();
 
