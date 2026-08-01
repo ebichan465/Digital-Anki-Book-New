@@ -1,0 +1,46 @@
+<!-- delete.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <path
+    d="M22 22H58"
+    stroke="#16488A"
+    stroke-width="4"
+    stroke-linecap="round"
+  />
+  <path
+    d="M32 18H48"
+    stroke="#16488A"
+    stroke-width="4"
+    stroke-linecap="round"
+  />
+  <path
+    d="M26 24H54"
+    stroke="#16488A"
+    stroke-width="3.5"
+    stroke-linecap="round"
+  />
+  <path
+    d="M28 28H52V58C52 61.3 49.3 64 46 64H34C30.7 64 28 61.3 28 58V28Z"
+    fill="none"
+    stroke="#16488A"
+    stroke-width="3.5"
+    stroke-linejoin="round"
+  />
+  <path
+    d="M35 36V54"
+    stroke="#16488A"
+    stroke-width="3"
+    stroke-linecap="round"
+  />
+  <path
+    d="M40 36V54"
+    stroke="#16488A"
+    stroke-width="3"
+    stroke-linecap="round"
+  />
+  <path
+    d="M45 36V54"
+    stroke="#16488A"
+    stroke-width="3"
+    stroke-linecap="round"
+  />
+</svg>

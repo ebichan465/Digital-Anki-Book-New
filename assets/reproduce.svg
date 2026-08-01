@@ -1,0 +1,5 @@
+<!-- reproduce.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <rect x="16" y="22" width="30" height="30" rx="0" fill="none" stroke="#16488A" stroke-width="3.5" />
+  <rect x="32" y="28" width="30" height="30" rx="0" fill="none" stroke="#16488A" stroke-width="3.5" />
+</svg>

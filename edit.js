@@ -661,7 +661,7 @@
       const file = e.target.files && e.target.files[0];
       if (!file) return;
       const dataUrl = await fileToDataURL(file);
-      const canvasData = await createCanvasFromDataURL(dataUrl, 1200);
+      const canvasData = await createCanvasFromDataURL(dataUrl, 2000);
       loadImage(canvasData.dataUrl);
       currentProject = { id: uid('proj'), name: file.name.replace(/\.[^.]+$/,''), imageDataUrl: canvasData.dataUrl, imageBaseWidth: canvasData.width, imageBaseHeight: canvasData.height, masks: [], categories: [], createdAt: Date.now() };
       masks = [];
@@ -697,7 +697,7 @@
 
     const inputMime = getDataUrlMime(dataUrl);
     const outputMime = chooseOutputMime(inputMime);
-    const quality = outputMime === 'image/jpeg' ? 0.82 : 0.95;
+    
     let outputDataUrl = dataUrl;
     try {
       outputDataUrl = canvas.toDataURL(outputMime, quality);

@@ -1,0 +1,15 @@
+<!-- mask.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <path
+    d="M40 18V62"
+    stroke="#16488A"
+    stroke-width="4.5"
+    stroke-linecap="round"
+  />
+  <path
+    d="M18 40H62"
+    stroke="#16488A"
+    stroke-width="4.5"
+    stroke-linecap="round"
+  />
+</svg>

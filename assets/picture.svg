@@ -1,0 +1,11 @@
+<!-- picture.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
+  <rect x="10" y="10" width="60" height="60" rx="0" stroke="#16488A" stroke-width="3.5" />
+
+  <circle cx="27" cy="26" r="6.5" fill="#16488A" />
+
+  <path
+    d="M16 59L31 42L40 50L51 34L66 59H16Z"
+    fill="#16488A"
+  />
+</svg>
