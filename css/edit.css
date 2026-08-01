@@ -68,7 +68,7 @@ body.edit-page .edit-topbar__title h1{
   font-size:clamp(20px, 4.2vw, 28px);
   font-weight:700;
   letter-spacing:.06em;
-  color:#41515a;
+  color:#44628A;
   text-shadow:0 1px 0 rgba(255,255,255,.45);
 }
 
@@ -76,7 +76,7 @@ body.edit-page .edit-topbar-btn{
   appearance:none;
   border:1px solid rgba(68, 78, 88, .12);
   background:linear-gradient(180deg, #ffffff 0%, #f0eadf 100%);
-  color:#29404f;
+  color:#44628A;
   box-shadow:0 8px 18px -14px rgba(74,58,36,.28), inset 0 1px 0 rgba(255,255,255,.55);
   cursor:pointer;
   display:inline-flex;
@@ -169,7 +169,7 @@ body.edit-page .tool-card{
   border-right:1px solid rgba(81, 90, 98, .12);
   background:
     linear-gradient(180deg, rgba(255,255,255,.95) 0%, rgba(246,239,227,.97) 100%);
-  color:#2a3b46;
+  color:#44628A;
   min-height:78px;
   padding:10px 6px 9px;
   display:flex;
@@ -285,7 +285,7 @@ body.edit-page .panel-title{
   font-size:14px;
   font-weight:700;
   letter-spacing:.03em;
-  color:#40525c;
+  color:#44628A;
   margin:0;
 }
 
@@ -374,7 +374,7 @@ body.edit-page .shape-btn{
   appearance:none;
   border:1px solid rgba(81, 90, 98, .14);
   background:linear-gradient(180deg, rgba(255,255,255,.95) 0%, rgba(246,239,227,.97) 100%);
-  color:#2a3b46;
+  color:#44628A;
   min-width:86px;
   min-height:72px;
   border-radius:18px;
@@ -428,7 +428,7 @@ body.edit-page .project-panel summary{
   justify-content:space-between;
   gap:10px;
   font-weight:700;
-  color:#40525c;
+  color:#44628A;
   font-size:14px;
 }
 
@@ -439,7 +439,7 @@ body.edit-page .project-panel summary::-webkit-details-marker{
 body.edit-page .project-panel summary::after{
   content:'▾';
   font-size:13px;
-  color:#667983;
+  color:#44628A;
   transition:transform .15s ease;
 }
 
@@ -461,7 +461,7 @@ body.edit-page .project-select{
   border-radius:14px;
   border:1px solid rgba(81, 90, 98, .16);
   background:#fff;
-  color:#24343d;
+  color:#44628A;
 }
 
 body.edit-page .project-panel__actions{
@@ -475,7 +475,7 @@ body.edit-page .big-btn{
   border-radius:14px;
   border:1px solid rgba(81, 90, 98, .16);
   background:linear-gradient(180deg, #ffffff 0%, #f2ebdf 100%);
-  color:#29404f;
+  color:#44628A;
   box-shadow:0 8px 18px -14px rgba(74,58,36,.28), inset 0 1px 0 rgba(255,255,255,.55);
   cursor:pointer;
   transition:transform .15s ease, filter .15s ease, box-shadow .15s ease;

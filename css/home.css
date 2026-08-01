@@ -56,14 +56,14 @@ body.home-page::before{
   font-weight:700;
   font-family: "Noto Sans JP", "Yu Gothic", "Hiragino Sans", sans-serif;
   letter-spacing:.05em;
-  color:#5F7EA6;
+  color:#44628A;
   text-shadow:0 1px 0 rgba(255,255,255,.55);
 }
 
 .home-subtitle{
   margin:2px 0 0;
   font-size:clamp(14px, 4vw, 18px);
-  color:#5F7EA6;
+  color:#44628A;
   font-weight:600;
   letter-spacing:.04em;
 }
@@ -203,7 +203,7 @@ body.home-page .review-bubble{
 
   font-size:13px;
   font-weight:700;
-  color:#6a5322;
+  color:#44628A;
 
   white-space:nowrap;
 
