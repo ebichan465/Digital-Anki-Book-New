@@ -99,26 +99,6 @@ function normalizeReview(review, createdAt) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ projects }));
   }
 
-  function loadAllCategories() {
-    const raw = localStorage.getItem(CATS_KEY);
-    if (!raw) return [];
-    try {
-      const parsed = JSON.parse(raw);
-      return Array.isArray(parsed.categories) ? parsed.categories : [];
-    } catch (e) {
-      return [];
-    }
-  }
-
-  function formatDate(value) {
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) return '';
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    return `${y}/${m}/${d}`;
-  }
-
   function normalizeImageRecord(image, fallbackTitle, fallbackCreatedAt) {
     if (!image || typeof image !== 'object') return null;
     const imageDataUrl = image.imageDataUrl || image.dataUrl || '';
@@ -442,12 +422,6 @@ function completeReviewStage() {
     }
 
     setBookState();
-  }
-
-  function refreshBookView() {
-    updateHeader();
-    setBookState();
-    loadCurrentImage();
   }
 
   function persistCurrentBook(mutator) {

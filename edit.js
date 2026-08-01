@@ -309,13 +309,6 @@
     alert(`"${catName}" を削除しました。`);
   }
 
-  function disableMaskPointerEvents(){
-    masks.forEach(m => { if (m.el) m.el.style.pointerEvents = 'none'; });
-  }
-  function enableMaskPointerEvents(){
-    masks.forEach(m => { if (m.el) m.el.style.pointerEvents = 'auto'; });
-  }
-
   if (colorPicker) colorPicker.value = '#000000';
   defaultShape = shapeSelect ? shapeSelect.value : 'rect';
 
@@ -687,27 +680,6 @@
       fr.readAsDataURL(file);
     });
   }
-  function downsizeIfNeeded(dataUrl, maxWidth){
-    return new Promise((res)=>{
-      const img = new Image();
-      img.onload = ()=>{
-        try {
-          if (img.naturalWidth <= maxWidth) return res({ dataUrl, width: img.naturalWidth, height: img.naturalHeight });
-          const scale = maxWidth / img.naturalWidth;
-          const canvas = document.createElement('canvas');
-          canvas.width = Math.round(img.naturalWidth * scale);
-          canvas.height = Math.round(img.naturalHeight * scale);
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(img,0,0,canvas.width,canvas.height);
-          res({ dataUrl: canvas.toDataURL('image/png',0.9), width: canvas.width, height: canvas.height });
-        } catch(e){
-          res({ dataUrl, width: img.naturalWidth || 1200, height: img.naturalHeight || 800 });
-        }
-      };
-      img.onerror = ()=> res({ dataUrl: dataUrl, width: 1200, height: 800 });
-      img.src = dataUrl;
-    });
-  }
 
   async function createCanvasFromDataURL(dataUrl, maxDimension=1200){
     const img = new Image();
@@ -1058,9 +1030,6 @@
         updateCategoryVisibility();
         // loaded saved project => clear dirty flag
         clearDirty();
-        
-        const MIN_MASK_PX = 8;
-        const DEFAULT_MASK_ROTATION = 0;
       };
     });
   }

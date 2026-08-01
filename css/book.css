@@ -155,24 +155,6 @@ body.book-page .book-toolbar-btn:active{
   transform:translateY(1px);
 }
 
-body.book-page .book-toolbar-check{
-  appearance:none;
-  border:1px solid rgba(81, 90, 98, .12);
-  background:linear-gradient(180deg, rgba(255,255,255,.95) 0%, rgba(246,239,227,.97) 100%);
-  color:#2a3b46;
-  min-height:48px;
-  padding:8px 12px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:6px;
-  cursor:pointer;
-  transition:transform .15s ease, background .15s ease, filter .15s ease;
-  font-family:inherit;
-  font-size:14px;
-  font-weight:700;
-}
-
 body.book-page .book-review-complete-btn{
   appearance:none;
   width:100%;
@@ -216,21 +198,9 @@ body.book-page .book-review-complete-btn:disabled{
   }
 }
 
-body.book-page .book-toolbar-check--floating{
-  align-self:flex-start;
-  margin-left:clamp(18px, 2vw, 28px);
-  margin-top:-2px;
-  border-radius:999px;
-  box-shadow:0 8px 18px -14px rgba(74,58,36,.22), inset 0 1px 0 rgba(255,255,255,.55);
-}
 body.book-page .book-toolbar-check:hover{
   transform:translateY(-1px);
   background:linear-gradient(180deg, #ffffff 0%, #f3ecdf 100%);
-}
-body.book-page .book-toolbar-check input{
-  width:18px;
-  height:18px;
-  accent-color:#2b6ef6;
 }
 
 body.book-page .book-topbar__meta{
@@ -298,41 +268,13 @@ body.book-page .book-layout{
 /* ===== review feature ===== */
 body.book-page #btnReviewComplete,
 body.book-page .book-review-complete-btn,
-body.book-page .book-review-button{
-  appearance:none;
-  border:1px solid rgba(84, 142, 89, .18);
-  background:linear-gradient(180deg, #dbe8d5 0%, #bfd4bb 100%);
-  color:#36533b;
-  box-shadow:0 10px 20px -16px rgba(74,58,36,.28), inset 0 1px 0 rgba(255,255,255,.55);
-  cursor:pointer;
-  width:100%;
-  min-height:52px;
-  margin-top:12px;
-  border-radius:22px;
-  padding:11px 16px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:8px;
-  font-size:15px;
-  font-weight:800;
-  letter-spacing:.04em;
-  transition:transform .15s ease, filter .15s ease, box-shadow .15s ease, background .15s ease;
-}
 
 body.book-page #btnReviewComplete:hover,
 body.book-page .book-review-complete-btn:hover,
-body.book-page .book-review-button:hover{
-  transform:translateY(-1px);
-  filter:saturate(.98) brightness(1.01);
-  background:linear-gradient(180deg, #e0ecd9 0%, #c7d9c3 100%);
-}
+
 
 body.book-page #btnReviewComplete:active,
 body.book-page .book-review-complete-btn:active,
-body.book-page .book-review-button:active{
-  transform:translateY(1px);
-}
 
 body.book-page #btnReviewComplete:disabled,
 body.book-page .book-review-complete-btn:disabled,

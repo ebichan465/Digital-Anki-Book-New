@@ -247,10 +247,6 @@ body.study-page .book-card__cover-placeholder{
   box-shadow:inset 0 1px 0 rgba(255,255,255,.55);
 }
 
-body.study-page .book-card__body{
-  display:none;
-}
-
 body.study-page .book-card__title{
   position:absolute;
   left:50%;
@@ -292,35 +288,6 @@ body.study-page .book-card__controls{
   display:flex;
   flex-direction:column;
   gap:8px;
-}
-body.study-page .book-card__weak-toggle,
-body.study-page .book-card__delete-toggle{
-  position: absolute;
-  left: 40%;
-  transform: translateX(-50%);
-  bottom: 8px;
-  z-index: 2;
-  background: transparent;
-  border: none;
-  padding: 0;
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  font-size:10px;
-  font-weight:700;
-  color:#40525c;
-}
-body.study-page .book-card__weak-toggle input,
-body.study-page .book-card__delete-toggle input{
-  width:18px;
-  height:18px;
-  accent-color:#2b6ef6;
-}
-body.study-page .book-card__categories{
-  font-size:12px;
-  line-height:1.35;
-  color:#6b6d70;
-  word-break:break-word;
 }
 
 body.study-page .study-sheet-backdrop{

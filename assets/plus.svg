@@ -2,7 +2,7 @@
 
   <g transform="translate(6 6) scale(0.8)">
 
-    <circle cx="40" cy="40" r="27" fill="#44589cff"/>
+    <circle cx="40" cy="40" r="30" fill="#44589cff"/>
     <path d="M40 28v24M28 40h24"
           stroke="#ffffff"
           stroke-width="4"

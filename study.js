@@ -34,7 +34,6 @@
     sortOrder: 'new',
     deleteMode: false,
     selectedDeleteIds: new Set(),
-    sheetType: null,
   };
 
   const DISPLAY_LABELS = {
@@ -210,8 +209,6 @@ function isTodayReviewTarget(book, now = Date.now()) {
   }
 
   function openSheet(type) {
-    state.sheetType = type;
-
     if (!sheetBackdrop || !sheetTitle || !sheetDescription || !sheetOptions) return;
 
     sheetTitle.textContent = type === 'sort' ? '並び替え' : '表示';
@@ -266,7 +263,6 @@ function isTodayReviewTarget(book, now = Date.now()) {
   }
 
   function closeSheet() {
-    state.sheetType = null;
     if (!sheetBackdrop) return;
     sheetBackdrop.classList.add('hidden');
     sheetBackdrop.setAttribute('aria-hidden', 'true');

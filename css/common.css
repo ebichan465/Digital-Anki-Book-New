@@ -48,38 +48,6 @@ p {
     font-size:25px;
 }
 
-/* 左カラム（メイン領域） */
-.main-col{
-  flex:1;
-  min-width:640px;
-}
-
-/* 右カラム（説明） */
-.side-col{
-  width:320px;
-}
-
-/* ヘッダー下のボタン群 */
-.action-area{
-  margin:18px 0;
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-  align-items:center;
-}
-
-/* 用途ごとにボタンをまとめる */
-.tool-group {
-  display:flex;
-  gap:12px;
-  align-items:center;
-}
-
-/* 2つのtool-groupの間隔をさらに広げる */
-.tool-group + .tool-group {
-  margin-left:56px; /* was 28px, now doubled */
-}
-
 /* 28pxを2倍にした */
 .big-btn{
   padding:12px 10px;
@@ -166,117 +134,6 @@ p {
   user-select: none;
 }
 
-/* テキストボックスのスタイル */
-.text-box {
-  position:absolute;
-  background:#fff;
-  z-index: 50; /* 編集モードではマスクを文字より前面に見せる */
-}
-.text-box-inner {
-  pointer-events:none;
-}
-
-/* 編集ページのツールバー */
-.editor-tools{
-  margin-top:12px;
-  display:flex;
-  gap:10px;
-  align-items:center;
-}
-
-/* 学習ページのプロジェクト一覧 */
-.project-card{
-  border:1px solid #e6e9ef;
-  padding:8px;
-  margin-bottom:12px;
-  background:#fff;
-}
-
-/* アコーディオン見出し */
-.project-header {
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:8px;
-  cursor:pointer;
-  user-select:none;
-  border:1px solid #e6e9ef;
-  border-radius:6px;
-  background:#fff;
-  margin-bottom:6px;
-}
-
-/* 見出しのタイトル/日時 */
-.project-header .title {
-  font-weight:600;
-}
-
-/* 見出し内のカテゴリチップ */
-.category-chip {
-  display:inline-block;
-  font-size:0.8rem;
-  padding:4px 8px;
-  border-radius:12px;
-  background:#eef6ff;
-  color:#0b66d1;
-  margin-left:8px;
-  border:1px solid #d6eaff;
-}
-
-/* カテゴリアイコン（小） */
-.category-icon {
-  display:inline-block;
-  width:20px;
-  height:20px;
-  line-height:20px;
-  text-align:center;
-  border-radius:50%;
-  background:#f0f6ff;
-  color:#0b66d1;
-  font-size:12px;
-  margin-left:8px;
-  cursor:help;
-}
-
-/* 見出し内の削除アイコン */
-.delete-icon{
-  background:transparent;
-  border:none;
-  cursor:pointer;
-  font-size:16px;
-  line-height:1;
-  padding:4px;
-  border-radius:6px;
-  color:#c44;
-}
-.delete-icon:hover{
-  background:rgba(200,100,100,0.08);
-}
-
-.project-header input[type="checkbox"]{
-  transform: scale(2); 
-  transform-origin: center;
-  margin: 0 8px;
-  width: 18px;
-  height: 18px;
-  /* 周囲要素（見出し）のpaddingで押せる範囲を広げる */
-}
-
-/* 折りたたみ内容 */
-.project-content {
-  display:none;
-  padding:8px;
-  border:1px solid #eee;
-  background:#fafafa;
-  border-radius:6px;
-  margin-bottom:12px;
-}
-
-/* 開いたとき */
-.project-card.open .project-content {
-  display:block;
-}
-
 /* テキスト挿入用モーダル */
 .modal{
   position:fixed;
@@ -298,30 +155,8 @@ p {
   box-shadow: 0 6px 24px rgba(0,0,0,0.2);
 }
 
-/* 全画面ボタン（学習） */
-.fullscreen-btn {
-  padding:8px 12px;
-  font-size:0.95rem;
-  border-radius:8px;
-  border:1px solid #ccc;
-  background:#fff;
-  cursor:pointer;
-}
-
 /* 補助用の小さなクラス */
 .hidden { display:none !important; }
-.note-box{
-  padding:12px;
-  border:1px dashed #ddd;
-  background:#fbfbff;
-  border-radius:8px;
-}
-
-.footer-note{
-  margin-top:18px;
-  color:#666;
-  font-size:0.9rem;
-}
 
 button,
 .big-btn,
@@ -354,55 +189,6 @@ input[type="color"]::-moz-color-swatch{
   border-radius:4px;
 }
 
-.review-summary{
-  margin: 0 0 12px 0;
-  padding: 12px 14px;
-  border:1px solid #f2d36b;
-  background:#fffdf0;
-  border-radius:10px;
-  font-weight:600;
-}
-.review-chip{
-  display:inline-block;
-  margin-left:8px;
-  padding:3px 8px;
-  border-radius:999px;
-  border:1px solid #f2d36b;
-  background:#fff7d1;
-  color:#7a5a00;
-  font-size:0.78rem;
-  font-weight:700;
-}
-.review-panel-actions{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  margin-top:8px;
-}
-.review-complete-btn{
-  padding:8px 12px;
-  border-radius:8px;
-  border:1px solid #d9b600;
-  background:#fff7a8;
-  color:#5f4a00;
-  cursor:pointer;
-  font-weight:700;
-}
-.review-complete-btn:hover{
-  background:#fff18a;
-}
-.study-mask{
-  border:2px dashed #ffeb3b;
-  box-sizing:border-box;
-}
-.study-mask.is-hidden{
-  background: transparent !important;
-  opacity: 1 !important;
-}
-.study-mask.is-visible{
-  opacity: 1 !important;
-}
-
 /* スマホ向け調整 */
 @media (max-width: 768px){
   header{
@@ -419,15 +205,6 @@ input[type="color"]::-moz-color-swatch{
     align-items:stretch;
   }
 
-  .main-col,
-  .side-col{
-    width:100%;
-    min-width:0;
-  }
-
-  .main-col > div[style*="display:flex"]{
-    flex-wrap:wrap;
-  }
 
   .home-action-btn{
     padding:15px 16px;
@@ -444,33 +221,6 @@ input[type="color"]::-moz-color-swatch{
     font-size:16px;
   }
 
-  .how-to-use{
-    margin-top:24px;
-    max-width:100%;
-  }
-  .how-to-use h2{
-    font-size:22px;
-  }
-  .how-to-use ol{
-    font-size:15px;
-    line-height:1.6;
-  }
-
-  .action-area{
-    margin:14px 0;
-    gap:8px;
-  }
-
-  .tool-group{
-    flex-wrap:wrap;
-    gap:8px;
-  }
-
-  .tool-group + .tool-group{
-    margin-left:0;
-    margin-top:8px;
-  }
-
   .big-btn{
     padding:11px 12px;
     font-size:15px;
@@ -483,41 +233,6 @@ input[type="color"]::-moz-color-swatch{
 
   .image-area{
     min-height:280px;
-  }
-
-  .note-box{
-    padding:10px;
-  }
-
-  .project-header{
-    flex-wrap:wrap;
-    gap:8px;
-  }
-
-  .project-header .title{
-    font-size:1rem;
-  }
-
-  .project-header .meta{
-    font-size:0.82rem;
-  }
-
-  .project-header input[type="checkbox"]{
-    transform:scale(1.6);
-    margin:0 4px;
-  }
-
-  .project-content{
-    min-height:220px;
-  }
-
-  .project-content > div{
-    flex-wrap:wrap;
-  }
-
-  .project-content .fullscreen-btn{
-    padding:8px 10px;
-    font-size:0.9rem;
   }
 
   .modal .modal-content{
@@ -574,7 +289,6 @@ body.study-page button,
 body.study-page .study-toolbar-btn,
 body.study-page .study-delete-panel__button,
 body.study-page .study-sheet__option,
-body.study-page .study-sheet__close,
 body.book-page button,
 body.book-page .book-toolbar-btn{
   font-family: inherit;
