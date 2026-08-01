@@ -2,7 +2,7 @@
 body.home-page{
   min-height:100%;
   font-family: "Klee One", "Yuji Syuku", "Yomogi", "Hannotate SC", "Segoe Print", "Bradley Hand", cursive;
-  color:#34424a;
+  color:#5F7EA6;
   background-color:#fbf7ed;
   background-image:
     radial-gradient(circle at 18% 16%, rgba(255,255,255,.58), transparent 26%),
@@ -56,14 +56,14 @@ body.home-page::before{
   font-weight:700;
   font-family: "Noto Sans JP", "Yu Gothic", "Hiragino Sans", sans-serif;
   letter-spacing:.05em;
-  color:#041888;
+  color:#5F7EA6;
   text-shadow:0 1px 0 rgba(255,255,255,.55);
 }
 
 .home-subtitle{
   margin:2px 0 0;
   font-size:clamp(14px, 4vw, 18px);
-  color:#041888;
+  color:#5F7EA6;
   font-weight:600;
   letter-spacing:.04em;
 }
