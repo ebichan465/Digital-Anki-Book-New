@@ -1,47 +1,64 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400" fill="none">
+  <defs>
+    <filter id="shadow" x="-12%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="2.5" dy="3.5" stdDeviation="3" flood-color="#000000" flood-opacity=".12"/>
+    </filter>
+  </defs>
 
-  <!-- 表紙 -->
-  <rect
-    x="0"
-    y="0"
-    width="300"
-    height="400"
-    fill="#8F8F8F"/>
+  <g filter="url(#shadow)">
+    <!-- 表紙 -->
+    <rect
+      x="0"
+      y="0"
+      width="298"
+      height="396"
+      fill="#8F8F8F"/>
 
-  <!-- 左の綴じ部分（単色） -->
-  <rect
-    x="0"
-    y="0"
-    width="22"
-    height="400"
-    fill="#767676"/>
+    <!-- 左の綴じ部分（単色） -->
+    <rect
+      x="0"
+      y="0"
+      width="22"
+      height="396"
+      fill="#767676"/>
 
-  <!-- 折り目 -->
-  <rect
-    x="22"
-    y="0"
-    width="2"
-    height="400"
-    fill="#6B6B6B"
-    opacity="0.55"/>
+    <!-- 折り目 -->
+    <rect
+      x="22"
+      y="0"
+      width="2"
+      height="396"
+      fill="#6B6B6B"
+      opacity="0.55"/>
 
-  <!-- タイトル記入欄 -->
-  <line
-    x1="58"
-    y1="72"
-    x2="255"
-    y2="72"
-    stroke="#727272"
-    stroke-width="2.2"
-    stroke-linecap="round"/>
+    <!-- タイトル記入欄 -->
+    <line
+      x1="58"
+      y1="72"
+      x2="255"
+      y2="72"
+      stroke="#727272"
+      stroke-width="2.2"
+      stroke-linecap="round"/>
 
-  <line
-    x1="58"
-    y1="108"
-    x2="255"
-    y2="108"
-    stroke="#727272"
-    stroke-width="2.2"
-    stroke-linecap="round"/>
+    <line
+      x1="58"
+      y1="108"
+      x2="255"
+      y2="108"
+      stroke="#727272"
+      stroke-width="2.2"
+      stroke-linecap="round"/>
+  </g>
 
+  <!-- 右側の紙の断面 -->
+  <rect x="298" y="0" width="2" height="396" fill="#F0F0F0"/>
+  <rect x="298" y="0" width="0.8" height="396" fill="#D8D8D8" opacity=".8"/>
+
+  <!-- 下側の紙の断面 -->
+  <rect x="0" y="396" width="300" height="4" fill="#D6D6D6"/>
+  <rect x="0" y="396" width="298" height="0.8" fill="#AFAFAF" opacity=".85"/>
+
+  <!-- 右下の角の厚み -->
+  <rect x="298" y="396" width="2" height="4" fill="#D2D2D2"/>
 </svg>

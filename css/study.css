@@ -179,7 +179,6 @@ body.study-page .book-card{
   background:none;
   box-shadow:none;
   border:none;
-  backdrop-filter: blur(2px);
   transition:transform .16s ease, box-shadow .16s ease, filter .16s ease;
 }
 
@@ -210,8 +209,7 @@ body.study-page .book-card__open:active{
 body.study-page .book-card__cover{
   position:relative;
   aspect-ratio: 0.95;
-  background:
-  linear-gradient(180deg, rgba(255,255,255,.68) 0%, rgba(246,239,227,.94) 100%);
+  background: transparent;
   align-items:center;
   overflow:hidden;
 }

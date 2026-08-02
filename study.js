@@ -268,6 +268,21 @@ function isTodayReviewTarget(book, now = Date.now()) {
     sheetBackdrop.setAttribute('aria-hidden', 'true');
   }
 
+    if (sheetOptions) {
+    sheetOptions.addEventListener('click', (ev) => {
+      const button = ev.target.closest('button[data-value]');
+      if (!button) return;
+
+      const value = button.dataset.value || 'all';
+
+      if (value === 'new' || value === 'old') {
+        setSortOrder(value);
+      } else {
+        setDisplayFilter(value);
+      }
+    });
+  }
+  
   function updateDeletePanel() {
     const count = state.selectedDeleteIds.size;
 
