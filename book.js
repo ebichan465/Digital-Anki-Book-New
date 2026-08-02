@@ -232,7 +232,6 @@ function normalizeReview(review, createdAt) {
         bookEmpty.classList.add('hidden');
       }
     }
-    updateReviewButton();
   }
 
   function updateReviewButton() {
@@ -286,9 +285,10 @@ function completeReviewStage() {
   };
 
   persistCurrentBook();
-  updateReviewButton();
+  setBookState();
   showReviewCompleteToast();
 }
+
   function clearMaskElements() {
     maskEntries.forEach((entry) => {
       if (entry.el && entry.el.parentNode) {
