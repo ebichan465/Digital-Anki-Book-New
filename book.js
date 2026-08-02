@@ -18,6 +18,8 @@
   const btnDeleteImage = document.getElementById('btnDeleteImage');
   const btnReviewComplete = document.getElementById('btnReviewComplete');
   const bookWeakCheckbox = document.getElementById('bookWeakCheckbox');
+  const reviewCompleteToast = document.getElementById('reviewCompleteToast');
+  let reviewCompleteToastTimer = null;
   
 
   let currentBook = null;
@@ -251,6 +253,22 @@ function normalizeReview(review, createdAt) {
   btnReviewComplete.disabled = !shouldShow;
 }
 
+function showReviewCompleteToast() {
+  if (!reviewCompleteToast) return;
+
+  if (reviewCompleteToastTimer) {
+    clearTimeout(reviewCompleteToastTimer);
+    reviewCompleteToastTimer = null;
+  }
+
+  reviewCompleteToast.classList.remove('hidden');
+
+  reviewCompleteToastTimer = window.setTimeout(() => {
+    reviewCompleteToast.classList.add('hidden');
+    reviewCompleteToastTimer = null;
+  }, 1000);
+}
+
 function completeReviewStage() {
   if (!currentBook) return;
 
@@ -269,7 +287,8 @@ function completeReviewStage() {
 
   persistCurrentBook();
   updateReviewButton();
-}  
+  showReviewCompleteToast();
+}
   function clearMaskElements() {
     maskEntries.forEach((entry) => {
       if (entry.el && entry.el.parentNode) {

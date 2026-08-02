@@ -284,6 +284,40 @@ body.book-page .book-review-button:disabled{
   transform:none;
 }
 
+body.book-page .review-complete-toast{
+  position:fixed;
+  inset:0;
+  display:grid;
+  place-items:center;
+  pointer-events:none;
+  z-index:2000;
+}
+
+body.book-page .review-complete-toast__icon{
+  width:clamp(72px, 18vw, 120px);
+  height:auto;
+  display:block;
+  animation:review-complete-pop 1s ease both;
+}
+
+@keyframes review-complete-pop{
+  0%{
+    transform:scale(.75);
+    opacity:0;
+  }
+  15%{
+    opacity:1;
+  }
+  75%{
+    transform:scale(1);
+    opacity:1;
+  }
+  100%{
+    transform:scale(1.05);
+    opacity:0;
+  }
+}
+
 @media (max-width: 768px){
   body.book-page #btnReviewComplete,
   body.book-page .book-review-complete-btn,
