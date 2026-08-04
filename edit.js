@@ -156,6 +156,11 @@
     return 'image/jpeg';
   }
 
+  function syncImageAreaState(){
+    if (!imageArea || !mainImage) return;
+    imageArea.classList.toggle('has-image', !!mainImage.getAttribute('src'));
+  }
+
   // Insert label "色" between image selection button and colorPicker (do it dynamically so HTML doesn't need editing)
   (function insertColorLabelOnce(){
     try {
@@ -736,6 +741,7 @@
 
   function loadImage(dataUrl){
     mainImage.src = dataUrl;
+    syncImageAreaState();
     masks.forEach(m=> m.el && m.el.remove());
     masks = [];
     selectedMaskId = null;
@@ -979,6 +985,7 @@
       masks.forEach(m=> m.el && m.el.remove());
       masks = [];
       mainImage.src = currentProject.imageDataUrl;
+      syncImageAreaState();
       mainImage.onload = ()=>{
         if (!Array.isArray(currentProject.categories)) currentProject.categories = [];
         if (Array.isArray(currentProject.masks)) {

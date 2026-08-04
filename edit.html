@@ -30,11 +30,6 @@
     <main class="edit-layout">
       <section class="edit-main">
         <div class="edit-toolbar edit-toolbar--primary" id="editTools" role="toolbar" aria-label="編集ツール">
-          <button id="btnChooseImage" class="tool-card" type="button">
-            <img src="assets/picture.svg" alt="画像選択" class="tool-card__icon">
-            <span class="tool-card__label">画像<br>選択</span>
-          </button>
-
           <button id="btnInsertText" class="tool-card" type="button">
             <img src="assets/text.svg" alt="テキスト" class="tool-card__icon">
             <span class="tool-card__label">テキスト</span>
@@ -54,14 +49,17 @@
             <img src="assets/delete.svg" alt="削除" class="tool-card__icon">
             <span class="tool-card__label">削除</span>
           </button>
-
         </div>
 
-        <div class="edit-paper-shell">
-          <div class="edit-hole-strip" aria-hidden="true"></div>
+        <div class="edit-book">
+          <div class="edit-book__page edit-book__page--left" aria-hidden="true"></div>
 
-          <div class="edit-paper">
+          <div class="edit-book__page edit-book__page--right">
             <div class="image-area edit-canvas" id="imageArea">
+              <button id="btnChooseImage" class="image-picker-card" type="button">
+                <img src="assets/picture.svg" alt="" class="image-picker-card__icon" aria-hidden="true">
+                <span class="image-picker-card__label">画像<br>選択</span>
+              </button>
               <img id="mainImage" alt="画像がここに表示されます" />
             </div>
           </div>

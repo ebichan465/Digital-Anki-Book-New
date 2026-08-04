@@ -146,7 +146,7 @@ body.edit-page .edit-sidebar{
 
 body.edit-page .edit-toolbar--primary{
   display:grid;
-  grid-template-columns:repeat(5, minmax(0, 1fr));
+  grid-template-columns:repeat(4, minmax(0, 1fr));
   gap:0;
   border-radius:22px;
   overflow:hidden;
@@ -208,35 +208,50 @@ body.edit-page .tool-card__label{
   letter-spacing:.04em;
 }
 
-body.edit-page .edit-paper-shell{
-  position:relative;
-  padding-left:24px;
+body.edit-page .edit-book{
+  display:grid;
+  grid-template-columns:minmax(0, 15fr) minmax(0, 85fr);
+  gap:12px;
+  align-items:stretch;
   margin-bottom:24px;
 }
 
-body.edit-page .edit-hole-strip{
-  position:absolute;
-  left:0;
-  top:10px;
-  bottom:10px;
-  width:18px;
-  border-radius:999px;
-  background:
-    radial-gradient(circle at center, rgba(255,255,255,.98) 0 4px, rgba(195, 179, 153, .95) 4.3px 5.1px, transparent 5.2px)
-    center 16px / 100% 32px repeat-y;
-  box-shadow: inset -1px 0 0 rgba(0,0,0,.03);
-  pointer-events:none;
-  opacity:.95;
-}
-
-body.edit-page .edit-paper{
-  min-height:calc(320px + 4px);
-  padding:18px 16px 20px 28px;
+body.edit-page .edit-book__page{
+  min-height:320px;
+  border:1px solid rgba(81, 90, 98, .12);
   border-radius:28px;
   background:rgba(255,255,255,.34);
   box-shadow:
     0 24px 40px -26px rgba(74,58,36,.45),
     inset 0 1px 0 rgba(255,255,255,.48);
+  overflow:hidden;
+}
+
+body.edit-page .edit-book__page--left{
+  background:
+    repeating-linear-gradient(
+      180deg,
+      rgba(167,177,185,.14) 0 1px,
+      transparent 1px 32px
+    ),
+    linear-gradient(180deg,#fbf7ed 0%,#f5ecd9 100%);
+}
+
+body.edit-page .edit-book__page--right{
+  padding:16px;
+}
+
+body.edit-page .image-area{
+  position:relative;
+  min-height:320px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  box-sizing:border-box;
+  padding:clamp(16px, 2vw, 24px);
+  background:url("../assets/paper.svg") center center / contain no-repeat;
+  border:none;
 }
 
 body.edit-page .edit-canvas{
@@ -245,15 +260,55 @@ body.edit-page .edit-canvas{
   display:flex;
   align-items:center;
   justify-content:center;
-  overflow:visible;
-  background:transparent;
+  overflow:hidden;
   border:none;
 }
 
 body.edit-page .edit-canvas img{
   display:block;
   max-width:100%;
+  max-height:100%;
   height:auto;
+  object-fit:contain;
+}
+
+body.edit-page .image-picker-card{
+  appearance:none;
+  border:none;
+  background:
+    radial-gradient(circle at 50% 38%, rgba(255,255,255,.55), transparent 44%),
+    linear-gradient(180deg, rgba(255,255,255,.34) 0%, rgba(246,239,227,.36) 100%);
+  position:absolute;
+  inset:0;
+  z-index:2;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  cursor:pointer;
+  color:#44628A;
+  padding:0;
+}
+
+body.edit-page .image-picker-card__icon{
+  width:72px;
+  height:72px;
+  display:block;
+  object-fit:contain;
+  opacity:.85;
+}
+
+body.edit-page .image-picker-card__label{
+  font-size:clamp(13px, 2.6vw, 16px);
+  font-weight:700;
+  line-height:1.1;
+  letter-spacing:.04em;
+  text-align:center;
+}
+
+body.edit-page .image-area.has-image .image-picker-card{
+  display:none;
 }
 
 body.edit-page .edit-toolbar--secondary{
@@ -540,10 +595,6 @@ body.edit-page .hidden{
     gap:14px;
   }
 
-  body.edit-page .edit-toolbar--primary{
-    grid-template-columns:repeat(5, minmax(0, 1fr));
-  }
-
   body.edit-page .tool-card{
     min-height:72px;
     padding:9px 4px 8px;
@@ -551,20 +602,6 @@ body.edit-page .hidden{
 
   body.edit-page .tool-card__label{
     font-size:10.5px;
-  }
-
-  body.edit-page .edit-paper-shell{
-    padding-left:20px;
-  }
-
-  body.edit-page .edit-hole-strip{
-    width:16px;
-  }
-
-  body.edit-page .edit-paper{
-    padding:16px 12px 18px 24px;
-    border-radius:24px;
-    margin-bottom:24px;
   }
 
   body.edit-page .edit-canvas{
@@ -603,5 +640,43 @@ body.edit-page .hidden{
   body.edit-page .project-panel,
   body.edit-page .edit-panel{
     padding:12px 14px 14px;
+  }
+
+  body.edit-page .edit-toolbar--primary{
+    grid-template-columns:repeat(4, minmax(0, 1fr));
+  }
+
+  body.edit-page .edit-book{
+    gap:10px;
+  }
+
+  body.edit-page .edit-book__page{
+    min-height:300px;
+    border-radius:24px;
+  }
+
+  body.edit-page .edit-book__page--right{
+    padding:12px;
+  }
+  body.edit-page .edit-book__page--right{
+  padding:12px;
+}
+
+  body.edit-page .image-area{
+    min-height:300px;
+  }
+
+  body.edit-page .image-picker-card__icon{
+    width:60px;
+    height:60px;
+  }
+
+  body.edit-page .image-area{
+    min-height:300px;
+  }
+
+  body.edit-page .image-picker-card__icon{
+    width:60px;
+    height:60px;
   }
 }
