@@ -210,16 +210,17 @@ body.edit-page .tool-card__label{
 
 body.edit-page .edit-book{
   display:flex;
-  justify-content:flex-start;
+  justify-content:center;
   align-items:flex-start;
   padding:18px 0 0 12px;
+  width:120%;   /* ←100%ではなく広げる */
 }
 
 body.edit-page .image-area{
   position:relative;
-  width:min(100%, 840px);
-  min-height:320px;
-  overflow:hidden;
+  width:120%;       /* ←100%から大きくする */
+  min-height:1000px;/* ←800pxから大きくする */
+  overflow:visible; /* ←hiddenをvisibleに */
   box-sizing:border-box;
   padding:0;
   border:none;
@@ -228,10 +229,13 @@ body.edit-page .image-area{
 
 body.edit-page .paper-frame{
   position:absolute;
-  left:-2%;
+  left:8%;
   top:18px;
-  width:104%;
+
+  /* ← この2つでPC版の大きさを調整 */
+  width:102%;
   height:calc(100% - 18px);
+
   object-fit:contain;
   object-position:left top;
   pointer-events:none;
@@ -647,6 +651,7 @@ body.edit-page .hidden{
 
   body.edit-page .edit-book{
     gap:10px;
+    padding:12px 0 0 8px;
   }
 
   body.edit-page .edit-book__page{
@@ -656,18 +661,6 @@ body.edit-page .hidden{
 
   body.edit-page .edit-book__page--right{
     padding:12px;
-  }
-  body.edit-page .edit-book__page--right{
-  padding:12px;
-}
-
-  body.edit-page .image-area{
-    min-height:300px;
-  }
-
-  body.edit-page .image-picker-card__icon{
-    width:60px;
-    height:60px;
   }
 
   body.edit-page .image-picker-card__icon{
@@ -682,10 +675,6 @@ body.edit-page .hidden{
   bottom:7%;
 }
 
-body.edit-page .edit-book{
-  padding:12px 0 0 8px;
-}
-
 body.edit-page .image-area{
   width:min(100%, 760px);
   min-height:300px;
@@ -694,6 +683,8 @@ body.edit-page .image-area{
 body.edit-page .paper-frame{
   left:-1%;
   top:14px;
+
+  /* ← この2つでスマホ版の大きさを調整 */
   width:102%;
   height:calc(100% - 14px);
 }

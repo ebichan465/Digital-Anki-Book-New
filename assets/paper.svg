@@ -1,101 +1,50 @@
-<!-- note.svg / paper.svg -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 700" fill="none">
+<!-- paper.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6912 3015" fill="none">
   <defs>
-    <linearGradient id="pageFillLeft" x1="72" y1="64" x2="242" y2="636" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#ffffff"/>
-      <stop offset="1" stop-color="#f6f6f4"/>
-    </linearGradient>
-
-    <linearGradient id="pageFillRight" x1="242" y1="70" x2="930" y2="636" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#ffffff"/>
-      <stop offset="1" stop-color="#f4f4f2"/>
-    </linearGradient>
-
-    <!-- 綴じ目: 左→右で薄くなる -->
-    <linearGradient id="spineShadowLeft" x1="228" y1="64" x2="242" y2="64" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#2f2f2f" stop-opacity="0"/>
-      <stop offset=".55" stop-color="#2f2f2f" stop-opacity=".30"/>
-      <stop offset="1" stop-color="#2f2f2f" stop-opacity=".55"/>
-    </linearGradient>
-
-    <linearGradient id="spineShadowRight" x1="242" y1="70" x2="256" y2="70" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#2f2f2f" stop-opacity=".40"/>
-      <stop offset=".62" stop-color="#2f2f2f" stop-opacity=".18"/>
-      <stop offset="1" stop-color="#2f2f2f" stop-opacity="0"/>
-    </linearGradient>
-
-    <linearGradient id="bottomThickness" x1="72" y1="636" x2="930" y2="656" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#d2d2d2"/>
-      <stop offset=".52" stop-color="#c0c0c0"/>
-      <stop offset="1" stop-color="#b0b0b0"/>
-    </linearGradient>
-
-    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="140%">
-      <feDropShadow dx="0" dy="7" stdDeviation="7" flood-color="#000000" flood-opacity=".10"/>
-    </filter>
+    <mask id="holesMask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse">
+      <rect x="0" y="0" width="6912" height="3015" fill="white"/>
+      <circle cx="112" cy="126" r="64" fill="black"/>
+      <circle cx="112" cy="382" r="64" fill="black"/>
+      <circle cx="112" cy="638" r="64" fill="black"/>
+      <circle cx="112" cy="894" r="64" fill="black"/>
+      <circle cx="112" cy="1150" r="64" fill="black"/>
+      <circle cx="112" cy="1406" r="64" fill="black"/>
+      <circle cx="112" cy="1662" r="64" fill="black"/>
+      <circle cx="112" cy="1918" r="64" fill="black"/>
+      <circle cx="112" cy="2174" r="64" fill="black"/>
+      <circle cx="112" cy="2430" r="64" fill="black"/>
+      <circle cx="112" cy="2686" r="64" fill="black"/>
+      <circle cx="112" cy="2942" r="64" fill="black"/>
+    </mask>
   </defs>
 
-  <!-- desk shadow -->
-  <ellipse cx="505" cy="664" rx="360" ry="16" fill="#000000" opacity=".08"/>
+  <!-- paper -->
+  <rect x="0" y="0" width="6912" height="3015" fill="#ffffff" mask="url(#holesMask)"/>
 
-  <g filter="url(#softShadow)">
-    <!-- left page -->
-    <rect x="72" y="64" width="170" height="572" fill="url(#pageFillLeft)"/>
-
-    <!-- right page -->
-    <rect x="242" y="70" width="688" height="566" fill="url(#pageFillRight)"/>
+  <!-- ruled lines -->
+  <g mask="url(#holesMask)" stroke="#cfd3d8" stroke-width="1.2" stroke-linecap="round" opacity=".75">
+    <path d="M200 118H6856"/>
+    <path d="M200 270H6856"/>
+    <path d="M200 422H6856"/>
+    <path d="M200 574H6856"/>
+    <path d="M200 726H6856"/>
+    <path d="M200 878H6856"/>
+    <path d="M200 1030H6856"/>
+    <path d="M200 1182H6856"/>
+    <path d="M200 1334H6856"/>
+    <path d="M200 1486H6856"/>
+    <path d="M200 1638H6856"/>
+    <path d="M200 1790H6856"/>
+    <path d="M200 1942H6856"/>
+    <path d="M200 2094H6856"/>
+    <path d="M200 2246H6856"/>
+    <path d="M200 2398H6856"/>
+    <path d="M200 2550H6856"/>
+    <path d="M200 2702H6856"/>
+    <path d="M200 2854H6856"/>
+    <path d="M200 3006H6856"/>
   </g>
 
-  <!-- spine shadow split left/right -->
-  <rect x="228" y="64" width="14" height="572" fill="url(#spineShadowLeft)"/>
-  <rect x="242" y="70" width="14" height="566" fill="url(#spineShadowRight)"/>
-
-  <!-- thin highlight at the join -->
-  <rect x="241.5" y="64" width="1" height="572" fill="#ffffff" opacity=".12"/>
-
-  <!-- bottom thickness -->
-  <rect x="72" y="636" width="858" height="20" rx="0" ry="0" fill="url(#bottomThickness)"/>
-
-  <!-- paper stack lines -->
-  <g stroke-linecap="round">
-    <path d="M82 640H920" stroke="#a8a8a8" stroke-width="1" opacity=".58"/>
-    <path d="M82 644H920" stroke="#5a5959ff" stroke-width="1" opacity=".54"/>
-    <path d="M82 648H920" stroke="#9f9f9f" stroke-width="1" opacity=".52"/>
-    <path d="M82 652H920" stroke="#d9d9d9" stroke-width="1" opacity=".46"/>
-  </g>
-
-  <!-- ruling on left page -->
-  <g stroke="#cfd3d8" stroke-width="1.15" stroke-linecap="round" opacity=".52">
-    <path d="M104 118C146 115 190 115 242 118"/>
-    <path d="M104 155C146 152 190 152 242 155"/>
-    <path d="M104 192C146 189 190 189 242 192"/>
-    <path d="M104 229C146 226 190 226 242 229"/>
-    <path d="M104 266C146 263 190 263 242 266"/>
-    <path d="M104 303C146 300 190 300 242 303"/>
-    <path d="M104 340C146 337 190 337 242 340"/>
-    <path d="M104 377C146 374 190 374 242 377"/>
-    <path d="M104 414C146 411 190 411 242 414"/>
-    <path d="M104 451C146 448 190 448 242 451"/>
-    <path d="M104 488C146 485 190 485 242 488"/>
-    <path d="M104 525C146 522 190 522 242 525"/>
-    <path d="M104 562C146 559 190 559 242 562"/>
-  </g>
-
-  <!-- ruling on right page -->
-  <g stroke="#c8ccd2" stroke-width="1.15" stroke-linecap="round" opacity=".58">
-    <path d="M320 108H892"/>
-    <path d="M320 145H892"/>
-    <path d="M320 182H892"/>
-    <path d="M320 219H892"/>
-    <path d="M320 256H892"/>
-    <path d="M320 293H892"/>
-    <path d="M320 330H892"/>
-    <path d="M320 367H892"/>
-    <path d="M320 404H892"/>
-    <path d="M320 441H892"/>
-    <path d="M320 478H892"/>
-    <path d="M320 515H892"/>
-    <path d="M320 552H892"/>
-    <path d="M320 589H892"/>
-  </g>
+  <!-- subtle left edge guide -->
+  <rect x="48" y="0" width="2" height="3015" fill="#e7eaee" opacity=".7"/>
 </svg>
