@@ -1,50 +1,74 @@
 <!-- paper.svg -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6912 3015" fill="none">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 5408 5767" fill="none">
   <defs>
     <mask id="holesMask" maskUnits="userSpaceOnUse" maskContentUnits="userSpaceOnUse">
-      <rect x="0" y="0" width="6912" height="3015" fill="white"/>
+      <rect x="0" y="0" width="5408" height="5767" fill="white"/>
       <circle cx="112" cy="126" r="64" fill="black"/>
-      <circle cx="112" cy="382" r="64" fill="black"/>
-      <circle cx="112" cy="638" r="64" fill="black"/>
-      <circle cx="112" cy="894" r="64" fill="black"/>
-      <circle cx="112" cy="1150" r="64" fill="black"/>
+      <circle cx="112" cy="446" r="64" fill="black"/>
+      <circle cx="112" cy="766" r="64" fill="black"/>
+      <circle cx="112" cy="1086" r="64" fill="black"/>
       <circle cx="112" cy="1406" r="64" fill="black"/>
-      <circle cx="112" cy="1662" r="64" fill="black"/>
-      <circle cx="112" cy="1918" r="64" fill="black"/>
-      <circle cx="112" cy="2174" r="64" fill="black"/>
-      <circle cx="112" cy="2430" r="64" fill="black"/>
+      <circle cx="112" cy="1726" r="64" fill="black"/>
+      <circle cx="112" cy="2046" r="64" fill="black"/>
+      <circle cx="112" cy="2366" r="64" fill="black"/>
       <circle cx="112" cy="2686" r="64" fill="black"/>
-      <circle cx="112" cy="2942" r="64" fill="black"/>
+      <circle cx="112" cy="3006" r="64" fill="black"/>
+      <circle cx="112" cy="3326" r="64" fill="black"/>
+      <circle cx="112" cy="3646" r="64" fill="black"/>
+      <circle cx="112" cy="3966" r="64" fill="black"/>
+      <circle cx="112" cy="4286" r="64" fill="black"/>
+      <circle cx="112" cy="4606" r="64" fill="black"/>
+      <circle cx="112" cy="4926" r="64" fill="black"/>
+      <circle cx="112" cy="5246" r="64" fill="black"/>
+      <circle cx="112" cy="5566" r="64" fill="black"/>
     </mask>
   </defs>
 
   <!-- paper -->
-  <rect x="0" y="0" width="6912" height="3015" fill="#ffffff" mask="url(#holesMask)"/>
+  <rect x="0" y="0" width="5408" height="5767" fill="#ffffff" mask="url(#holesMask)"/>
 
   <!-- ruled lines -->
   <g mask="url(#holesMask)" stroke="#cfd3d8" stroke-width="1.2" stroke-linecap="round" opacity=".75">
-    <path d="M200 118H6856"/>
-    <path d="M200 270H6856"/>
-    <path d="M200 422H6856"/>
-    <path d="M200 574H6856"/>
-    <path d="M200 726H6856"/>
-    <path d="M200 878H6856"/>
-    <path d="M200 1030H6856"/>
-    <path d="M200 1182H6856"/>
-    <path d="M200 1334H6856"/>
-    <path d="M200 1486H6856"/>
-    <path d="M200 1638H6856"/>
-    <path d="M200 1790H6856"/>
-    <path d="M200 1942H6856"/>
-    <path d="M200 2094H6856"/>
-    <path d="M200 2246H6856"/>
-    <path d="M200 2398H6856"/>
-    <path d="M200 2550H6856"/>
-    <path d="M200 2702H6856"/>
-    <path d="M200 2854H6856"/>
-    <path d="M200 3006H6856"/>
+    <path d="M56 118H5352"/>
+    <path d="M56 270H5352"/>
+    <path d="M56 422H5352"/>
+    <path d="M56 574H5352"/>
+    <path d="M56 726H5352"/>
+    <path d="M56 878H5352"/>
+    <path d="M56 1030H5352"/>
+    <path d="M56 1182H5352"/>
+    <path d="M56 1334H5352"/>
+    <path d="M56 1486H5352"/>
+    <path d="M56 1638H5352"/>
+    <path d="M56 1790H5352"/>
+    <path d="M56 1942H5352"/>
+    <path d="M56 2094H5352"/>
+    <path d="M56 2246H5352"/>
+    <path d="M56 2398H5352"/>
+    <path d="M56 2550H5352"/>
+    <path d="M56 2702H5352"/>
+    <path d="M56 2854H5352"/>
+    <path d="M56 3006H5352"/>
+    <path d="M56 3158H5352"/>
+    <path d="M56 3310H5352"/>
+    <path d="M56 3462H5352"/>
+    <path d="M56 3614H5352"/>
+    <path d="M56 3766H5352"/>
+    <path d="M56 3918H5352"/>
+    <path d="M56 4070H5352"/>
+    <path d="M56 4222H5352"/>
+    <path d="M56 4374H5352"/>
+    <path d="M56 4526H5352"/>
+    <path d="M56 4678H5352"/>
+    <path d="M56 4830H5352"/>
+    <path d="M56 4982H5352"/>
+    <path d="M56 5134H5352"/>
+    <path d="M56 5286H5352"/>
+    <path d="M56 5438H5352"/>
+    <path d="M56 5590H5352"/>
+    <path d="M56 5742H5352"/>
   </g>
 
   <!-- subtle left edge guide -->
-  <rect x="48" y="0" width="2" height="3015" fill="#e7eaee" opacity=".7"/>
+  <rect x="48" y="0" width="2" height="5767" fill="#e7eaee" opacity=".7"/>
 </svg>
