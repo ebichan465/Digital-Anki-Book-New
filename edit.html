@@ -22,9 +22,15 @@
         <h1>マスクをつくる</h1>
       </div>
 
-      <button id="btnSave" class="edit-topbar-btn edit-topbar-btn--save" type="button">
-        <span class="edit-topbar-btn__text">保存</span>
-      </button>
+      <div class="edit-topbar__actions">
+        <button id="btnUndo" class="edit-topbar-btn edit-topbar-btn--undo" type="button" disabled>
+          <span class="edit-topbar-btn__text">元に戻す</span>
+        </button>
+
+        <button id="btnSave" class="edit-topbar-btn edit-topbar-btn--save" type="button" disabled>
+          <span class="edit-topbar-btn__text">保存</span>
+        </button>
+      </div>
     </div>
 
     <main class="edit-layout">
@@ -32,7 +38,7 @@
         <div class="edit-toolbar edit-toolbar--primary" id="editTools" role="toolbar" aria-label="編集ツール">
           <button id="btnInsertText" class="tool-card" type="button">
             <img src="assets/text.svg" alt="テキスト" class="tool-card__icon">
-            <span class="tool-card__label">テキスト</span>
+            <span class="tool-card__label">テキスト追加</span>
           </button>
 
           <button id="btnAddMask" class="tool-card" type="button">
@@ -124,25 +130,12 @@
       <div class="modal-content">
         <h3 style="margin-top:0;">テキスト挿入</h3>
 
-        <div style="display:flex; gap:8px; margin-bottom:8px;">
-          <div style="flex:1;">
-            <label style="font-size:0.9rem;">キャンバス幅 (px)</label>
-            <input id="textCanvasWidth" type="number" value="1200" min="200" max="4096" style="width:100%; margin-top:4px;" />
-          </div>
-          <div style="width:160px;">
-            <label style="font-size:0.9rem;">キャンバス高さ (px)</label>
-            <input id="textCanvasHeight" type="number" value="400" min="100" max="4096" style="width:100%; margin-top:4px;" />
-          </div>
-        </div>
-
         <label style="font-size:0.9rem;">フォントサイズ (px)</label>
         <input id="textFontSize" type="number" value="32" min="8" max="200" style="width:100%; margin-bottom:8px;" />
 
-        <label style="font-size:0.9rem;">文字色</label>
-        <input id="textColorPicker" type="color" value="#000000" style="width:100%; margin-bottom:8px; height:40px;" />
-
         <label style="font-size:0.9rem;">テキスト（改行可）</label>
         <textarea id="textInputArea" rows="6" style="width:100%; margin-bottom:8px;"></textarea>
+
         <div style="display:flex; gap:8px; justify-content:flex-end;">
           <button id="btnInsertCancel" class="secondary-btn" type="button">キャンセル</button>
           <button id="btnInsertConfirm" class="big-btn" type="button">挿入</button>

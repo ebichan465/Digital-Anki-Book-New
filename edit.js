@@ -10,6 +10,7 @@
   const btnDeleteSelected = getEl('btnDeleteSelected');
   const btnSave = getEl('btnSave');
   const btnBack = getEl('btnBack');
+  const btnUndo = getEl('btnUndo');
   const projectSelect = getEl('projectSelect');
   const btnLoad = getEl('btnLoad');
   const btnDeleteProject = getEl('btnDeleteProject');
@@ -28,9 +29,6 @@
   const textModal = getEl('textModal');
   const textInputArea = getEl('textInputArea');
   const textFontSize = getEl('textFontSize');
-  const textCanvasWidth = getEl('textCanvasWidth');
-  const textCanvasHeight = getEl('textCanvasHeight');
-  const textColorPicker = getEl('textColorPicker');
   const btnInsertCancel = getEl('btnInsertCancel');
   const btnInsertConfirm = getEl('btnInsertConfirm');
 
@@ -45,6 +43,99 @@
   let currentProject = null;
   let defaultShape = shapeSelect ? shapeSelect.value : 'rect';
   let textBox = null;
+  let undoStack = [];
+  const MAX_UNDO = 80;
+
+  function cloneMaskForUndo(m) {
+    return {
+      id: m.id,
+      x: m.x,
+      y: m.y,
+      w: m.w,
+      h: m.h,
+      rotation: normalizeRotation(m.rotation),
+      visible: (m.visible === undefined) ? true : Boolean(m.visible),
+      color: m.color || '#000000',
+      shape: m.shape || 'rect'
+    };
+  }
+
+  function syncSaveButtonState() {
+    if (!btnSave) return;
+    btnSave.disabled = !mainImage.src;
+  }
+
+  function syncTextButtonLabel() {
+    if (!btnInsertText) return;
+    const label = btnInsertText.querySelector('.tool-card__label');
+    if (label) label.textContent = textBox ? 'テキスト編集' : 'テキスト追加';
+  }
+
+  function pushUndoState() {
+    if (!mainImage.src) return;
+    undoStack.push({
+      masks: masks.map(cloneMaskForUndo),
+      selectedMaskId: selectedMaskId
+    });
+    if (undoStack.length > MAX_UNDO) undoStack.shift();
+    if (btnUndo) btnUndo.disabled = false;
+  }
+
+  function clearTextBox() {
+    if (textBox && textBox.el) {
+      textBox.el.remove();
+    }
+    textBox = null;
+    syncTextButtonLabel();
+  }
+
+function renderTextBox() {
+  if (textBox && textBox.el) {
+    textBox.el.remove();
+    textBox.el = null;
+  }
+  if (!textBox || !String(textBox.text || '').trim()) return;
+
+  const el = document.createElement('div');
+  el.className = 'text-box';
+  el.textContent = textBox.text;
+  el.style.left = `${(textBox.x ?? 0.08) * 100}%`;
+  el.style.top = `${(textBox.y ?? 0.08) * 100}%`;
+  el.style.width = `${(textBox.w ?? 0.84) * 100}%`;
+  el.style.minHeight = `${(textBox.h ?? 0.18) * 100}%`;
+  el.style.fontSize = `${textBox.fontSize || 32}px`;
+  el.style.lineHeight = String(textBox.lineHeight || 1.2);
+  imageArea.appendChild(el);
+  textBox.el = el;
+}
+
+  function restoreUndoState(state) {
+    masks.forEach(m => m.el && m.el.remove());
+    masks = [];
+
+    (state.masks || []).forEach((raw) => {
+      const m = {
+        id: raw.id || uid('m'),
+        x: raw.x,
+        y: raw.y,
+        w: raw.w,
+        h: raw.h,
+        rotation: normalizeRotation(raw.rotation),
+        visible: (raw.visible === undefined) ? true : Boolean(raw.visible),
+        color: raw.color || '#000000',
+        shape: raw.shape || 'rect'
+      };
+      masks.push(m);
+      renderMask(m);
+    });
+
+    selectedMaskId = state.selectedMaskId || null;
+
+    refreshAllMasks();
+    if (selectedMaskId) selectMask(selectedMaskId);
+    if (btnUndo) btnUndo.disabled = undoStack.length === 0;
+    markDirty(true);
+  }
 
   // --- NEW: dirty flag (未保存状態) ---
   // true = 編集している（保存されていない変更あり OR 新規に読み込んだ/作成したが未保存）
@@ -323,6 +414,7 @@
       if (selectedMaskId) {
         const m = masks.find(x=>x.id===selectedMaskId);
         if (m) {
+          pushUndoState();
           m.shape = defaultShape;
           if (m.el) {
             m.el.classList.remove('rect','circle');
@@ -464,9 +556,11 @@
     rotateHandle.addEventListener('touchmove', preventTouchScroll, { passive: false });
 
     el.addEventListener('pointerdown', (ev)=>{
-      ev.preventDefault();
-      lockPageScroll();
-      selectMask(m.id);
+    ev.preventDefault();
+    lockPageScroll();
+    selectMask(m.id);
+
+    pushUndoState();
 
       startClient = { x: ev.clientX, y: ev.clientY };
       startBox = {
@@ -567,6 +661,7 @@
       if (selectedMaskId) {
         const m = masks.find(x=>x.id === selectedMaskId);
         if (m) {
+          pushUndoState();
           m.color = c;
           if (m.el) m.el.style.background = c;
           markDirty(true); // color change => dirty
@@ -576,9 +671,10 @@
   }
 
   if (btnDeleteSelected) {
-    btnDeleteSelected.addEventListener('click', ()=>{
-      if (!selectedMaskId) return;
-      const idx = masks.findIndex(x=>x.id===selectedMaskId);
+  btnDeleteSelected.addEventListener('click', ()=>{
+    if (!selectedMaskId) return;
+    pushUndoState();
+    const idx = masks.findIndex(x=>x.id===selectedMaskId);
       if (idx>=0){
         const m = masks[idx];
         m.el && m.el.remove();
@@ -591,11 +687,12 @@
   }
 
   if (btnDuplicateMask) {
-    btnDuplicateMask.addEventListener('click', ()=>{
-      if (!selectedMaskId) { alert('マスクが選択されていません'); return; }
-      const orig = masks.find(x=>x.id===selectedMaskId);
-      if (!orig) return;
-      const imgRect = mainImage.getBoundingClientRect();
+  btnDuplicateMask.addEventListener('click', ()=>{
+    if (!selectedMaskId) { alert('マスクが選択されていません'); return; }
+    const orig = masks.find(x=>x.id===selectedMaskId);
+    if (!orig) return;
+    pushUndoState();
+    const imgRect = mainImage.getBoundingClientRect();
       const offsetX = Math.min(20, imgRect.width * 0.05) / imgRect.width;
       const offsetY = Math.min(20, imgRect.height * 0.05) / imgRect.height;
             const copy = {
@@ -619,6 +716,7 @@
   if (btnAddMask) {
     btnAddMask.addEventListener('click', ()=>{
       if (!mainImage.src) { alert('先に画像を読み込んでください'); return; }
+      pushUndoState();
       const rect = mainImage.getBoundingClientRect();
       const w = Math.min( Math.round(rect.width * 0.5), 800 );
       const h = Math.min( Math.round(rect.height * 0.12), 200 );
@@ -676,6 +774,9 @@
       updateCategoryVisibility();
     });
   }
+  syncSaveButtonState();
+  syncTextButtonLabel();
+  if (btnUndo) btnUndo.disabled = true;
 
   function fileToDataURL(file){
     return new Promise((res,rej)=>{
@@ -742,11 +843,11 @@
   function loadImage(dataUrl){
     mainImage.src = dataUrl;
     syncImageAreaState();
+    syncSaveButtonState();
     masks.forEach(m=> m.el && m.el.remove());
     masks = [];
     selectedMaskId = null;
     mainImage.onload = () => {
-
       setTimeout(refreshAllMasks, 40);
       updateCategoryVisibility();
     };
@@ -755,15 +856,18 @@
   // TEXT insertion UI: show modal
   if (btnInsertText) {
     btnInsertText.addEventListener('click', ()=>{
-      textInputArea.value = '';
-      textFontSize.value = 32;
-      textCanvasWidth.value = 1200;
-      textCanvasHeight.value = 400;
-      if (textColorPicker) textColorPicker.value = '#000000';
+      const existingText = textBox ? textBox.text : '';
+      const existingFontSize = textBox ? textBox.fontSize : 32;
+
+      textInputArea.value = existingText;
+      textFontSize.value = existingFontSize;
+
       textModal.classList.remove('hidden');
       textInputArea.focus();
+      syncTextButtonLabel();
     });
   }
+
   if (btnInsertCancel) btnInsertCancel.addEventListener('click', ()=> textModal.classList.add('hidden'));
 
   // robust text wrapping function that preserves explicit paragraph breaks
@@ -793,58 +897,78 @@
     return outLines;
   }
 
-  // create a text-only canvas (preserves paragraphs and wraps lines)
-  async function createTextCanvasData(text, fontSize, canvasW, canvasH, textColor){
-    const canvas = document.createElement('canvas');
-    canvas.width = canvasW;
-    canvas.height = canvasH;
-    const ctx = canvas.getContext('2d');
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0,0,canvasW,canvasH);
-    ctx.fillStyle = textColor || '#000000';
-    ctx.font = `${fontSize}px "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif`;
-    ctx.textBaseline = 'top';
-    const padding = 12;
-    const maxTextWidth = Math.max(16, canvasW - padding * 2);
-    const lines = wrapTextPreserveNewlines(ctx, text || '', maxTextWidth);
-    let y = padding;
-    const lineHeight = Math.round(fontSize * 1.2);
-    for (let i=0;i<lines.length;i++){
-      const line = lines[i];
-      if (line === '') {
-        y += lineHeight;
-        continue;
-      }
-      ctx.fillText(line, padding, y);
-      y += lineHeight;
-      if (y > canvasH - padding) break;
-    }
-    return { dataUrl: canvas.toDataURL('image/png', 0.95), width: canvasW, height: canvasH };
-  }
+  async function composeImageIfNeeded(){
+  if (!mainImage.src) return null;
+  if (!textBox || !String(textBox.text || '').trim()) return null;
 
-  if (btnInsertConfirm) {
-    btnInsertConfirm.addEventListener('click', async ()=>{
-      const text = textInputArea.value || '';
-      const fontSize = parseInt(textFontSize.value,10) || 32;
-      const canvasW = Math.max(200, parseInt(textCanvasWidth.value,10) || 1200);
-      const canvasH = Math.max(100, parseInt(textCanvasHeight.value,10) || 400);
-      const textColor = textColorPicker ? (textColorPicker.value || '#000000') : '#000000';
+  const baseImg = new Image();
+  await new Promise((resolve, reject) => {
+    baseImg.onload = resolve;
+    baseImg.onerror = reject;
+    baseImg.src = mainImage.src;
+  });
 
-      const textCanvasData = await createTextCanvasData(text, fontSize, canvasW, canvasH, textColor);
-      textModal.classList.add('hidden');
+  const width = baseImg.naturalWidth || mainImage.naturalWidth || mainImage.width || 1;
+  const height = baseImg.naturalHeight || mainImage.naturalHeight || mainImage.height || 1;
 
-      const canvasData = await createCanvasFromDataURL(textCanvasData.dataUrl, 1200);
-      loadImage(canvasData.dataUrl);
-      currentProject = { id: uid('proj'), name: 'text-image', imageDataUrl: canvasData.dataUrl, imageBaseWidth: canvasData.width, imageBaseHeight: canvasData.height, masks: [], categories: [], createdAt: Date.now() };
-      masks = [];
-      selectedMaskId = null;
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+
+  ctx.drawImage(baseImg, 0, 0, width, height);
+
+  const fontSize = textBox.fontSize || 32;
+  const lineHeight = Math.round(fontSize * (textBox.lineHeight || 1.2));
+  const x = Math.round((textBox.x ?? 0.08) * width);
+  const y = Math.round((textBox.y ?? 0.08) * height);
+  const maxWidth = Math.max(16, Math.round((textBox.w ?? 0.84) * width));
+
+  ctx.fillStyle = '#000000';
+  ctx.font = `${fontSize}px "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif`;
+  ctx.textBaseline = 'top';
+
+  const lines = wrapTextPreserveNewlines(ctx, textBox.text || '', maxWidth);
+  let cursorY = y;
+  lines.forEach(line => {
+    ctx.fillText(line, x, cursorY);
+    cursorY += lineHeight;
+  });
+
+  return { dataUrl: canvas.toDataURL('image/png'), width, height };
+}
+
+if (btnInsertConfirm) {
+  btnInsertConfirm.addEventListener('click', ()=>{
+    const text = textInputArea.value || '';
+    const fontSize = parseInt(textFontSize.value, 10) || 32;
+
+    if (!String(text).trim()) {
       clearTextBox();
-      await waitForImageLayout(mainImage, 300);
-      // new text-image is unsaved
+      textBox = null;
+      syncTextButtonLabel();
+      textModal.classList.add('hidden');
       markDirty(true);
-      updateCategoryVisibility();
-    });
-  }
+      return;
+    }
+
+    textBox = {
+      text,
+      fontSize,
+      lineHeight: 1.2,
+      x: textBox ? textBox.x : 0.08,
+      y: textBox ? textBox.y : 0.08,
+      w: textBox ? textBox.w : 0.84,
+      h: textBox ? textBox.h : 0.18,
+      el: null
+    };
+
+    renderTextBox();
+    syncTextButtonLabel();
+    textModal.classList.add('hidden');
+    markDirty(true);
+  });
+}
 
   function waitForImageLayout(imgEl, timeout=500){
     return new Promise((res) => {
@@ -864,12 +988,6 @@
       textBox.el.remove();
       textBox = null;
     }
-  }
-
-  async function composeImageIfNeeded(){
-    if (!mainImage.src) return null;
-    if (!textBox) return null;
-    return null;
   }
 
   if (btnSave) {
@@ -949,9 +1067,17 @@
           imageBaseWidth: baseW,
           imageBaseHeight: baseH,
           createdAt,
-          review: normalizeReviewForSave(currentProject.review, createdAt)
+          review: normalizeReviewForSave(currentProject.review, createdAt),
+          textBox: textBox ? {
+            text: textBox.text,
+            fontSize: textBox.fontSize,
+            lineHeight: textBox.lineHeight,
+            x: textBox.x,
+            y: textBox.y,
+            w: textBox.w,
+            h: textBox.h
+          } : null
         };
-
         const savedPayload = await persistProjectWithFallback(payload);
         if (!savedPayload) {
           alert('保存に失敗しました。端末の保存容量が不足している可能性があります。');
@@ -980,8 +1106,23 @@
       const p = all.find(x=>x.id===id);
       if (!p) { alert('プロジェクトが見つかりません'); return; }
       currentProject = JSON.parse(JSON.stringify(p));
+      textBox = currentProject.textBox ? {
+        text: currentProject.textBox.text || '',
+        fontSize: currentProject.textBox.fontSize || 32,
+        lineHeight: currentProject.textBox.lineHeight || 1.2,
+        x: currentProject.textBox.x ?? 0.08,
+        y: currentProject.textBox.y ?? 0.08,
+        w: currentProject.textBox.w ?? 0.84,
+        h: currentProject.textBox.h ?? 0.18,
+        el: null
+      } : null;
+
+      renderTextBox();
+      syncTextButtonLabel();
+      undoStack = [];
+      if (btnUndo) btnUndo.disabled = true;
+      syncSaveButtonState();
       refreshCurrentProjectReviewDefaults();
-      clearTextBox();
       masks.forEach(m=> m.el && m.el.remove());
       masks = [];
       mainImage.src = currentProject.imageDataUrl;
@@ -1069,6 +1210,17 @@
     });
   }
 
+  if (btnUndo) {
+  btnUndo.disabled = true;
+  btnUndo.addEventListener('click', () => {
+    const prev = undoStack.pop();
+    if (!prev) {
+      btnUndo.disabled = true;
+      return;
+    }
+    restoreUndoState(prev);
+  });
+  }
   window.addEventListener('resize', refreshAllMasks);
   mainImage.addEventListener('load', refreshAllMasks);
 

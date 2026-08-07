@@ -37,7 +37,7 @@ body.edit-page .edit-scene{
 
 body.edit-page .edit-topbar{
   display:grid;
-  grid-template-columns: 48px 1fr 48px;
+  grid-template-columns: 48px 1fr auto;
   align-items:center;
   gap:12px;
   padding:12px 14px;
@@ -46,6 +46,44 @@ body.edit-page .edit-topbar{
   background:rgba(251, 247, 237, .86);
   box-shadow:0 18px 28px -24px rgba(74, 58, 36, .35), inset 0 1px 0 rgba(255,255,255,.42);
   backdrop-filter: blur(4px);
+}
+
+body.edit-page .edit-topbar__actions{
+  justify-self:end;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+body.edit-page .edit-topbar-btn--undo{
+  border-radius:999px;
+  min-width:112px;
+  background:linear-gradient(180deg, #ffffff 0%, #f0eadf 100%);
+  border-color: rgba(68, 78, 88, .12);
+}
+
+body.edit-page .edit-topbar-btn--save:disabled{
+  opacity:.45;
+  color:#9aa0a6;
+  border-color:rgba(81, 90, 98, .10);
+  background:linear-gradient(180deg, #f1f1f1 0%, #e2e2e2 100%);
+  box-shadow:none;
+  cursor:not-allowed;
+  transform:none;
+}
+
+body.edit-page .edit-topbar-btn--save:disabled:hover{
+  transform:none;
+  filter:none;
+}
+
+body.edit-page .text-box{
+  position:absolute;
+  z-index:1;
+  white-space:pre-wrap;
+  color:#111;
+  pointer-events:none;
+  user-select:none;
 }
 
 body.edit-page .edit-topbar__title{
