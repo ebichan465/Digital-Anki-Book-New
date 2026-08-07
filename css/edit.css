@@ -216,7 +216,7 @@ body.edit-page .image-area{
   width:min(100%, 900px);
   min-height:1000px;
   box-sizing:border-box;
-  overflow:hidden;
+  overflow:visible;
   padding:28px 28px 28px 64px;
   border:none;
   border-radius:28px;
@@ -266,10 +266,14 @@ body.edit-page .image-area::after{
   bottom:22px;
   width:34px;
   pointer-events:none;
-  z-index:0;
+  z-index:2;
   background:
-    radial-gradient(circle at 16px 26px, transparent 0 7px, rgba(0,0,0,.16) 7px 8.5px, transparent 8.6px) 0 0 / 34px 58px repeat-y;
-  filter:drop-shadow(1px 0 0 rgba(0,0,0,.06));
+    radial-gradient(
+      circle at 16px 26px,
+      #f5ecd9 0 7px,
+      rgba(0,0,0,.16) 7px 8.5px,
+      transparent 8.6px
+    ) 0 0 / 34px 58px repeat-y;
 }
 
 body.edit-page .image-picker-card{
