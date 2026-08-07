@@ -14,11 +14,6 @@ body.edit-page::before{
   background-image:
     radial-gradient(circle at 18% 16%, rgba(255,255,255,.58), transparent 26%),
     radial-gradient(circle at 82% 12%, rgba(255,255,255,.28), transparent 24%),
-    repeating-linear-gradient(
-      180deg,
-      rgba(167,177,185,.14) 0 1px,
-      transparent 1px 32px
-    ),
     linear-gradient(180deg,#fbf7ed 0%,#f5ecd9 100%);
 }
 
@@ -225,8 +220,7 @@ body.edit-page .image-area{
   padding:28px 28px 28px 64px;
   border:none;
   border-radius:28px;
-  background:
-    linear-gradient(180deg, #fcf8ee 0%, #f5eddc 100%);
+  background:#ffffff;
   box-shadow:
     0 24px 40px -26px rgba(74, 58, 36, .35),
     inset 0 1px 0 rgba(255,255,255,.55);
@@ -274,7 +268,7 @@ body.edit-page .image-area::after{
   pointer-events:none;
   z-index:0;
   background:
-    radial-gradient(circle at 16px 26px, #fff 0 7px, rgba(0,0,0,.16) 7px 8.5px, transparent 8.6px) 0 0 / 34px 58px repeat-y;
+    radial-gradient(circle at 16px 26px, transparent 0 7px, rgba(0,0,0,.16) 7px 8.5px, transparent 8.6px) 0 0 / 34px 58px repeat-y;
   filter:drop-shadow(1px 0 0 rgba(0,0,0,.06));
 }
 
