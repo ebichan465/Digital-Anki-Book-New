@@ -12,21 +12,14 @@
   <div class="edit-scene">
     <div class="edit-topbar" aria-label="編集トップバー">
       <button id="btnBack" class="edit-topbar-btn edit-topbar-btn--back" type="button">
-        <img
-        src="assets/back.svg"
-        alt="戻る"
-        class="edit-topbar-btn__icon">
-    </button>
+        <img src="assets/back.svg" alt="戻る" class="edit-topbar-btn__icon">
+      </button>
 
       <div class="edit-topbar__title">
         <h1>マスクをつくる</h1>
       </div>
 
       <div class="edit-topbar__actions">
-        <button id="btnUndo" class="edit-topbar-btn edit-topbar-btn--undo" type="button" disabled>
-          <span class="edit-topbar-btn__text">元に戻す</span>
-        </button>
-
         <button id="btnSave" class="edit-topbar-btn edit-topbar-btn--save" type="button" disabled>
           <span class="edit-topbar-btn__text">保存</span>
         </button>
@@ -56,16 +49,22 @@
             <span class="tool-card__label">削除</span>
           </button>
         </div>
+
+        <div class="edit-main__back-row">
+          <button id="btnUndo" class="edit-topbar-btn edit-topbar-btn--undo" type="button" disabled>
+            <img src="assets/mask-back.svg" alt="元に戻す" class="edit-topbar-btn__icon">
+          </button>
+        </div>
+
         <div class="edit-book">
           <div class="image-area edit-canvas" id="imageArea">
             <button id="btnChooseImage" class="image-picker-card" type="button">
               <img src="assets/picture.svg" alt="" class="image-picker-card__icon" aria-hidden="true">
-              <span class="image-picker-card__label">画像<br>選択</span>
+              <span class="image-picker-card__label">タップして<br>画像を選択</span>
             </button>
             <img id="mainImage" alt="" />
           </div>
         </div>
-
         <div class="edit-toolbar edit-toolbar--secondary" aria-label="マスク設定">
           <section class="mask-settings-group mask-settings-group--color">
             <div class="mask-settings-title">マスクの色</div>
@@ -99,7 +98,7 @@
 
       <aside class="edit-sidebar">
         <details class="project-panel">
-          <summary class="panel-summary">保存しているプロジェクト</summary>
+          <summary class="panel-summary">保存している画像</summary>
           <div class="project-panel__body">
             <select id="projectSelect" class="project-select"></select>
             <div class="project-panel__actions">
@@ -110,7 +109,7 @@
         </details>
 
         <section class="edit-panel" id="categoryBox" style="display:none;">
-          <h4 class="panel-title">カテゴリを選択（複数可）</h4>
+          <h4 class="panel-title">カテゴリを選択</h4>
           <div id="categoryList" class="category-list"></div>
           <button id="btnNewCategory" class="secondary-btn edit-panel__button" type="button">新たなカテゴリ</button>
         </section>
@@ -130,10 +129,10 @@
       <div class="modal-content">
         <h3 style="margin-top:0;">テキスト挿入</h3>
 
-        <label style="font-size:0.9rem;">フォントサイズ (px)</label>
+        <label style="font-size:0.9rem;">フォントサイズ</label>
         <input id="textFontSize" type="number" value="32" min="8" max="200" style="width:100%; margin-bottom:8px;" />
 
-        <label style="font-size:0.9rem;">テキスト（改行可）</label>
+        <label style="font-size:0.9rem;">テキスト</label>
         <textarea id="textInputArea" rows="6" style="width:100%; margin-bottom:8px;"></textarea>
 
         <div style="display:flex; gap:8px; justify-content:flex-end;">

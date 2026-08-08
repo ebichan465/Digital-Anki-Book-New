@@ -1230,7 +1230,7 @@ if (btnInsertConfirm) {
     projectSelect.innerHTML = '';
     const emptyOpt = document.createElement('option');
     emptyOpt.value = '';
-    emptyOpt.textContent = '-- 保存プロジェクト --';
+    emptyOpt.textContent = 'タップして選択';
     projectSelect.appendChild(emptyOpt);
     all.forEach(p=>{
       const opt = document.createElement('option');
@@ -1242,7 +1242,7 @@ if (btnInsertConfirm) {
 
   if (btnNewCategory) {
     btnNewCategory.addEventListener('click', ()=>{
-      const name = prompt('カテゴリ名を入力してください（例: 英語,）');
+      const name = prompt('カテゴリ名を入力してください');
       if (!name) return;
       const cats = loadAllCategories();
       if (cats.includes(name)) {
