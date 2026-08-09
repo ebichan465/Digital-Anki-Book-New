@@ -42,7 +42,6 @@
   let selectedMaskId = null;
   let currentProject = null;
   let defaultShape = shapeSelect ? shapeSelect.value : 'rect';
-  let textBox = null;
   let undoStack = [];
   const MAX_UNDO = 80;
 
@@ -65,12 +64,6 @@
     btnSave.disabled = !mainImage.src;
   }
 
-  function syncTextButtonLabel() {
-    if (!btnInsertText) return;
-    const label = btnInsertText.querySelector('.tool-card__label');
-    if (label) label.textContent = textBox ? 'テキスト編集' : 'テキスト追加';
-  }
-
   function pushUndoState() {
     if (!mainImage.src) return;
     undoStack.push({
@@ -80,34 +73,6 @@
     if (undoStack.length > MAX_UNDO) undoStack.shift();
     if (btnUndo) btnUndo.disabled = false;
   }
-
-  function clearTextBox() {
-    if (textBox && textBox.el) {
-      textBox.el.remove();
-    }
-    textBox = null;
-    syncTextButtonLabel();
-  }
-
-function renderTextBox() {
-  if (textBox && textBox.el) {
-    textBox.el.remove();
-    textBox.el = null;
-  }
-  if (!textBox || !String(textBox.text || '').trim()) return;
-
-  const el = document.createElement('div');
-  el.className = 'text-box';
-  el.textContent = textBox.text;
-  el.style.left = `${(textBox.x ?? 0.08) * 100}%`;
-  el.style.top = `${(textBox.y ?? 0.08) * 100}%`;
-  el.style.width = `${(textBox.w ?? 0.84) * 100}%`;
-  el.style.minHeight = `${(textBox.h ?? 0.18) * 100}%`;
-  el.style.fontSize = `${textBox.fontSize || 32}px`;
-  el.style.lineHeight = String(textBox.lineHeight || 1.2);
-  imageArea.appendChild(el);
-  textBox.el = el;
-}
 
   function restoreUndoState(state) {
     masks.forEach(m => m.el && m.el.remove());
@@ -745,7 +710,6 @@ function renderTextBox() {
   if (btnChooseImage) {
     btnChooseImage.addEventListener('click', ()=> {
       currentProject = null;
-      clearTextBox();
       masks.forEach(m=> m.el && m.el.remove());
       masks = [];
       selectedMaskId = null;
@@ -753,7 +717,6 @@ function renderTextBox() {
         imageInput.value = '';
         imageInput.click();
       }
-      // Starting new image selection => unsaved until saved
       markDirty(true);
       updateCategoryVisibility();
     });
@@ -775,7 +738,6 @@ function renderTextBox() {
     });
   }
   syncSaveButtonState();
-  syncTextButtonLabel();
   if (btnUndo) btnUndo.disabled = true;
 
   function fileToDataURL(file){
@@ -806,7 +768,7 @@ function renderTextBox() {
     
     let outputDataUrl = dataUrl;
     try {
-      outputDataUrl = canvas.toDataURL(outputMime, quality);
+      outputDataUrl = canvas.toDataURL(outputMime, 0.95);
     } catch (e) {
       try {
         outputDataUrl = canvas.toDataURL('image/png');
@@ -856,15 +818,10 @@ function renderTextBox() {
   // TEXT insertion UI: show modal
   if (btnInsertText) {
     btnInsertText.addEventListener('click', ()=>{
-      const existingText = textBox ? textBox.text : '';
-      const existingFontSize = textBox ? textBox.fontSize : 32;
-
-      textInputArea.value = existingText;
-      textFontSize.value = existingFontSize;
-
+      textInputArea.value = '';
+      textFontSize.value = 32;
       textModal.classList.remove('hidden');
       textInputArea.focus();
-      syncTextButtonLabel();
     });
   }
 
@@ -897,76 +854,72 @@ function renderTextBox() {
     return outLines;
   }
 
-  async function composeImageIfNeeded(){
-  if (!mainImage.src) return null;
-  if (!textBox || !String(textBox.text || '').trim()) return null;
-
-  const baseImg = new Image();
-  await new Promise((resolve, reject) => {
-    baseImg.onload = resolve;
-    baseImg.onerror = reject;
-    baseImg.src = mainImage.src;
-  });
-
-  const width = baseImg.naturalWidth || mainImage.naturalWidth || mainImage.width || 1;
-  const height = baseImg.naturalHeight || mainImage.naturalHeight || mainImage.height || 1;
-
+  async function createTextImageData(text, fontSize){
   const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
+  canvas.width = 1200;
+  canvas.height = 400;
+
   const ctx = canvas.getContext('2d');
-
-  ctx.drawImage(baseImg, 0, 0, width, height);
-
-  const fontSize = textBox.fontSize || 32;
-  const lineHeight = Math.round(fontSize * (textBox.lineHeight || 1.2));
-  const x = Math.round((textBox.x ?? 0.08) * width);
-  const y = Math.round((textBox.y ?? 0.08) * height);
-  const maxWidth = Math.max(16, Math.round((textBox.w ?? 0.84) * width));
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 
   ctx.fillStyle = '#000000';
   ctx.font = `${fontSize}px "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif`;
   ctx.textBaseline = 'top';
 
-  const lines = wrapTextPreserveNewlines(ctx, textBox.text || '', maxWidth);
-  let cursorY = y;
-  lines.forEach(line => {
-    ctx.fillText(line, x, cursorY);
-    cursorY += lineHeight;
-  });
+  const padding = 12;
+  const maxTextWidth = Math.max(16, canvas.width - padding * 2);
+  const lines = wrapTextPreserveNewlines(ctx, text || '', maxTextWidth);
 
-  return { dataUrl: canvas.toDataURL('image/png'), width, height };
-}
+  let y = padding;
+  const lineHeight = Math.round(fontSize * 1.2);
 
-if (btnInsertConfirm) {
-  btnInsertConfirm.addEventListener('click', ()=>{
+  for (const line of lines){
+    if (y > canvas.height - padding) break;
+    ctx.fillText(line, padding, y);
+    y += lineHeight;
+  }
+
+  return {
+    dataUrl: canvas.toDataURL('image/png'),
+    width: canvas.width,
+    height: canvas.height
+  };
+  }
+
+
+  if (btnInsertConfirm) {
+  btnInsertConfirm.addEventListener('click', async ()=>{
     const text = textInputArea.value || '';
     const fontSize = parseInt(textFontSize.value, 10) || 32;
 
     if (!String(text).trim()) {
-      clearTextBox();
-      textBox = null;
-      syncTextButtonLabel();
-      textModal.classList.add('hidden');
-      markDirty(true);
       return;
     }
 
-    textBox = {
-      text,
-      fontSize,
-      lineHeight: 1.2,
-      x: textBox ? textBox.x : 0.08,
-      y: textBox ? textBox.y : 0.08,
-      w: textBox ? textBox.w : 0.84,
-      h: textBox ? textBox.h : 0.18,
-      el: null
+    const textCanvasData = await createTextImageData(text, fontSize);
+    textModal.classList.add('hidden');
+
+    loadImage(textCanvasData.dataUrl);
+
+    currentProject = {
+      id: uid('proj'),
+      name: 'text-image',
+      imageDataUrl: textCanvasData.dataUrl,
+      imageBaseWidth: textCanvasData.width,
+      imageBaseHeight: textCanvasData.height,
+      masks: [],
+      categories: [],
+      createdAt: Date.now()
     };
 
-    renderTextBox();
-    syncTextButtonLabel();
-    textModal.classList.add('hidden');
+    masks = [];
+    selectedMaskId = null;
+    undoStack = [];
+    if (btnUndo) btnUndo.disabled = true;
+
     markDirty(true);
+    updateCategoryVisibility();
   });
 }
 
@@ -981,13 +934,6 @@ if (btnInsertConfirm) {
       }
       check();
     });
-  }
-
-  function clearTextBox(){
-    if (textBox && textBox.el) {
-      textBox.el.remove();
-      textBox = null;
-    }
   }
 
   if (btnSave) {
@@ -1018,16 +964,8 @@ if (btnInsertConfirm) {
         refreshCurrentProjectReviewDefaults();
 
         let finalImageDataUrl = mainImage.src;
-        let baseW = undefined, baseH = undefined;
-        const composed = await composeImageIfNeeded();
-        if (composed) {
-          finalImageDataUrl = composed.dataUrl;
-          baseW = composed.width;
-          baseH = composed.height;
-        } else {
-          baseW = mainImage.naturalWidth || undefined;
-          baseH = mainImage.naturalHeight || undefined;
-        }
+        let baseW = mainImage.naturalWidth || undefined;
+        let baseH = mainImage.naturalHeight || undefined;
 
         const normalizedMasks = masks.map(m => ({
           id: m.id,
@@ -1067,16 +1005,7 @@ if (btnInsertConfirm) {
           imageBaseWidth: baseW,
           imageBaseHeight: baseH,
           createdAt,
-          review: normalizeReviewForSave(currentProject.review, createdAt),
-          textBox: textBox ? {
-            text: textBox.text,
-            fontSize: textBox.fontSize,
-            lineHeight: textBox.lineHeight,
-            x: textBox.x,
-            y: textBox.y,
-            w: textBox.w,
-            h: textBox.h
-          } : null
+          review: normalizeReviewForSave(currentProject.review, createdAt)
         };
         const savedPayload = await persistProjectWithFallback(payload);
         if (!savedPayload) {
@@ -1106,19 +1035,6 @@ if (btnInsertConfirm) {
       const p = all.find(x=>x.id===id);
       if (!p) { alert('プロジェクトが見つかりません'); return; }
       currentProject = JSON.parse(JSON.stringify(p));
-      textBox = currentProject.textBox ? {
-        text: currentProject.textBox.text || '',
-        fontSize: currentProject.textBox.fontSize || 32,
-        lineHeight: currentProject.textBox.lineHeight || 1.2,
-        x: currentProject.textBox.x ?? 0.08,
-        y: currentProject.textBox.y ?? 0.08,
-        w: currentProject.textBox.w ?? 0.84,
-        h: currentProject.textBox.h ?? 0.18,
-        el: null
-      } : null;
-
-      renderTextBox();
-      syncTextButtonLabel();
       undoStack = [];
       if (btnUndo) btnUndo.disabled = true;
       syncSaveButtonState();

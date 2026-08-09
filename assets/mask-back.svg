@@ -1,28 +1,15 @@
 <!-- mask-back.svg -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80" fill="none">
-
-  <!-- U-turn arrow -->
   <path
-    d="M12 50
-       H52
-       C70 50 70 18 52 18
-       H22"
+    d="M22 50H52C70 50 70 18 52 18H22"
     stroke="#16488A"
-    stroke-width="4"
+    stroke-width="6"
     stroke-linecap="round"
     stroke-linejoin="round"
   />
 
-  <!-- left-pointing arrowhead -->
   <path
-    d="M22 18
-       L29 13
-       M22 18
-       L29 23"
-    stroke="#16488A"
-    stroke-width="4"
-    stroke-linecap="round"
-    stroke-linejoin="round"
+    d="M14 18L30 10L30 26Z"
+    fill="#16488A"
   />
-
 </svg>
