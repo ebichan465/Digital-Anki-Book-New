@@ -174,9 +174,10 @@ body.book-page .book-review-complete-btn{
   transition:transform .15s ease, filter .15s ease, box-shadow .15s ease;
 }
 
-body.book-page .book-review-complete-btn:hover{
-  transform:translateY(-1px);
-  filter:saturate(.96) brightness(1.01);
+body.book-page .book-review-complete-btn:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+  transform:none;
 }
 
 body.book-page .book-review-complete-btn:active{
@@ -258,24 +259,6 @@ body.book-page .book-layout{
     margin-left:18px;
     font-size:13px;
   }
-}
-
-/* ===== review feature ===== */
-body.book-page #btnReviewComplete,
-body.book-page .book-review-complete-btn,
-
-body.book-page #btnReviewComplete:hover,
-body.book-page .book-review-complete-btn:hover,
-
-
-body.book-page #btnReviewComplete:active,
-body.book-page .book-review-complete-btn:active,
-
-body.book-page #btnReviewComplete:disabled,
-body.book-page .book-review-complete-btn:disabled{
-  opacity:.55;
-  cursor:not-allowed;
-  transform:none;
 }
 
 body.book-page .review-complete-toast{

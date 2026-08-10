@@ -232,7 +232,34 @@ function normalizeReview(review, createdAt) {
         bookEmpty.classList.add('hidden');
       }
     }
+    updateReviewButton();
   }
+  
+function updateReviewButton() {
+  if (!btnReviewComplete) return;
+
+  if (!currentBook) {
+    btnReviewComplete.classList.add('hidden');
+    btnReviewComplete.disabled = true;
+    return;
+  }
+
+  const activeImage = getActiveImageRecord();
+  const review = normalizeReview(currentBook.review, currentBook.createdAt);
+  const stage = getReviewStage(
+    review.createdAt ||
+    (activeImage && activeImage.createdAt) ||
+    currentBook.createdAt
+  );
+
+  const shouldShow =
+    !!(activeImage && activeImage.imageDataUrl) &&
+    stage > 0 &&
+    !review.completedStages.includes(stage);
+
+  btnReviewComplete.classList.toggle('hidden', !shouldShow);
+  btnReviewComplete.disabled = !shouldShow;
+}
 
 function showReviewCompleteToast() {
   if (!reviewCompleteToast) return;
@@ -271,14 +298,14 @@ function completeReviewStage() {
   showReviewCompleteToast();
 }
 
-  function clearMaskElements() {
-    maskEntries.forEach((entry) => {
-      if (entry.el && entry.el.parentNode) {
-        entry.el.parentNode.removeChild(entry.el);
-      }
-    });
-    maskEntries = [];
-  }
+function clearMaskElements() {
+  maskEntries.forEach((entry) => {
+     if (entry.el && entry.el.parentNode) {
+       entry.el.parentNode.removeChild(entry.el);
+     }
+  });
+  maskEntries = [];
+}
 
   function normalizeMaskModel(mask) {
   const safe = mask && typeof mask === 'object' ? mask : {};
