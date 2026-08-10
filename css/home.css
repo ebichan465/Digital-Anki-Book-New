@@ -125,19 +125,6 @@ body.home-page .home-action-btn::before{
   opacity:.56;
 }
 
-body.home-page .home-action-btn::after{
-  content:'';
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:-14px;
-  height:26px;
-  background:linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,0));
-  filter:blur(12px);
-  opacity:.30;
-  pointer-events:none;
-}
-
 body.home-page .home-action-btn--blue{
   --note-tilt:-4deg;
   --note-bg:#8fbfd2;
