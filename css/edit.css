@@ -726,15 +726,6 @@ body.edit-page .hidden{
     padding:12px 0 0 8px;
   }
 
-  body.edit-page .edit-book__page{
-    min-height:300px;
-    border-radius:24px;
-  }
-
-  body.edit-page .edit-book__page--right{
-    padding:12px;
-  }
-
   body.edit-page .image-picker-card__icon{
     width:60px;
     height:60px;

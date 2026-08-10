@@ -198,11 +198,6 @@ body.book-page .book-review-complete-btn:disabled{
   }
 }
 
-body.book-page .book-toolbar-check:hover{
-  transform:translateY(-1px);
-  background:linear-gradient(180deg, #ffffff 0%, #f3ecdf 100%);
-}
-
 body.book-page .book-topbar__meta{
   margin:4px 0 0;
   min-height:1.2em;
@@ -277,8 +272,7 @@ body.book-page #btnReviewComplete:active,
 body.book-page .book-review-complete-btn:active,
 
 body.book-page #btnReviewComplete:disabled,
-body.book-page .book-review-complete-btn:disabled,
-body.book-page .book-review-button:disabled{
+body.book-page .book-review-complete-btn:disabled{
   opacity:.55;
   cursor:not-allowed;
   transform:none;

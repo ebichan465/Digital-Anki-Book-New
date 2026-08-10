@@ -218,19 +218,6 @@
   }
 
   // Insert label "色" between image selection button and colorPicker (do it dynamically so HTML doesn't need editing)
-  (function insertColorLabelOnce(){
-    try {
-      if (!btnChooseImage || !colorPicker) return;
-      const existingLabel = colorPicker.previousSibling;
-      if (existingLabel && existingLabel.dataset && existingLabel.dataset.insertedColorLabel) return;
-      const label = document.createElement('span');
-      label.textContent = '色';
-      label.style.margin = '0 8px';
-      label.style.fontWeight = '600';
-      label.dataset.insertedColorLabel = '1';
-      colorPicker.parentNode && colorPicker.parentNode.insertBefore(label, colorPicker);
-    } catch(e){}
-  })();
 
   function refreshCategoryOptions(){
     const cats = loadAllCategories();
@@ -346,29 +333,6 @@
   currentProject.categories = checked.length ? Array.from(new Set(checked)) : [];
   markDirty(true);
 }
-
-  function deleteCategoryBySelection(){
-    const selected = Array.from(categoryList.querySelectorAll('input[type="checkbox"]:checked')).map(i=>i.value);
-    if (!selected.length) { alert('削除するカテゴリを選んでください'); return; }
-    const catName = selected[0];
-    if (!confirm(`カテゴリ "${catName}" を本当に削除しますか？\n`)) return;
-    const cats = loadAllCategories().filter(c => c !== catName);
-    saveAllCategories(cats);
-    const all = loadAllProjects();
-    let changed=false;
-    all.forEach(p=>{
-      if (!Array.isArray(p.categories)) p.categories = [];
-      if (p.categories.includes(catName)) {
-        p.categories = p.categories.filter(c => c !== catName);
-        changed = true;
-      }
-    });
-    if (changed) saveAllProjects(all);
-    refreshProjectSelect();
-    refreshCategoryOptions();
-    updateCategoryVisibility();
-    alert(`"${catName}" を削除しました。`);
-  }
 
   if (colorPicker) colorPicker.value = '#000000';
   defaultShape = shapeSelect ? shapeSelect.value : 'rect';
@@ -615,8 +579,14 @@
     selectedMaskId = id;
     refreshAllMasks();
     const m = masks.find(x=>x.id===id);
-    if (m && colorPicker) colorPicker.value = m.color || '#000000';
-    if (m && shapeSelect) shapeSelect.value = m.shape || 'rect';
+    if (m && colorPicker) {
+      colorPicker.value = m.color || '#000000';
+      colorPicker.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    if (m && shapeSelect) {
+      shapeSelect.value = m.shape || 'rect';
+      shapeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    }
     if (btnDeleteSelected) btnDeleteSelected.disabled = !selectedMaskId;
   }
 
@@ -923,19 +893,6 @@
   });
 }
 
-  function waitForImageLayout(imgEl, timeout=500){
-    return new Promise((res) => {
-      const start = Date.now();
-      function check(){
-        const r = imgEl.getBoundingClientRect();
-        if (r.width > 2 && r.height > 2) return res();
-        if (Date.now() - start > timeout) return res();
-        setTimeout(check, 40);
-      }
-      check();
-    });
-  }
-
   if (btnSave) {
     btnSave.addEventListener('click', async ()=>{
       try {
@@ -1172,10 +1129,6 @@
       markDirty(true); // adding category affects project selection UI -> consider unsaved
     });
   }
-
-  // NOTE: btnDeleteCategory removed from UI; function kept for backward compatibility but not wired
-  // if (btnDeleteCategory) { btnDeleteCategory.addEventListener('click', ()=> { deleteCategoryBySelection(); }); }
-
   // categoryList already wires checkbox change to mark dirty in refreshCategoryOptions
   // (no additional listener needed here)
 

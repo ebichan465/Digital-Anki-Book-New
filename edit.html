@@ -194,36 +194,6 @@
         syncShapeButtons(shapeSelect.value);
       });
     });
-
-    let lastColor = colorInput ? colorInput.value : '';
-    let lastShape = shapeSelect ? shapeSelect.value : '';
-
-    if (colorInput) {
-      colorInput.addEventListener('input', () => {
-        syncColorButtons(colorInput.value);
-        lastColor = colorInput.value;
-      });
-      syncColorButtons(colorInput.value || '#000000');
-    }
-
-    if (shapeSelect) {
-      shapeSelect.addEventListener('change', () => {
-        syncShapeButtons(shapeSelect.value);
-        lastShape = shapeSelect.value;
-      });
-      syncShapeButtons(shapeSelect.value || 'rect');
-    }
-
-    setInterval(() => {
-      if (colorInput && colorInput.value !== lastColor) {
-        lastColor = colorInput.value;
-        syncColorButtons(lastColor);
-      }
-      if (shapeSelect && shapeSelect.value !== lastShape) {
-        lastShape = shapeSelect.value;
-        syncShapeButtons(lastShape);
-      }
-    }, 120);
   })();
   </script>
 

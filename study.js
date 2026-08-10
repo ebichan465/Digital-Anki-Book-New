@@ -451,10 +451,6 @@ if (!hasAnyFilteredBooks) {
         }
         navigateToBook(book.id);
       });
-
-      const controls = document.createElement('div');
-      controls.className = 'book-card__controls';
-
       const weakLabel = document.createElement('label');
       weakLabel.className = 'book-card__weak-toggle';
 
@@ -480,7 +476,6 @@ if (!hasAnyFilteredBooks) {
       coverWrap.appendChild(weakLabel);
 
       card.appendChild(openButton);
-      card.appendChild(controls);
 
       booksList.appendChild(card);
     });

@@ -281,13 +281,6 @@ body.study-page .book-card__date{
 color:#353638;
 }
 
-body.study-page .book-card__controls{
-  padding:0 12px 12px;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
-
 body.study-page .study-sheet-backdrop{
   position:fixed;
   inset:0;
@@ -515,10 +508,6 @@ body.study-page .study-selection-bar__button--delete{
 
   body.study-page .book-card{
     border-radius:20px;
-  }
-
-  body.study-page .book-card__controls{
-    padding-top:0;
   }
 
   body.study-page .study-sheet-backdrop{

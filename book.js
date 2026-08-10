@@ -234,24 +234,6 @@ function normalizeReview(review, createdAt) {
     }
   }
 
-  function updateReviewButton() {
-  if (!btnReviewComplete) return;
-
-  if (!currentBook) {
-    btnReviewComplete.classList.add('hidden');
-    btnReviewComplete.disabled = true;
-    return;
-  }
-
-  const activeImage = getActiveImageRecord();
-  const review = normalizeReview(currentBook.review, currentBook.createdAt);
-  const stage = getReviewStage(review.createdAt || (activeImage && activeImage.createdAt) || currentBook.createdAt);
-  const shouldShow = !!(activeImage && activeImage.imageDataUrl) && stage > 0 && !review.completedStages.includes(stage);
-
-  btnReviewComplete.classList.toggle('hidden', !shouldShow);
-  btnReviewComplete.disabled = !shouldShow;
-}
-
 function showReviewCompleteToast() {
   if (!reviewCompleteToast) return;
 
@@ -318,10 +300,9 @@ function completeReviewStage() {
     const mask = entry.model;
     entry.el.classList.remove('rect', 'circle');
     entry.el.classList.add(mask.shape === 'circle' ? 'circle' : 'rect');
-    entry.el.style.background = mask.color || '#000000';
     entry.el.style.background = mask.visible
-  ? (mask.color || '#000000')
-  : 'transparent';
+      ? (mask.color || '#000000')
+      : 'transparent';
   }
 
   function waitForImageLayout(imgEl, timeout = 700) {
@@ -595,10 +576,6 @@ function completeReviewStage() {
   }
 
   function init() {
-    if (bookCanvas) {
-      bookCanvas.style.position = 'relative';
-    }
-
     if (btnBackStudy) {
       btnBackStudy.addEventListener('click', () => {
         location.href = 'study.html';
