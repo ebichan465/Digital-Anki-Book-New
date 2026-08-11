@@ -4,17 +4,8 @@ body.edit-page{
   color:#34424a;
   overflow-x:hidden;
   position:relative;
-}
-
-body.edit-page::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  z-index:-1;
-  background-image:
-    radial-gradient(circle at 18% 16%, rgba(255,255,255,.58), transparent 26%),
-    radial-gradient(circle at 82% 12%, rgba(255,255,255,.28), transparent 24%),
-    linear-gradient(180deg,#fbf7ed 0%,#f5ecd9 100%);
+  background:
+    url("../assets/desk.jpg") center center / cover no-repeat fixed;
 }
 
 body.edit-page button,
