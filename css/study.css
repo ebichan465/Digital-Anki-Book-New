@@ -129,6 +129,7 @@ body.study-page .study-delete-panel{
 body.study-page .study-delete-panel__info{
   font-weight:700;
   color:#16488A;
+  font-family:"Zen Kaku Gothic New", "Noto Sans JP", "Yu Gothic", "Hiragino Sans", sans-serif;
 }
 body.study-page .study-delete-panel__actions{
   display:flex;
