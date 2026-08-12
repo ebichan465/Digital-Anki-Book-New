@@ -276,7 +276,7 @@ input[type="color"]::-moz-color-swatch{
 body.study-page,
 body.book-page{
   min-height:100%;
-  font-family: "Klee One", "Yuji Syuku", "Yomogi", "Hannotate SC", "Segoe Print", "Bradley Hand", cursive;
+  font-family:"Zen Kaku Gothic New", "Noto Sans JP", "Yu Gothic", "Hiragino Sans", sans-serif;
   color:#30404a;
   overflow-x:hidden;
   position:relative;
@@ -334,7 +334,7 @@ body.book-page .book-topbar__title h1{
   font-size:clamp(20px, 4.2vw, 28px);
   font-weight:700;
   letter-spacing:.06em;
-  color:#44628A;
+  color:#16488A;
   text-shadow:0 1px 0 rgba(255,255,255,.45);
 }
 

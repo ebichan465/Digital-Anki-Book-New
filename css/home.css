@@ -1,7 +1,7 @@
 body.home-page{
   min-height:100%;
-  font-family: "Klee One", "Yuji Syuku", "Yomogi", "Hannotate SC", "Segoe Print", "Bradley Hand", cursive;
-  color:#4A82C7;
+  font-family:"Zen Kaku Gothic New", "Noto Sans JP", "Yu Gothic", "Hiragino Sans", sans-serif;
+  color:#16488A;
   background:
     url("../assets/desk.jpg") center center / cover no-repeat fixed;
   overflow-x:hidden;
@@ -34,7 +34,6 @@ body.home-page{
   margin:0;
   font-size:clamp(34px, 8.1vw, 37px);
   font-weight:700;
-  font-family: "Noto Sans JP", "Yu Gothic", "Hiragino Sans", sans-serif;
   letter-spacing:.05em;
   color:#16488A;
   text-shadow:0 1px 0 rgba(255,255,255,.55);

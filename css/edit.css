@@ -1,6 +1,6 @@
 body.edit-page{
   min-height:100%;
-  font-family: "Klee One", "Yuji Syuku", "Yomogi", "Hannotate SC", "Segoe Print", "Bradley Hand", cursive;
+  font-family:"Zen Kaku Gothic New", "Noto Sans JP", "Yu Gothic", "Hiragino Sans", sans-serif;
   color:#34424a;
   overflow-x:hidden;
   position:relative;
@@ -92,7 +92,7 @@ body.edit-page .edit-topbar__title h1{
   font-size:clamp(20px, 4.2vw, 28px);
   font-weight:700;
   letter-spacing:.06em;
-  color:#44628A;
+  color:#16488A;
   text-shadow:0 1px 0 rgba(255,255,255,.45);
 }
 
@@ -100,7 +100,7 @@ body.edit-page .edit-topbar-btn{
   appearance:none;
   border:1px solid rgba(68, 78, 88, .12);
   background:linear-gradient(180deg, #ffffff 0%, #f0eadf 100%);
-  color:#44628A;
+  color:#16488A;
   box-shadow:0 8px 18px -14px rgba(74,58,36,.28), inset 0 1px 0 rgba(255,255,255,.55);
   cursor:pointer;
   display:inline-flex;
@@ -203,7 +203,8 @@ body.edit-page .tool-card{
   border-right:1px solid rgba(81, 90, 98, .12);
   background:
     linear-gradient(180deg, rgba(255,255,255,.95) 0%, rgba(246,239,227,.97) 100%);
-  color:#44628A;
+  color:#16488A;
+  font-weight:700;
   min-height:78px;
   padding:10px 6px 9px;
   display:flex;
@@ -321,7 +322,7 @@ body.edit-page .image-area::after{
   background:
     radial-gradient(
       circle at 16px 26px,
-      #f5ecd9 0 7px,
+      #F9CB8D 0 7px,
       rgba(0,0,0,.16) 7px 8.5px,
       transparent 8.6px
     ) 0 0 / 34px 58px repeat-y;
@@ -342,7 +343,7 @@ body.edit-page .image-picker-card{
   justify-content:center;
   gap:10px;
   cursor:pointer;
-  color:#44628A;
+  color:#16488A;
   padding:0;
 }
 
@@ -390,7 +391,7 @@ body.edit-page .panel-title{
   font-size:14px;
   font-weight:700;
   letter-spacing:.03em;
-  color:#44628A;
+  color:#16488A;
   margin:0;
 }
 
@@ -479,7 +480,7 @@ body.edit-page .shape-btn{
   appearance:none;
   border:1px solid rgba(81, 90, 98, .14);
   background:linear-gradient(180deg, rgba(255,255,255,.95) 0%, rgba(246,239,227,.97) 100%);
-  color:#44628A;
+  color:#16488A;
   min-width:86px;
   min-height:72px;
   border-radius:18px;
@@ -533,7 +534,7 @@ body.edit-page .project-panel summary{
   justify-content:space-between;
   gap:10px;
   font-weight:700;
-  color:#44628A;
+  color:#16488A;
   font-size:14px;
 }
 
@@ -544,7 +545,7 @@ body.edit-page .project-panel summary::-webkit-details-marker{
 body.edit-page .project-panel summary::after{
   content:'▾';
   font-size:13px;
-  color:#44628A;
+  color:#16488A;
   transition:transform .15s ease;
 }
 
@@ -566,7 +567,7 @@ body.edit-page .project-select{
   border-radius:14px;
   border:1px solid rgba(81, 90, 98, .16);
   background:#fff;
-  color:#44628A;
+  color:#16488A;
 }
 
 body.edit-page .project-panel__actions{
@@ -580,7 +581,7 @@ body.edit-page .big-btn{
   border-radius:14px;
   border:1px solid rgba(81, 90, 98, .16);
   background:linear-gradient(180deg, #ffffff 0%, #f2ebdf 100%);
-  color:#44628A;
+  color:#16488A;
   box-shadow:0 8px 18px -14px rgba(74,58,36,.28), inset 0 1px 0 rgba(255,255,255,.55);
   cursor:pointer;
   transition:transform .15s ease, filter .15s ease, box-shadow .15s ease;

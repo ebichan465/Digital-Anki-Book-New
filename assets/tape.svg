@@ -1,13 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1530 750" fill="none">
   <defs>
     <linearGradient id="g" x1="0" y1="0" x2="0" y2="750" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#f0dfab"/>
-      <stop offset=".52" stop-color="#ecd596"/>
-      <stop offset="1" stop-color="#dfc56c"/>
+      <stop offset="0" stop-color="#AFC8D4"/>
+      <stop offset=".52" stop-color="#7FA6B8"/>
+      <stop offset="1" stop-color="#63899B"/>
     </linearGradient>
 
     <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#8f8f8f" flood-opacity=".10"/>
+      <feDropShadow
+        dx="0"
+        dy="8"
+        stdDeviation="8"
+        flood-color="#667C88"
+        flood-opacity=".10"/>
     </filter>
   </defs>
 
@@ -37,24 +42,17 @@
     opacity="0.90"
   />
 
-  <path
-    d="M120 200H1410"
-    stroke="#ffffff"
-    stroke-opacity=".20"
-    stroke-width="12"
-    stroke-linecap="round"
-  />
 
   <path
     d="M120 375H1410"
-    stroke="#d8c48f"
+    stroke="#6E92A3"
     stroke-opacity=".10"
     stroke-width="6"
   />
 
   <path
     d="M120 550H1410"
-    stroke="#bfa96f"
+    stroke="#557989"
     stroke-opacity=".06"
     stroke-width="6"
   />
