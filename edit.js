@@ -826,7 +826,7 @@
 
   async function createTextImageData(text, fontSize){
   const canvas = document.createElement('canvas');
-  canvas.width = 1200;
+  canvas.width = 1000;
   canvas.height = 400;
 
   const ctx = canvas.getContext('2d');

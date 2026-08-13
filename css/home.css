@@ -151,9 +151,9 @@ body.home-page .home-action-btn::after{
 
   left:-5%;
   right:-5%;
-  bottom:-14px;
+  bottom:-10px;
 
-  height:12px;
+  height:8px;
 
   background:rgba(55,42,25,.65);
   border-radius:50%;

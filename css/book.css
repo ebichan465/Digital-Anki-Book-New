@@ -12,42 +12,41 @@ body.book-page .book-main{
   position:relative;
 }
 
-body.book-page .book-paper-shell{
-  position:relative;
-  padding-left:24px;
-}
-body.book-page .book-hole-strip{
-  position:absolute;
-  left:0;
-  top:0;
-  bottom:0;
-  width:18px;
-  border-radius:999px;
-  background:
-    radial-gradient(circle at center, rgba(255,255,255,.98) 0 4px, rgba(195, 179, 153, .96) 4.3px 5.1px, transparent 5.2px)
-    center 18px / 100% 34px repeat-y;
-  box-shadow: inset -1px 0 0 rgba(0,0,0,.03);
-  pointer-events:none;
-  opacity:.95;
-}
 body.book-page .book-paper{
+  position:relative;
   min-height:calc(440px + 4px);
   padding:26px 16px 22px 28px;
   border-radius:28px;
-  background-color:#fbf7ed;
+  background-color:#ffffff;
   background-image:
-    radial-gradient(circle at 18% 18%, rgba(255,255,255,.58), transparent 26%),
-    radial-gradient(circle at 82% 12%, rgba(255,255,255,.28), transparent 24%),
     repeating-linear-gradient(
       180deg,
-      rgba(167, 177, 185, .14) 0 1px,
-      transparent 1px 32px
-    ),
-    linear-gradient(180deg, #fbf7ed 0%, #f5ecd9 100%);
+      transparent 0 31px,
+      rgba(139,156,171,.18) 31px 32px
+    );
   box-shadow:
     0 24px 40px -26px rgba(74,58,36,.45),
     inset 0 1px 0 rgba(255,255,255,.48);
 }
+
+body.book-page .book-paper::after{
+  content:'';
+  position:absolute;
+  left:14px;
+  top:22px;
+  bottom:22px;
+  width:34px;
+  pointer-events:none;
+  z-index:2;
+  background:
+    radial-gradient(
+      circle at 16px 26px,
+      #FBD3A0 0 7px,
+      rgba(0,0,0,.16) 7px 8.5px,
+      transparent 8.6px
+    ) 0 0 / 34px 58px repeat-y;
+}
+
 body.book-page .book-canvas{
   position:relative;
   min-height:440px;
@@ -62,6 +61,7 @@ body.book-page .book-canvas img{
   display:block;
   max-width:100%;
   height:auto;
+  transform:translateX(20px);
   box-shadow:0 10px 20px rgba(54,41,21,.16), 0 2px 5px rgba(54,41,21,.08);
 }
 body.book-page .book-empty{
@@ -216,14 +216,6 @@ body.book-page .hidden{
 @media (max-width: 768px){
 body.book-page .book-layout{
     gap:12px;
-  }
-
-  body.book-page .book-paper-shell{
-    padding-left:20px;
-  }
-
-  body.book-page .book-hole-strip{
-    width:16px;
   }
 
   body.book-page .book-paper{

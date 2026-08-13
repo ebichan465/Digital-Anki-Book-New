@@ -644,7 +644,7 @@ body.edit-page .hidden{
 
   body.edit-page .edit-topbar-btn--save{
     min-width:88px;
-    transform:translateX(10px)
+    transform:translateX(15px)
   }
 
   body.edit-page .edit-layout{
@@ -726,7 +726,7 @@ body.edit-page .hidden{
 
   body.edit-page .image-area{
   width:min(100%, 760px);
-  min-height:300px;
+  min-height:350px;
   padding:22px 20px 22px 54px;
   }
 }
