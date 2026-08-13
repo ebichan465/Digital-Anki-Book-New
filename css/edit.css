@@ -322,7 +322,7 @@ body.edit-page .image-area::after{
   background:
     radial-gradient(
       circle at 16px 26px,
-      #F9CB8D 0 7px,
+      #FBD3A0 0 7px,
       rgba(0,0,0,.16) 7px 8.5px,
       transparent 8.6px
     ) 0 0 / 34px 58px repeat-y;
@@ -644,6 +644,7 @@ body.edit-page .hidden{
 
   body.edit-page .edit-topbar-btn--save{
     min-width:88px;
+    transform:translateX(10px)
   }
 
   body.edit-page .edit-layout{
