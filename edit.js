@@ -1,6 +1,4 @@
 (() => {
-  const STORAGE_KEY = 'digital-anki-projects-v1';
-  const CATS_KEY = 'digital-anki-categories-v1';
   const getEl = id => document.getElementById(id);
   const imageInput = getEl('imageInput');
   const mainImage = getEl('mainImage');
@@ -173,14 +171,13 @@
   // ----- utils -----
   function uid(prefix='id'){ return prefix + '-' + Math.random().toString(36).slice(2,9); }
 
-  function loadAllProjects(){
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    try { return JSON.parse(raw).projects || []; } catch(e){ return []; }
+  async function loadAllProjects(){
+    return DigitalAnkiStorage.getAllProjects();
   }
-  function saveAllProjects(arr){
+
+  async function saveAllProjects(arr){
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({projects: arr}));
+      await DigitalAnkiStorage.saveProjects(arr);
       return true;
     } catch (e) {
       console.error('保存に失敗しました', e);
@@ -188,16 +185,13 @@
     }
   }
 
-  function loadAllCategories(){
-    const raw = localStorage.getItem(CATS_KEY);
-    if (!raw) {
-      const init = [];
-      localStorage.setItem(CATS_KEY, JSON.stringify({categories: init}));
-      return init;
-    }
-    try { return JSON.parse(raw).categories || []; } catch(e){ return []; }
+  async function loadAllCategories(){
+    return DigitalAnkiStorage.getAllCategories();
   }
-  function saveAllCategories(arr){ localStorage.setItem(CATS_KEY, JSON.stringify({categories: arr})); }
+
+  async function saveAllCategories(arr){
+    await DigitalAnkiStorage.saveAllCategories(arr);
+  }
 
   function getDataUrlMime(dataUrl){
     const match = /^data:([^;,]+)[;,]/.exec(dataUrl || '');
@@ -219,8 +213,8 @@
 
   // Insert label "色" between image selection button and colorPicker (do it dynamically so HTML doesn't need editing)
 
-  function refreshCategoryOptions(){
-    const cats = loadAllCategories();
+  async function refreshCategoryOptions(){
+    const cats = await loadAllCategories();
     categoryList.innerHTML = '';
     cats.forEach(cat => {
       const id = 'catchk-' + cat.replace(/\s+/g,'_') + '-' + Math.random().toString(36).slice(2,6);
@@ -252,26 +246,42 @@
       trash.style.padding = '4px';
       trash.style.marginLeft = '6px';
       trash.textContent = '🗑️';
-      trash.addEventListener('click', (ev)=>{
+      trash.addEventListener('click', async (ev)=>{
         ev.stopPropagation();
         if (!confirm(`本当にこのカテゴリを削除しますか？`)) return;
         // delete category: remove from global list, and remove from all projects; projects that had only this become categories = []
-        const catsAll = loadAllCategories().filter(c=>c !== cat);
-        saveAllCategories(catsAll);
-        const allProjects = loadAllProjects();
-        let changed = false;
-        allProjects.forEach(p => {
-          if (!Array.isArray(p.categories)) p.categories = [];
-          if (p.categories.includes(cat)) {
-            p.categories = p.categories.filter(c => c !== cat);
-            changed = true;
+        const catsAll = (await loadAllCategories()).filter(c => c !== cat);
+        await saveAllCategories(catsAll);
+
+        const allProjects = await loadAllProjects();
+
+        const changedProjects = [];
+
+        allProjects.forEach((project) => {
+          if (!Array.isArray(project.categories)) {
+            project.categories = [];
+          }
+
+          if (project.categories.includes(cat)) {
+            project.categories = project.categories.filter(c => c !== cat);
+            changedProjects.push(project);
           }
         });
-        if (changed) saveAllProjects(allProjects);
+
+        for (const project of changedProjects) {
+          try {
+            await DigitalAnkiStorage.saveProject(project);
+          } catch (error) {
+            console.error(
+              'カテゴリ削除に伴うプロジェクト更新に失敗しました。',
+              error
+            );
+          }
+        }
         // refresh UI
-        refreshProjectSelect();
-        refreshCategoryOptions();
-        updateCategoryVisibility();
+        await refreshProjectSelect();
+        await updateCategoryVisibility();
+
         alert(`カテゴリ「${cat}」を削除しました。該当画像はカテゴリなしになります。`);
       });
 
@@ -288,21 +298,30 @@
     });
   }
 
-  function updateCategoryVisibility(){
-    const visible = !!( (currentProject && currentProject.imageDataUrl) || mainImage.src );
+  async function updateCategoryVisibility(){
+    const visible = !!(
+      (currentProject && currentProject.imageDataUrl) ||
+      mainImage.src
+    );
+
     if (!categoryBox) return;
+
     categoryBox.style.display = visible ? 'block' : 'none';
-    if (visible) {
-      refreshCategoryOptions();
-      if (currentProject && Array.isArray(currentProject.categories)) {
-        const checks = categoryList.querySelectorAll('input[type="checkbox"]');
-        checks.forEach(ch => {
-          ch.checked = currentProject.categories.includes(ch.value);
-        });
-      } else {
-        const checks = categoryList.querySelectorAll('input[type="checkbox"]');
-        checks.forEach(ch => { ch.checked = false; });
-      }
+
+    if (!visible) return;
+
+    await refreshCategoryOptions();
+
+    if (currentProject && Array.isArray(currentProject.categories)) {
+      const checks = categoryList.querySelectorAll('input[type="checkbox"]');
+      checks.forEach(ch => {
+        ch.checked = currentProject.categories.includes(ch.value);
+      });
+    } else {
+      const checks = categoryList.querySelectorAll('input[type="checkbox"]');
+      checks.forEach(ch => {
+        ch.checked = false;
+      });
     }
   }
 
@@ -751,11 +770,17 @@
 
   async function persistProjectWithFallback(payload){
     const widths = [null, 960, 720, 560, 400];
+
     for (const maxWidth of widths) {
       const candidate = JSON.parse(JSON.stringify(payload));
+
       if (maxWidth !== null) {
         try {
-          const compressed = await createCanvasFromDataURL(candidate.imageDataUrl, maxWidth);
+          const compressed = await createCanvasFromDataURL(
+            candidate.imageDataUrl,
+            maxWidth
+          );
+
           candidate.imageDataUrl = compressed.dataUrl;
           candidate.imageBaseWidth = compressed.width;
           candidate.imageBaseHeight = compressed.height;
@@ -763,12 +788,15 @@
           console.error('圧縮に失敗', e);
         }
       }
-      const all = loadAllProjects();
-      const existingIdx = all.findIndex(p => p.id === candidate.id);
-      if (existingIdx >= 0) all[existingIdx] = candidate;
-      else all.unshift(candidate);
-      if (saveAllProjects(all)) return candidate;
+
+      try {
+        await DigitalAnkiStorage.saveProject(candidate);
+        return candidate;
+      } catch (error) {
+        console.error('プロジェクトの保存に失敗', error);
+      }
     }
+
     return null;
   }
 
@@ -970,7 +998,7 @@
           return;
         }
 
-        refreshProjectSelect();
+        await refreshProjectSelect();
         // update currentProject to saved payload and clear dirty flag
         currentProject = JSON.parse(JSON.stringify(savedPayload));
         clearDirty();
@@ -985,11 +1013,11 @@
   }
 
   if (btnLoad) {
-    btnLoad.addEventListener('click', ()=>{
+    btnLoad.addEventListener('click', async ()=>{
       const id = projectSelect.value;
       if (!id) { alert('読み込むプロジェクトを選んでください'); return; }
-      const all = loadAllProjects();
-      const p = all.find(x=>x.id===id);
+      const all = await loadAllProjects();
+      const p = all.find(x => x.id === id);
       if (!p) { alert('プロジェクトが見つかりません'); return; }
       currentProject = JSON.parse(JSON.stringify(p));
       undoStack = [];
@@ -1000,7 +1028,7 @@
       masks = [];
       mainImage.src = currentProject.imageDataUrl;
       syncImageAreaState();
-      mainImage.onload = ()=>{
+      mainImage.onload = async ()=>{
         if (!Array.isArray(currentProject.categories)) currentProject.categories = [];
         if (Array.isArray(currentProject.masks)) {
           const imgNaturalW = mainImage.naturalWidth || currentProject.imageBaseWidth || mainImage.width;
@@ -1020,11 +1048,10 @@
             if (mm.visible === undefined || mm.visible === null) mm.visible = true;
           });
           if (converted) {
-            const allProjects = loadAllProjects();
-            const idx = allProjects.findIndex(pp => pp.id === currentProject.id);
-            if (idx >= 0) {
-              allProjects[idx].masks = currentProject.masks;
-              saveAllProjects(allProjects);
+            try {
+              await DigitalAnkiStorage.saveProject(currentProject);
+            } catch (error) {
+              console.error('マスク補正データの保存に失敗しました。', error);
             }
           }
         }
@@ -1056,15 +1083,28 @@
   }
 
   if (btnDeleteProject) {
-    btnDeleteProject.addEventListener('click', ()=>{
+    btnDeleteProject.addEventListener('click', async ()=>{
       const id = projectSelect.value;
-      if (!id) { alert('選択してください'); return; }
-      if (!confirm('本当に削除しますか？')) return;
-      const all = loadAllProjects().filter(p=>p.id!==id);
-      saveAllProjects(all);
-      refreshProjectSelect();
+      if (!id) {
+        alert('選択してください');
+        return;
+      }
+
+      if (!confirm('本当に削除しますか？')) {
+        return;
+      }
+
+      try {
+        await DigitalAnkiStorage.deleteProject(id);
+      } catch (error) {
+        console.error('プロジェクトの削除に失敗しました。', error);
+        alert('削除に失敗しました');
+        return;
+      }
+
+      await refreshProjectSelect();
       alert('削除しました');
-      updateCategoryVisibility();
+      await updateCategoryVisibility();
     });
   }
 
@@ -1097,14 +1137,18 @@
   window.addEventListener('resize', refreshAllMasks);
   mainImage.addEventListener('load', refreshAllMasks);
 
-  function refreshProjectSelect(){
-    const all = loadAllProjects();
+  async function refreshProjectSelect(){
+    const all = await loadAllProjects();
+
     if (!projectSelect) return;
+
     projectSelect.innerHTML = '';
+
     const emptyOpt = document.createElement('option');
     emptyOpt.value = '';
     emptyOpt.textContent = 'タップして選択';
     projectSelect.appendChild(emptyOpt);
+
     all.forEach(p=>{
       const opt = document.createElement('option');
       opt.value = p.id;
@@ -1114,25 +1158,32 @@
   }
 
   if (btnNewCategory) {
-    btnNewCategory.addEventListener('click', ()=>{
+    btnNewCategory.addEventListener('click', async ()=>{
       const name = prompt('カテゴリ名を入力してください');
       if (!name) return;
-      const cats = loadAllCategories();
+
+      const cats = await loadAllCategories();
+
       if (cats.includes(name)) {
         alert('同名のカテゴリが既に存在します');
         return;
       }
+
       cats.push(name);
-      saveAllCategories(cats);
-      refreshCategoryOptions();
+
+      await saveAllCategories(cats);
+      await refreshCategoryOptions();
       updateCategoryVisibility();
-      markDirty(true); // adding category affects project selection UI -> consider unsaved
+      markDirty(true);
     });
   }
   // categoryList already wires checkbox change to mark dirty in refreshCategoryOptions
   // (no additional listener needed here)
 
-  refreshProjectSelect();
-  refreshCategoryOptions();
-  updateCategoryVisibility();
+async function initializeEditPage() {
+  await refreshProjectSelect();
+  await updateCategoryVisibility();
+}
+
+initializeEditPage();
 })();

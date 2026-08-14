@@ -1,6 +1,4 @@
 (() => {
-  const STORAGE_KEY = 'digital-anki-projects-v1';
-  const CATS_KEY = 'digital-anki-categories-v1';
   const BOOK_COVER_SVG = 'assets/bookcover.svg';
 
   const btnBackHome = document.getElementById('btnBackHome');
@@ -51,30 +49,16 @@
     return `${prefix}-${Math.random().toString(36).slice(2, 9)}`;
   }
 
-  function loadAllProjects() {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    try {
-      const parsed = JSON.parse(raw);
-      return Array.isArray(parsed.projects) ? parsed.projects : [];
-    } catch (e) {
-      return [];
-    }
+  async function loadAllProjects() {
+    return DigitalAnkiStorage.getAllProjects();
   }
 
-  function saveAllProjects(projects) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ projects }));
+  async function saveAllProjects(projects) {
+    await DigitalAnkiStorage.saveProjects(projects);
   }
 
-  function loadAllCategories() {
-    const raw = localStorage.getItem(CATS_KEY);
-    if (!raw) return [];
-    try {
-      const parsed = JSON.parse(raw);
-      return Array.isArray(parsed.categories) ? parsed.categories : [];
-    } catch (e) {
-      return [];
-    }
+  async function loadAllCategories() {
+    return DigitalAnkiStorage.getAllCategories();
   }
 
   function unique(values) {
@@ -194,21 +178,21 @@ function isTodayReviewTarget(book, now = Date.now()) {
     return SORT_LABELS[value] || SORT_LABELS.new;
   }
 
-  function setDisplayFilter(value) {
+  async function setDisplayFilter(value) {
     state.displayFilter = value;
     if (displayLabel) displayLabel.textContent = getDisplayLabel(value);
     closeSheet();
-    renderBooks();
+    await renderBooks();
   }
 
-  function setSortOrder(value) {
+  async function setSortOrder(value) {
     state.sortOrder = value;
     if (sortLabel) sortLabel.textContent = getSortLabel(value);
     closeSheet();
-    renderBooks();
+    await renderBooks();
   }
 
-  function openSheet(type) {
+  async function openSheet(type) {
     if (!sheetBackdrop || !sheetTitle || !sheetDescription || !sheetOptions) return;
 
     sheetTitle.textContent = type === 'sort' ? '並び替え' : '表示';
@@ -245,7 +229,7 @@ function isTodayReviewTarget(book, now = Date.now()) {
       makeOption('お気に入り画像のみ', 'checked', state.displayFilter === 'checked');
       makeOption('今日の復習', 'todayReview', state.displayFilter === 'todayReview');
 
-      const cats = loadAllCategories();
+      const cats = await loadAllCategories();
       cats.forEach((cat) => {
         makeOption(cat, `cat::${cat}`, state.displayFilter === `cat::${cat}`);
       });
@@ -269,16 +253,16 @@ function isTodayReviewTarget(book, now = Date.now()) {
   }
 
     if (sheetOptions) {
-    sheetOptions.addEventListener('click', (ev) => {
+    sheetOptions.addEventListener('click', async (ev) => {
       const button = ev.target.closest('button[data-value]');
       if (!button) return;
 
       const value = button.dataset.value || 'all';
 
       if (value === 'new' || value === 'old') {
-        setSortOrder(value);
+        await setSortOrder(value);
       } else {
-        setDisplayFilter(value);
+        await setDisplayFilter(value);
       }
     });
   }
@@ -341,13 +325,19 @@ function isTodayReviewTarget(book, now = Date.now()) {
     renderBooks();
   }
 
-  function updateProjectField(projectId, updater) {
-    const all = loadAllProjects();
-    const idx = all.findIndex((project) => project.id === projectId);
-    if (idx < 0) return false;
-    updater(all[idx]);
-    saveAllProjects(all);
-    return true;
+  async function updateProjectField(projectId, updater) {
+    const project = await DigitalAnkiStorage.getProjectById(projectId);
+    if (!project) return false;
+
+    updater(project);
+
+    try {
+      await DigitalAnkiStorage.saveProject(project);
+      return true;
+    } catch (error) {
+      console.error('Bookの更新に失敗しました。', error);
+      return false;
+    }
   }
 
   function navigateToBook(bookId) {
@@ -377,10 +367,10 @@ function isTodayReviewTarget(book, now = Date.now()) {
     return coverWrap;
   }
 
-  function renderBooks() {
+  async function renderBooks() {
     if (!booksList || !emptyState) return;
 
-    const allBooks = loadAllProjects().map(normalizeBook);
+    const allBooks = (await loadAllProjects()).map(normalizeBook);
 
     let filteredBooks = allBooks.slice();
     const filterVal = state.displayFilter;
@@ -471,8 +461,8 @@ if (!hasAnyFilteredBooks) {
         ev.stopPropagation();
       });
 
-      weakInput.addEventListener('change', () => {
-        updateProjectField(book.id, (project) => {
+      weakInput.addEventListener('change', async () => {
+        await updateProjectField(book.id, (project) => {
           project.checked = weakInput.checked;
         });
       });
@@ -491,8 +481,9 @@ if (!hasAnyFilteredBooks) {
     updateDeletePanel();
   }
 
-  function confirmDeleteSelectedBooks() {
+  async function confirmDeleteSelectedBooks() {
     const ids = Array.from(state.selectedDeleteIds);
+
     if (!ids.length) {
       alert('削除するBookを選んでください');
       return;
@@ -501,10 +492,16 @@ if (!hasAnyFilteredBooks) {
     const ok = confirm(`選択した ${ids.length} 冊を削除しますか？`);
     if (!ok) return;
 
-    const remaining = loadAllProjects().filter((project) => !state.selectedDeleteIds.has(project.id));
-    saveAllProjects(remaining);
+    try {
+      await DigitalAnkiStorage.deleteProjects(ids);
+    } catch (error) {
+      console.error('Bookの削除に失敗しました。', error);
+      alert('Bookの削除に失敗しました。');
+      return;
+    }
+
     cancelDeleteMode();
-    renderBooks();
+    await renderBooks();
   }
 
   if (sheetBackdrop) {
@@ -513,11 +510,11 @@ if (!hasAnyFilteredBooks) {
       closeSheet();
     }
   });
-}
+  }
 
-if (sheetCancel) {
-  sheetCancel.addEventListener('click', closeSheet);
-}
+  if (sheetCancel) {
+    sheetCancel.addEventListener('click', closeSheet);
+  }
 
   if (btnBackHome) {
     btnBackHome.addEventListener('click', () => {
@@ -554,8 +551,8 @@ if (sheetCancel) {
   }
 
   if (btnConfirmDeleteMode) {
-    btnConfirmDeleteMode.addEventListener('click', () => {
-      confirmDeleteSelectedBooks();
+    btnConfirmDeleteMode.addEventListener('click', async () => {
+      await confirmDeleteSelectedBooks();
     });
   }
 
@@ -566,8 +563,8 @@ if (sheetCancel) {
   }
 
   if (selectionDelete) {
-    selectionDelete.addEventListener('click', () => {
-      confirmDeleteSelectedBooks();
+    selectionDelete.addEventListener('click', async () => {
+      await confirmDeleteSelectedBooks();
     });
   }
 
@@ -587,17 +584,17 @@ if (sheetCancel) {
     if (sortLabel) sortLabel.textContent = getSortLabel(state.sortOrder);
   }
 
-function init() {
+async function init() {
   syncToolbarLabels();
   updateDeletePanel();
 
   if (btnTodayReview) {
-    btnTodayReview.addEventListener('click', () => {
-      setDisplayFilter('todayReview');
+    btnTodayReview.addEventListener('click', async () => {
+      await setDisplayFilter('todayReview');
     });
   }
 
-  renderBooks();
+  await renderBooks();
 }
 
   init();

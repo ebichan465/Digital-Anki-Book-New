@@ -381,35 +381,82 @@
   }
 
   async function saveProjects(projects) {
-    if (!Array.isArray(projects)) {
-      throw new Error('projectsが配列ではありません。');
-    }
-
-    const db = await initializeStorage();
-
-    const transaction = db.transaction(
-      PROJECTS_STORE,
-      'readwrite'
-    );
-
-    const store = transaction.objectStore(PROJECTS_STORE);
-
-    for (const project of projects) {
-      if (!project || typeof project !== 'object') {
-        continue;
-      }
-
-      if (!project.id) {
-        continue;
-      }
-
-      store.put(safeClone(project));
-    }
-
-    await transactionToPromise(transaction);
-
-    return safeClone(projects);
+  if (!Array.isArray(projects)) {
+    throw new Error('projectsが配列ではありません。');
   }
+
+  const db = await initializeStorage();
+
+  /*
+   * まずreadonly transactionで、
+   * 現在IndexedDBに存在するprojectのIDだけ取得する。
+   *
+   * readwrite transactionの途中でawaitして、
+   * transactionが自動終了してしまうのを防ぐ。
+   */
+  const readTransaction = db.transaction(
+    PROJECTS_STORE,
+    'readonly'
+  );
+
+  const readStore = readTransaction.objectStore(PROJECTS_STORE);
+
+  const existingProjects = await requestToPromise(
+    readStore.getAll()
+  );
+
+  /*
+   * 今回保存するprojectのID一覧
+   */
+  const nextIds = new Set(
+    projects
+      .filter((project) => (
+        project &&
+        typeof project === 'object' &&
+        project.id
+      ))
+      .map((project) => project.id)
+  );
+
+  /*
+   * ここから実際の書き込み。
+   * このtransaction内ではawaitしない。
+   */
+  const writeTransaction = db.transaction(
+    PROJECTS_STORE,
+    'readwrite'
+  );
+
+  const writeStore = writeTransaction.objectStore(PROJECTS_STORE);
+
+  /*
+   * 現在存在するが、今回保存する配列に存在しないprojectを削除。
+   */
+  for (const project of existingProjects) {
+    if (!nextIds.has(project.id)) {
+      writeStore.delete(project.id);
+    }
+  }
+
+  /*
+   * 今回保存するprojectを追加・更新。
+   */
+  for (const project of projects) {
+    if (!project || typeof project !== 'object') {
+      continue;
+    }
+
+    if (!project.id) {
+      continue;
+    }
+
+    writeStore.put(safeClone(project));
+  }
+
+  await transactionToPromise(writeTransaction);
+
+  return safeClone(projects);
+}
 
   async function deleteProject(projectId) {
     if (!projectId) {

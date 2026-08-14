@@ -1,7 +1,4 @@
 (() => {
-  const STORAGE_KEY = 'digital-anki-projects-v1';
-  const CATS_KEY = 'digital-anki-categories-v1';
-
   const params = new URLSearchParams(location.search);
   const bookId = params.get('id') || params.get('bookId') || '';
 
@@ -86,19 +83,12 @@ function normalizeReview(review, createdAt) {
   };
 }
 
-  function loadAllProjects() {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    try {
-      const parsed = JSON.parse(raw);
-      return Array.isArray(parsed.projects) ? parsed.projects : [];
-    } catch (e) {
-      return [];
-    }
+  async function loadAllProjects() {
+  return DigitalAnkiStorage.getAllProjects();
   }
 
-  function saveAllProjects(projects) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ projects }));
+  async function saveAllProjects(projects) {
+  await DigitalAnkiStorage.saveProjects(projects);
   }
 
   function normalizeImageRecord(image, fallbackTitle, fallbackCreatedAt) {
@@ -165,10 +155,10 @@ function normalizeReview(review, createdAt) {
     }
   }
 
-  function getBookById(id) {
-    const all = loadAllProjects();
-    const found = all.find((project) => project.id === id);
-    return found ? normalizeBook(found) : null;
+  async function getBookById(id) {
+  const all = await loadAllProjects();
+  const found = all.find((project) => project.id === id);
+  return found ? normalizeBook(found) : null;
   }
 
   function getActiveImageRecord() {
@@ -277,12 +267,16 @@ function showReviewCompleteToast() {
   }, 1000);
 }
 
-function completeReviewStage() {
+async function completeReviewStage() {
   if (!currentBook) return;
 
   const activeImage = getActiveImageRecord();
   const review = normalizeReview(currentBook.review, currentBook.createdAt);
-  const stage = getReviewStage(review.createdAt || (activeImage && activeImage.createdAt) || currentBook.createdAt);
+  const stage = getReviewStage(
+    review.createdAt ||
+    (activeImage && activeImage.createdAt) ||
+    currentBook.createdAt
+  );
 
   if (stage <= 0) return;
 
@@ -293,7 +287,7 @@ function completeReviewStage() {
     completedStages: unique([...review.completedStages, stage]).sort((a, b) => a - b),
   };
 
-  persistCurrentBook();
+  await persistCurrentBook();
   setBookState();
   showReviewCompleteToast();
 }
@@ -451,7 +445,7 @@ function clearMaskElements() {
     setBookState();
   }
 
-  function persistCurrentBook(mutator) {
+  async function persistCurrentBook(mutator) {
     if (!currentBook) return null;
 
     if (typeof mutator === 'function') {
@@ -461,12 +455,13 @@ function clearMaskElements() {
     const normalized = normalizeBook(currentBook);
     syncLegacyFields(normalized);
 
-    const all = loadAllProjects();
-    const idx = all.findIndex((project) => project.id === normalized.id);
-    if (idx < 0) return null;
+    try {
+      await DigitalAnkiStorage.saveProject(normalized);
+    } catch (error) {
+      console.error('Bookの保存に失敗しました。', error);
+      return null;
+    }
 
-    all[idx] = normalized;
-    saveAllProjects(all);
     currentBook = normalized;
     updateHeader();
     return currentBook;
@@ -480,7 +475,7 @@ function clearMaskElements() {
       .filter((value, index, array) => array.indexOf(value) === index);
   }
 
-  function renameBook() {
+  async function renameBook() {
     if (!currentBook) return;
     const nextName = prompt('新しいBook名を入力してください', currentBook.name || '');
     if (nextName === null) return;
@@ -488,19 +483,24 @@ function clearMaskElements() {
     const trimmed = nextName.trim();
     if (!trimmed) return;
 
-    currentBook.name = trimmed;
-    persistCurrentBook();
+    const saved = await persistCurrentBook();
+
+    if (!saved) {
+      alert('保存に失敗しました。');
+      return;
+    }
+
     updateHeader();
   }
 
-  function changeCategories() {
+  async function changeCategories() {
     if (!currentBook) return;
     const current = Array.isArray(currentBook.categories) ? currentBook.categories.join(', ') : '';
     const next = prompt('カテゴリを入力してください（カンマ区切り / 例: 英語, 数学）', current);
     if (next === null) return;
 
     currentBook.categories = parseCategories(next);
-    persistCurrentBook();
+    await persistCurrentBook();
     updateHeader();
   }
 
@@ -516,17 +516,17 @@ function clearMaskElements() {
     });
   }
 
-  function toggleWeakFlag() {
+  async function toggleWeakFlag() {
     if (!currentBook || !bookWeakCheckbox) return;
     currentBook.checked = !!bookWeakCheckbox.checked;
-    persistCurrentBook();
+    await persistCurrentBook();
     updateHeader();
   }
 
-  function deleteCurrentImage() {
+  async function deleteCurrentImage() {
     if (!currentBook) return;
 
-    const all = loadAllProjects();
+    const all = await loadAllProjects();
     const idx = all.findIndex((project) => project.id === currentBook.id);
     if (idx < 0) return;
 
@@ -549,8 +549,7 @@ function clearMaskElements() {
       : [];
 
     if (!nextBook.images.length) {
-      all.splice(idx, 1);
-      saveAllProjects(all);
+      await DigitalAnkiStorage.deleteProject(currentBook.id);
       alert('Bookを削除しました。');
       location.href = 'study.html';
       return;
@@ -559,9 +558,8 @@ function clearMaskElements() {
     nextBook.images = nextBook.images.map((image) => normalizeImageRecord(image, nextBook.name, nextBook.createdAt)).filter(Boolean);
     syncLegacyFields(nextBook);
 
-    all[idx] = nextBook;
-    saveAllProjects(all);
     currentBook = nextBook;
+    await persistCurrentBook();
     currentImageIndex = 0;
     sessionMasks = deepClone(nextBook.images[0].masks || []).map(normalizeMaskModel);
     updateHeader();
@@ -602,7 +600,7 @@ function clearMaskElements() {
     document.title = 'Digital Anki Book - Book';
   }
 
-  function init() {
+  async function init() {
     if (btnBackStudy) {
       btnBackStudy.addEventListener('click', () => {
         location.href = 'study.html';
@@ -641,7 +639,7 @@ function clearMaskElements() {
       return;
     }
 
-    const found = getBookById(bookId);
+    const found = await getBookById(bookId);
     if (!found) {
       showMissingBookState('Bookが見つかりませんでした。');
       return;
