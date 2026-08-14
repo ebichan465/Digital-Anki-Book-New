@@ -59,7 +59,7 @@ body.book-page .book-canvas{
 }
 body.book-page .book-canvas img{
   display:block;
-  max-width:100%;
+  max-width:calc(100% - 20px);
   height:auto;
   transform:translateX(20px);
   box-shadow:0 10px 20px rgba(54,41,21,.16), 0 2px 5px rgba(54,41,21,.08);
@@ -93,7 +93,7 @@ body.book-page .book-favorite-toggle{
 
   padding:6px 10px;
 
-  border-radius:999px;
+  border-radius:998px;
   background:rgba(255,255,255,.92);
   box-shadow:0 6px 18px rgba(0,0,0,.12);
 
