@@ -509,6 +509,24 @@ body.study-page .study-selection-bar__button--delete{
     padding:7px 6px;
   }
 
+  /* ===== Book表紙のタイトル位置調整：ここから ===== */
+  body.study-page .book-card__title{
+    top:10%;
+    left:50%;
+  }
+
+  /* ===== Book表紙の日付位置調整：ここから ===== */
+  body.study-page .book-card__date{
+    bottom:32px;
+    left:50%;
+  }
+
+  /* ================================================ */
+
+  body.study-page .study-toolbar{
+    display:flex;
+  }
+
   body.study-page .study-toolbar-btn:last-child{
     border-right:none;
   }
