@@ -444,6 +444,9 @@ if (!hasAnyFilteredBooks) {
       coverWrap.appendChild(title);
       coverWrap.appendChild(date);
 
+            // ===== お気に入り復活：この位置から =====
+      // ===== お気に入りボタン配置：この位置から =====
+
       openButton.addEventListener('click', () => {
         if (state.deleteMode) {
           toggleDeleteSelection(book.id, !state.selectedDeleteIds.has(book.id));
@@ -451,6 +454,11 @@ if (!hasAnyFilteredBooks) {
         }
         navigateToBook(book.id);
       });
+
+      // Bookの下側に配置するための操作エリア
+      const controls = document.createElement('div');
+      controls.className = 'book-card__controls';
+
       const weakLabel = document.createElement('label');
       weakLabel.className = 'book-card__weak-toggle';
 
@@ -458,9 +466,11 @@ if (!hasAnyFilteredBooks) {
       weakInput.type = 'checkbox';
       weakInput.checked = !!book.checked;
       weakInput.title = 'お気に入りBook';
+
       weakInput.addEventListener('click', (ev) => {
         ev.stopPropagation();
       });
+
       weakInput.addEventListener('change', () => {
         updateProjectField(book.id, (project) => {
           project.checked = weakInput.checked;
@@ -472,11 +482,9 @@ if (!hasAnyFilteredBooks) {
 
       weakLabel.appendChild(weakInput);
       weakLabel.appendChild(weakText);
-
-      coverWrap.appendChild(weakLabel);
-
+      controls.appendChild(weakLabel);
       card.appendChild(openButton);
-
+      card.appendChild(controls);
       booksList.appendChild(card);
     });
 

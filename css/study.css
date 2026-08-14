@@ -193,7 +193,7 @@ body.study-page .book-card.is-delete-mode{
 
 body.study-page .book-card__open{
   appearance:none;
-  width:auto;
+  width:100%;
   border:none;
   padding:0;
   background:transparent;
@@ -209,6 +209,7 @@ body.study-page .book-card__open:active{
 
 body.study-page .book-card__cover{
   position:relative;
+  width:100%;
   aspect-ratio: 0.95;
   background: transparent;
   align-items:center;
@@ -280,6 +281,34 @@ body.study-page .book-card__date{
   font-weight:700;
 
 color:#353638;
+}
+
+body.study-page .book-card__controls{
+  padding:8px 4px 4px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+body.study-page .book-card__weak-toggle{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  margin:0;
+  padding:0;
+  color:#40525c;
+  font-size:12px;
+  font-weight:700;
+  line-height:1;
+  cursor:pointer;
+}
+
+body.study-page .book-card__weak-toggle input{
+  width:18px;
+  height:18px;
+  margin:0;
+  accent-color:#2b6ef6;
 }
 
 body.study-page .study-sheet-backdrop{
@@ -509,6 +538,20 @@ body.study-page .study-selection-bar__button--delete{
 
   body.study-page .book-card{
     border-radius:20px;
+  }
+
+  body.study-page .book-card__controls{
+    padding:6px 2px 2px;
+  }
+
+  body.study-page .book-card__weak-toggle{
+    font-size:10px;
+    gap:4px;
+  }
+
+  body.study-page .book-card__weak-toggle input{
+    width:14px;
+    height:14px;
   }
 
   body.study-page .study-sheet-backdrop{
