@@ -483,6 +483,8 @@ function clearMaskElements() {
     const trimmed = nextName.trim();
     if (!trimmed) return;
 
+    currentBook.name = trimmed;
+
     const saved = await persistCurrentBook();
 
     if (!saved) {
@@ -539,7 +541,7 @@ function clearMaskElements() {
     const hasMultipleImages = Array.isArray(currentBook.images) && currentBook.images.length > 1;
     const confirmMessage = hasMultipleImages
       ? '選択中の画像を削除しますか？'
-      : '最後の画像を削除するとBook自体も削除されます。続行しますか？';
+      : 'この画像を削除しますか？';
 
     if (!confirm(confirmMessage)) return;
 

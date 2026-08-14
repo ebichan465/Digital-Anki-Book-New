@@ -1028,6 +1028,8 @@
       masks = [];
       mainImage.src = currentProject.imageDataUrl;
       syncImageAreaState();
+      syncSaveButtonState();
+
       mainImage.onload = async ()=>{
         if (!Array.isArray(currentProject.categories)) currentProject.categories = [];
         if (Array.isArray(currentProject.masks)) {
