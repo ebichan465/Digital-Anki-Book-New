@@ -147,13 +147,10 @@
 
         if (!bubble) return;
 
-        if (dueCount > 0) {
-          bubble.textContent =
-            `今日の復習 ${dueCount}枚`;
-          bubble.classList.remove('hidden');
-        } else {
-          bubble.classList.add('hidden');
-        }
+        bubble.textContent =
+          `今日の復習 ${dueCount}枚`;
+
+        bubble.classList.remove('hidden');
       } catch (error) {
         console.error(
           '今日の復習件数の取得に失敗しました。',
