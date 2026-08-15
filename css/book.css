@@ -217,7 +217,7 @@ body.book-page .hidden{
 }
 
 @media (max-width: 768px){
-body.book-page .book-layout{
+  body.book-page .book-layout{
     gap:12px;
   }
 

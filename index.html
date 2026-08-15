@@ -33,44 +33,136 @@
     </section>
   </main>
 
+  <script src="storage.js"></script>
+
   <script>
   (() => {
-    const STORAGE_KEY = 'digital-anki-projects-v1';
-    const DAY = 24 * 60 * 60 * 1000;
-    const INTERVALS = [1, 7, 30, 90];
     const bubble = document.getElementById('homeReviewBubble');
 
-    function loadAllProjects() {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return [];
+    const REVIEW_WINDOWS = [
+      { stage: 1, minDays: 1, maxDays: 3 },
+      { stage: 2, minDays: 7, maxDays: 14 },
+      { stage: 3, minDays: 30, maxDays: 60 },
+    ];
+
+    const DAY_MS = 24 * 60 * 60 * 1000;
+
+    function unique(values) {
+      return Array.from(new Set(values.filter(Boolean)));
+    }
+
+    function startOfDayMs(value) {
+      const d = new Date(value);
+      d.setHours(0, 0, 0, 0);
+      return d.getTime();
+    }
+
+    function diffDays(from, to = Date.now()) {
+      return Math.floor(
+        (startOfDayMs(to) - startOfDayMs(from)) / DAY_MS
+      );
+    }
+
+    function getReviewStage(createdAt, now = Date.now()) {
+      const days = diffDays(createdAt, now);
+
+      const matched = REVIEW_WINDOWS.find(
+        (item) =>
+          days >= item.minDays &&
+          days <= item.maxDays
+      );
+
+      return matched ? matched.stage : 0;
+    }
+
+    function normalizeReview(review, createdAt) {
+      const baseCreatedAt =
+        Number(createdAt) || Date.now();
+
+      const safe =
+        review && typeof review === 'object'
+          ? review
+          : {};
+
+      return {
+        createdAt:
+          Number.isFinite(Number(safe.createdAt))
+            ? Number(safe.createdAt)
+            : baseCreatedAt,
+
+        currentStage:
+          Number.isFinite(Number(safe.currentStage))
+            ? Number(safe.currentStage)
+            : getReviewStage(baseCreatedAt),
+
+        completedStages:
+          Array.isArray(safe.completedStages)
+            ? unique(
+                safe.completedStages
+                  .map((n) => Number(n))
+                  .filter((n) => Number.isFinite(n))
+              )
+            : [],
+
+        lastCompletedStage:
+          Number.isFinite(Number(safe.lastCompletedStage))
+            ? Number(safe.lastCompletedStage)
+            : 0,
+      };
+    }
+
+    function isTodayReviewTarget(project, now = Date.now()) {
+      if (!project) return false;
+
+      const review = normalizeReview(
+        project.review,
+        project.createdAt
+      );
+
+      const stage = getReviewStage(
+        review.createdAt,
+        now
+      );
+
+      return (
+        stage > 0 &&
+        !review.completedStages.includes(stage)
+      );
+    }
+
+    async function updateReviewCount() {
       try {
-        return JSON.parse(raw).projects || [];
-      } catch (e) {
-        return [];
+        const projects =
+          await DigitalAnkiStorage.getAllProjects();
+
+        const dueCount = projects.filter(
+          (project) =>
+            isTodayReviewTarget(project)
+        ).length;
+        console.log('IndexedDB projects:', projects);
+        console.log('今日の復習件数:', dueCount);
+
+        console.log(projects[0]);
+        console.log(projects[0].review);
+
+        if (!bubble) return;
+
+        if (dueCount > 0) {
+          bubble.textContent =
+            `今日の復習 ${dueCount}枚`;
+          bubble.classList.remove('hidden');
+        } else {
+          bubble.classList.add('hidden');
+        }
+      } catch (error) {
+        console.error(
+          '今日の復習件数の取得に失敗しました。',
+          error
+        );
       }
     }
 
-    function normalizeReview(project) {
-      const createdAt = Number(project && project.createdAt) || Date.now();
-      const r = project && project.review && typeof project.review === 'object' ? project.review : null;
-      const stage = Number.isFinite(Number(r && r.stage)) ? Number(r.stage) : 0;
-      const completed = !!(r && r.completed);
-      const nextReviewAt = Number.isFinite(Number(r && r.nextReviewAt))
-        ? Number(r.nextReviewAt)
-        : createdAt + (INTERVALS[Math.min(stage, INTERVALS.length - 1)] * DAY);
-      return { stage, nextReviewAt, completed };
-    }
-
-    const now = Date.now();
-    const dueCount = loadAllProjects().filter((project) => {
-      const review = normalizeReview(project);
-      return !review.completed && Number.isFinite(review.nextReviewAt) && review.nextReviewAt <= now;
-    }).length;
-
-    if (bubble && dueCount > 0) {
-      bubble.textContent = `今日の復習 ${dueCount}枚`;
-      bubble.classList.remove('hidden');
-    }
+    updateReviewCount();
   })();
   </script>
 </body>
