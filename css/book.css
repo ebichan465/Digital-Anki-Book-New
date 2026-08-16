@@ -126,13 +126,14 @@ body.book-page .book-toolbar{
   box-shadow:0 18px 28px -24px rgba(74, 58, 36, .35);
   margin-top: 40px;
 }
+
 body.book-page .book-toolbar-btn{
   appearance:none;
   border:none;
   border-right:1px solid rgba(81, 90, 98, .12);
   background:linear-gradient(180deg, rgba(255,255,255,.95) 0%, rgba(246,239,227,.97) 100%);
   color:#16488A;
-  min-height:74px;
+  min-height:56px;
   padding:10px 10px;
   display:flex;
   align-items:center;
