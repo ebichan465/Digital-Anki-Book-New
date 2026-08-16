@@ -173,7 +173,7 @@ body.book-page .book-review-complete-btn{
   font-family:inherit;
   font-size:15px;
   font-weight:800;
-  margin:40px;
+  margin-top:60px;
   cursor:pointer;
   transition:transform .15s ease, filter .15s ease, box-shadow .15s ease;
 }
