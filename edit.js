@@ -816,8 +816,30 @@
   // TEXT insertion UI: show modal
   if (btnInsertText) {
     btnInsertText.addEventListener('click', ()=>{
-      textInputArea.value = '';
-      textFontSize.value = 32;
+      const hasImage = !!mainImage.src;
+      const isTextProject = !!(
+        currentProject &&
+        currentProject.contentType === 'text'
+      );
+
+      if (hasImage && !isTextProject) {
+        const ok = confirm(
+          'テキストを挿入した場合、現在の画像は破棄されます。テキストを挿入しますか？'
+        );
+
+        if (!ok) {
+          return;
+        }
+      }
+
+      if (isTextProject && currentProject.textData) {
+        textInputArea.value = currentProject.textData.text || '';
+        textFontSize.value = String(currentProject.textData.fontSize || 32);
+      } else {
+        textInputArea.value = '';
+        textFontSize.value = '32';
+      }
+
       textModal.classList.remove('hidden');
       textInputArea.focus();
     });
@@ -887,39 +909,58 @@
 
 
   if (btnInsertConfirm) {
-  btnInsertConfirm.addEventListener('click', async ()=>{
-    const text = textInputArea.value || '';
-    const fontSize = parseInt(textFontSize.value, 10) || 32;
+    btnInsertConfirm.addEventListener('click', async ()=>{
+      const text = textInputArea.value || '';
+      const fontSize = parseInt(textFontSize.value, 10) || 32;
 
-    if (!String(text).trim()) {
-      return;
-    }
+      if (!String(text).trim()) {
+        return;
+      }
 
-    const textCanvasData = await createTextImageData(text, fontSize);
-    textModal.classList.add('hidden');
+      const textCanvasData = await createTextImageData(text, fontSize);
+      textModal.classList.add('hidden');
 
-    loadImage(textCanvasData.dataUrl);
+      const projectId = currentProject && currentProject.id
+        ? currentProject.id
+        : uid('proj');
 
-    currentProject = {
-      id: uid('proj'),
-      name: 'text-image',
-      imageDataUrl: textCanvasData.dataUrl,
-      imageBaseWidth: textCanvasData.width,
-      imageBaseHeight: textCanvasData.height,
-      masks: [],
-      categories: [],
-      createdAt: Date.now()
-    };
+      const createdAt = currentProject && currentProject.createdAt
+        ? currentProject.createdAt
+        : Date.now();
 
-    masks = [];
-    selectedMaskId = null;
-    undoStack = [];
-    if (btnUndo) btnUndo.disabled = true;
+      const categories = currentProject && Array.isArray(currentProject.categories)
+        ? [...currentProject.categories]
+        : [];
 
-    markDirty(true);
-    updateCategoryVisibility();
-  });
-}
+      loadImage(textCanvasData.dataUrl);
+
+      currentProject = {
+        id: projectId,
+        name: currentProject && currentProject.name
+          ? currentProject.name
+          : 'text-image',
+        imageDataUrl: textCanvasData.dataUrl,
+        imageBaseWidth: textCanvasData.width,
+        imageBaseHeight: textCanvasData.height,
+        masks: [],
+        categories,
+        createdAt,
+        contentType: 'text',
+        textData: {
+          text,
+          fontSize
+        }
+      };
+
+      masks = [];
+      selectedMaskId = null;
+      undoStack = [];
+      if (btnUndo) btnUndo.disabled = true;
+
+      markDirty(true);
+      updateCategoryVisibility();
+    });
+  }
 
   if (btnSave) {
     btnSave.addEventListener('click', async ()=>{
@@ -990,7 +1031,20 @@
           imageBaseWidth: baseW,
           imageBaseHeight: baseH,
           createdAt,
-          review: normalizeReviewForSave(currentProject.review, createdAt)
+          review: normalizeReviewForSave(currentProject.review, createdAt),
+          contentType: currentProject && currentProject.contentType
+            ? currentProject.contentType
+            : 'image',
+          textData: (
+            currentProject &&
+            currentProject.contentType === 'text' &&
+            currentProject.textData
+          )
+            ? {
+                text: currentProject.textData.text || '',
+                fontSize: Number(currentProject.textData.fontSize) || 32
+              }
+            : null
         };
         const savedPayload = await persistProjectWithFallback(payload);
         if (!savedPayload) {
@@ -1020,6 +1074,14 @@
       const p = all.find(x => x.id === id);
       if (!p) { alert('プロジェクトが見つかりません'); return; }
       currentProject = JSON.parse(JSON.stringify(p));
+
+      if (currentProject.contentType === 'text' && currentProject.textData) {
+        currentProject.textData = {
+          text: currentProject.textData.text || '',
+          fontSize: Number(currentProject.textData.fontSize) || 32
+        };
+      }
+
       undoStack = [];
       if (btnUndo) btnUndo.disabled = true;
       syncSaveButtonState();

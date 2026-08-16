@@ -31,7 +31,7 @@
         <div class="edit-toolbar edit-toolbar--primary" role="toolbar" aria-label="編集ツール">
           <button id="btnInsertText" class="tool-card" type="button">
             <img src="assets/text.svg" alt="テキスト" class="tool-card__icon">
-            <span class="tool-card__label">テキスト追加</span>
+            <span class="tool-card__label">テキスト挿入</span>
           </button>
 
           <button id="btnAddMask" class="tool-card" type="button">
@@ -129,9 +129,12 @@
       <div class="modal-content">
         <h3 style="margin-top:0;">テキスト挿入</h3>
 
-        <label style="font-size:0.9rem;">フォントサイズ</label>
-        <input id="textFontSize" type="number" value="32" min="8" max="200" style="width:100%; margin-bottom:8px;" />
-
+        <label style="font-size:0.9rem;">文字の大きさ</label>
+        <select id="textFontSize" style="width:100%; margin-bottom:8px;">
+          <option value="32">小</option>
+          <option value="48">中</option>
+          <option value="64">大</option>
+        </select>
         <label style="font-size:0.9rem;">テキスト</label>
         <textarea id="textInputArea" rows="6" style="width:100%; margin-bottom:8px;"></textarea>
 
