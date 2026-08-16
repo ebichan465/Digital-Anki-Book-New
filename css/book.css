@@ -256,17 +256,6 @@ body.book-page .book-category-panel__button:active{
   transform:translateY(1px);
 }
 
-@media (max-width: 768px){
-  body.book-page .book-category-panel{
-    padding:12px 14px 14px;
-    border-radius:20px;
-  }
-
-  body.book-page .book-category-panel__title{
-    font-size:13px;
-  }
-}
-
 body.book-page .book-review-complete-btn:disabled{
   opacity:.45;
   cursor:not-allowed;
@@ -283,15 +272,6 @@ body.book-page .book-review-complete-btn:disabled{
   transform:none;
 }
 
-@media (max-width: 768px){
-  body.book-page .book-review-complete-btn{
-    min-height:48px;
-    padding:10px 14px;
-    font-size:14px;
-    border-radius:16px;
-  }
-}
-
 body.book-page .book-topbar__meta{
   margin:4px 0 0;
   min-height:1.2em;
@@ -304,46 +284,6 @@ body.book-page .book-topbar__meta{
 
 body.book-page .hidden{
   display:none !important;
-}
-
-@media (max-width: 768px){
-  body.book-page .book-layout{
-    gap:12px;
-  }
-
-  body.book-page .book-paper{
-    padding:18px 10px 16px 22px;
-    border-radius:24px;
-    min-height:calc(360px + 4px);
-  }
-
-  body.book-page .book-canvas{
-    min-height:360px;
-    padding-top:16px;
-  }
-
-  body.book-page .book-toolbar{
-    grid-template-columns:repeat(3, minmax(0, 1fr));
-  }
-
-  body.book-page .book-toolbar-btn{
-    min-height:66px;
-    border-bottom:1px solid rgba(81, 90, 98, .12);
-  }
-
-  body.book-page .book-toolbar-btn:nth-last-child(-n+2){
-    border-bottom:none;
-  }
-
-  body.book-page .book-toolbar-btn:nth-child(2n){
-    border-right:none;
-  }
-
-  body.book-page .book-toolbar-check{
-    min-height:44px;
-    margin-left:18px;
-    font-size:13px;
-  }
 }
 
 body.book-page .review-complete-toast{
@@ -381,6 +321,59 @@ body.book-page .review-complete-toast__icon{
 }
 
 @media (max-width: 768px){
+  body.book-page .book-category-panel{
+    padding:12px 14px 14px;
+    border-radius:20px;
+  }
+
+  body.book-page .book-category-panel__title{
+    font-size:13px;
+  }
+
+  body.book-page .book-review-complete-btn{
+    min-height:48px;
+    padding:10px 14px;
+    font-size:14px;
+    border-radius:16px;
+  }
+
+  body.book-page .book-layout{
+    gap:12px;
+  }
+
+  body.book-page .book-paper{
+    padding:18px 10px 16px 22px;
+    border-radius:24px;
+    min-height:calc(360px + 4px);
+  }
+
+  body.book-page .book-canvas{
+    min-height:360px;
+    padding-top:16px;
+  }
+
+  body.book-page .book-toolbar{
+    grid-template-columns:repeat(3, minmax(0, 1fr));
+  }
+
+  body.book-page .book-toolbar-btn{
+    min-height:66px;
+    padding:8px 6px;
+    border-bottom:none;
+    border-right:1px solid rgba(81, 90, 98, .12);
+    font-size:12px;
+  }
+
+  body.book-page .book-toolbar-btn:nth-child(3n){
+    border-right:none;
+  }
+
+  body.book-page .book-toolbar-check{
+    min-height:44px;
+    margin-left:18px;
+    font-size:13px;
+  }
+
   body.book-page #btnReviewComplete,
   body.book-page .book-review-complete-btn,
   body.book-page .book-review-button{
