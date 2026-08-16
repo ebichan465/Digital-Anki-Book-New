@@ -273,7 +273,7 @@ body.study-page .book-card__date{
   position:absolute;
   left:50%;
   transform:translateX(-50%);
-  bottom:32px;
+  bottom:5px;
 
   margin:0;
 

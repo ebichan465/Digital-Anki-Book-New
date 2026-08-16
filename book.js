@@ -11,7 +11,9 @@
 
   const btnResetMasks = document.getElementById('btnResetMasks');
   const btnRenameBook = document.getElementById('btnRenameBook');
-  const btnChangeCategory = document.getElementById('btnChangeCategory');
+  const bookCategoryBox = document.getElementById('bookCategoryBox');
+  const bookCategoryList = document.getElementById('bookCategoryList');
+  const btnNewBookCategory = document.getElementById('btnNewBookCategory');
   const btnDeleteImage = document.getElementById('btnDeleteImage');
   const btnReviewComplete = document.getElementById('btnReviewComplete');
   const bookWeakCheckbox = document.getElementById('bookWeakCheckbox');
@@ -89,6 +91,14 @@ function normalizeReview(review, createdAt) {
 
   async function saveAllProjects(projects) {
   await DigitalAnkiStorage.saveProjects(projects);
+  }
+
+  async function loadAllCategories() {
+    return DigitalAnkiStorage.getAllCategories();
+  }
+
+  async function saveAllCategories(categories) {
+    await DigitalAnkiStorage.saveAllCategories(categories);
   }
 
   function normalizeImageRecord(image, fallbackTitle, fallbackCreatedAt) {
@@ -202,7 +212,6 @@ function normalizeReview(review, createdAt) {
 
     if (btnResetMasks) btnResetMasks.disabled = !hasImage;
     if (btnRenameBook) btnRenameBook.disabled = !hasBook;
-    if (btnChangeCategory) btnChangeCategory.disabled = !hasBook;
     if (btnDeleteImage) btnDeleteImage.disabled = !hasImage;
     if (bookWeakCheckbox) bookWeakCheckbox.disabled = !hasBook;
 
@@ -495,15 +504,138 @@ function clearMaskElements() {
     updateHeader();
   }
 
-  async function changeCategories() {
-    if (!currentBook) return;
-    const current = Array.isArray(currentBook.categories) ? currentBook.categories.join(', ') : '';
-    const next = prompt('カテゴリを入力してください（カンマ区切り / 例: 英語, 数学）', current);
-    if (next === null) return;
+  if (btnNewBookCategory) {
+    btnNewBookCategory.addEventListener('click', async () => {
+      const name = prompt('カテゴリ名を入力してください');
+      if (name === null) return;
 
-    currentBook.categories = parseCategories(next);
-    await persistCurrentBook();
-    updateHeader();
+      const trimmed = name.trim();
+      if (!trimmed) return;
+
+      const categories = await loadAllCategories();
+
+      if (categories.includes(trimmed)) {
+        alert('同名のカテゴリが既に存在します');
+        return;
+      }
+
+      categories.push(trimmed);
+
+      await saveAllCategories(categories);
+      await refreshBookCategoryOptions();
+    });
+  }
+
+  async function refreshBookCategoryOptions() {
+    if (!bookCategoryList) return;
+
+    const categories = await loadAllCategories();
+    bookCategoryList.innerHTML = '';
+
+    categories.forEach((category) => {
+      const row = document.createElement('div');
+      row.className = 'book-category-panel__item';
+
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.className = 'book-category-panel__checkbox';
+      checkbox.value = category;
+      checkbox.checked = Array.isArray(currentBook?.categories)
+        ? currentBook.categories.includes(category)
+        : false;
+
+      checkbox.addEventListener('change', async () => {
+        if (!currentBook) return;
+
+        const nextCategories = new Set(
+          Array.isArray(currentBook.categories)
+            ? currentBook.categories
+            : []
+        );
+
+        if (checkbox.checked) {
+          nextCategories.add(category);
+        } else {
+          nextCategories.delete(category);
+        }
+
+        currentBook.categories = Array.from(nextCategories);
+
+        const saved = await persistCurrentBook();
+
+        if (!saved) {
+          checkbox.checked = !checkbox.checked;
+          return;
+        }
+
+        updateHeader();
+      });
+
+      const label = document.createElement('span');
+      label.className = 'book-category-panel__label';
+      label.textContent = category;
+
+      const deleteButton = document.createElement('button');
+      deleteButton.type = 'button';
+      deleteButton.className = 'book-category-panel__delete';
+      deleteButton.title = 'カテゴリを削除';
+      deleteButton.textContent = '🗑️';
+
+      deleteButton.addEventListener('click', async (ev) => {
+        ev.stopPropagation();
+
+        if (!confirm(`カテゴリ「${category}」を削除しますか？`)) {
+          return;
+        }
+
+        const categories = await loadAllCategories();
+        const nextCategories = categories.filter((item) => item !== category);
+
+        await saveAllCategories(nextCategories);
+
+        const allProjects = await loadAllProjects();
+
+        for (const project of allProjects) {
+          if (!Array.isArray(project.categories)) {
+            project.categories = [];
+          }
+
+          if (!project.categories.includes(category)) {
+            continue;
+          }
+
+          project.categories = project.categories.filter(
+            (item) => item !== category
+          );
+
+          try {
+            await DigitalAnkiStorage.saveProject(project);
+          } catch (error) {
+            console.error(
+              'カテゴリ削除に伴うBook更新に失敗しました。',
+              error
+            );
+          }
+        }
+
+        if (currentBook && Array.isArray(currentBook.categories)) {
+          currentBook.categories = currentBook.categories.filter(
+            (item) => item !== category
+          );
+        }
+
+        updateHeader();
+        await refreshBookCategoryOptions();
+
+        alert(`カテゴリ「${category}」を削除しました。`);
+      });
+
+      row.appendChild(checkbox);
+      row.appendChild(label);
+      row.appendChild(deleteButton);
+
+      bookCategoryList.appendChild(row);
+    });
   }
 
   function resetMasks() {
@@ -617,10 +749,6 @@ function clearMaskElements() {
       btnRenameBook.addEventListener('click', renameBook);
     }
 
-    if (btnChangeCategory) {
-      btnChangeCategory.addEventListener('click', changeCategories);
-    }
-
     if (btnDeleteImage) {
       btnDeleteImage.addEventListener('click', deleteCurrentImage);
     }
@@ -652,6 +780,7 @@ function clearMaskElements() {
     syncLegacyFields(currentBook);
     updateHeader();
     setBookState();
+    await refreshBookCategoryOptions();
     loadCurrentImage();
   }
 

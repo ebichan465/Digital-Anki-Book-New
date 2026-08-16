@@ -47,9 +47,15 @@
       <section class="book-toolbar" aria-label="Book操作">
         <button id="btnResetMasks" class="book-toolbar-btn" type="button">リセット</button>
         <button id="btnRenameBook" class="book-toolbar-btn" type="button">名前を変更</button>
-        <button id="btnChangeCategory" class="book-toolbar-btn" type="button">カテゴリ変更</button>
         <button id="btnDeleteImage" class="book-toolbar-btn" type="button">画像削除</button>
       </section>
+
+      <section class="book-category-panel" id="bookCategoryBox" aria-label="カテゴリを選択">
+        <h4 class="book-category-panel__title">カテゴリを選択</h4>
+        <div id="bookCategoryList" class="book-category-panel__list"></div>
+        <button id="btnNewBookCategory" class="book-category-panel__button" type="button">新たなカテゴリ</button>
+      </section>
+      
       <button id="btnReviewComplete" class="book-review-complete-btn hidden" type="button">
         復習完了
       </button>
