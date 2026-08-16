@@ -627,6 +627,25 @@ body.edit-page .hidden{
   display:none !important;
 }
 
+body.edit-page #textModal{
+  color:#16488A;
+}
+
+body.edit-page #textModal textarea{
+  color:#16488A;
+  font-family:"Zen Kaku Gothic New", sans-serif;
+}
+
+body.edit-page #textModal select{
+  color:#16488A;
+  font-family:"Zen Kaku Gothic New", sans-serif;
+}
+
+body.edit-page #textModal button{
+  color:#16488A;
+  font-family:"Zen Kaku Gothic New", sans-serif;
+}
+
 @media (max-width: 768px){
   body.edit-page .edit-scene{
     padding:14px 10px 22px;
