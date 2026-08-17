@@ -254,5 +254,14 @@ body.home-page .home-decoration--eraser{
   .home-subtitle{
     font-size:clamp(13px, 3.6vw, 16px);
   }
+  body.home-page .home-decoration--pen{
+    right:230px;
+    bottom:-400px;
+  }
+
+  body.home-page .home-decoration--eraser{
+    right:140px;
+    bottom:-400px;
+  }
 }
 
