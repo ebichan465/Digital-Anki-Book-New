@@ -191,6 +191,31 @@ body.home-page .review-bubble{
   box-shadow:0 4px 10px rgba(0,0,0,.08);
 }
 
+body.home-page .home-decoration{
+  position:absolute;
+  z-index:0;
+  pointer-events:none;
+  user-select:none;
+}
+
+body.home-page .home-stage{
+  position:relative;
+}
+
+body.home-page .home-decoration--pen{
+  width:250px;
+  right:380px;
+  bottom:-300px;
+  transform:rotate(-12deg);
+}
+
+body.home-page .home-decoration--eraser{
+  width:150px;
+  right:290px;
+  bottom:-300px;
+  transform:rotate(8deg);
+}
+
 @media (max-width: 768px){
   .home-scene{
     min-height:100svh;
