@@ -257,6 +257,7 @@ body.edit-page .tool-card__label{
 
 body.edit-page .edit-book{
   display:flex;
+  flex-direction:column;
   justify-content:flex-start;
   align-items:flex-start;
   padding:18px 0 0 12px;
@@ -331,9 +332,7 @@ body.edit-page .image-area::after{
 body.edit-page .image-picker-card{
   appearance:none;
   border:none;
-  background:
-    radial-gradient(circle at 50% 38%, rgba(255,255,255,.55), transparent 44%),
-    linear-gradient(180deg, rgba(255,255,255,.34) 0%, rgba(246,239,227,.36) 100%);
+  background:transparent;
   position:absolute;
   inset:0;
   z-index:2;
@@ -395,6 +394,16 @@ body.edit-page .panel-title{
   margin:0;
 }
 
+body.edit-page .zoom-hint{
+  margin:8px 0 0;
+  padding-left:64px;
+  color:#7a858d;
+  font-size:12px;
+  font-weight:600;
+  letter-spacing:.04em;
+  text-align:left;
+}
+
 body.edit-page .mask-swatches{
   display:flex;
   flex-wrap:wrap;
@@ -422,7 +431,7 @@ body.edit-page .swatch:hover{
 }
 
 body.edit-page .swatch.is-selected{
-  outline:3px solid #ffd45c;
+  outline:3px solid #fff06a;
   outline-offset:2px;
   transform:translateY(-1px) scale(1.05);
   box-shadow:
@@ -500,7 +509,7 @@ body.edit-page .shape-btn:hover{
 }
 
 body.edit-page .shape-btn.is-selected{
-  outline:3px solid #ffd45c;
+  outline:3px solid #fff06a;
   outline-offset:2px;
   background:linear-gradient(180deg, #ffffff 0%, #f3ecdf 100%);
 }
@@ -747,5 +756,10 @@ body.edit-page #textModal button{
   width:min(100%, 760px);
   min-height:350px;
   padding:22px 20px 22px 54px;
+  }
+
+  body.edit-page .zoom-hint{
+    padding-left:54px;
+    font-size:11px;
   }
 }

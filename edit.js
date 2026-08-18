@@ -52,7 +52,7 @@
       h: m.h,
       rotation: normalizeRotation(m.rotation),
       visible: (m.visible === undefined) ? true : Boolean(m.visible),
-      color: m.color || '#000000',
+      color: m.color || '#111111',
       shape: m.shape || 'rect'
     };
   }
