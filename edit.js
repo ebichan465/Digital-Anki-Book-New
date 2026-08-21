@@ -21,8 +21,6 @@
   const categoryBox = getEl('categoryBox');
   const categoryList = getEl('categoryList');
   const btnNewCategory = getEl('btnNewCategory');
-  // NOTE: btnDeleteCategory UI/button removed per latest spec (do not reference it)
-  // const btnDeleteCategory = getEl('btnDeleteCategory');
 
   const textModal = getEl('textModal');
   const textInputArea = getEl('textInputArea');
@@ -175,16 +173,6 @@
     return DigitalAnkiStorage.getAllProjects();
   }
 
-  async function saveAllProjects(arr){
-    try {
-      await DigitalAnkiStorage.saveProjects(arr);
-      return true;
-    } catch (e) {
-      console.error('保存に失敗しました', e);
-      return false;
-    }
-  }
-
   async function loadAllCategories(){
     return DigitalAnkiStorage.getAllCategories();
   }
@@ -210,8 +198,6 @@
     if (!imageArea || !mainImage) return;
     imageArea.classList.toggle('has-image', !!mainImage.getAttribute('src'));
   }
-
-  // Insert label "色" between image selection button and colorPicker (do it dynamically so HTML doesn't need editing)
 
   async function refreshCategoryOptions(){
     const cats = await loadAllCategories();
@@ -354,7 +340,6 @@
 }
 
   if (colorPicker) colorPicker.value = '#000000';
-  defaultShape = shapeSelect ? shapeSelect.value : 'rect';
 
   if (shapeSelect) {
     shapeSelect.addEventListener('change', (e)=>{
@@ -426,25 +411,9 @@
 
     const resizeHandle = document.createElement('div');
     resizeHandle.className = 'resize-handle';
-    resizeHandle.style.touchAction = 'none';
 
     const rotateHandle = document.createElement('div');
     rotateHandle.className = 'rotate-handle';
-    rotateHandle.style.position = 'absolute';
-    rotateHandle.style.left = '50%';
-    rotateHandle.style.top = 'calc(100% + 10px)';
-    rotateHandle.style.transform = 'translateX(-50%)';
-    rotateHandle.style.width = '12px';
-    rotateHandle.style.height = '12px';
-    rotateHandle.style.borderRadius = '50%';
-    rotateHandle.style.background = '#fff';
-    rotateHandle.style.border = '1px solid #333';
-    rotateHandle.style.boxShadow = '0 1px 3px rgba(0,0,0,.2)';
-    rotateHandle.style.cursor = 'grab';
-    rotateHandle.style.touchAction = 'none';
-    rotateHandle.style.userSelect = 'none';
-    rotateHandle.style.zIndex = '2';
-    rotateHandle.style.display = 'none';
 
     el.appendChild(resizeHandle);
     el.appendChild(rotateHandle);
@@ -727,7 +696,6 @@
     });
   }
   syncSaveButtonState();
-  if (btnUndo) btnUndo.disabled = true;
 
   function fileToDataURL(file){
     return new Promise((res,rej)=>{
@@ -739,23 +707,36 @@
   }
 
   async function createCanvasFromDataURL(dataUrl, maxDimension=1200){
-    const img = new Image();
-    await new Promise(r=>{ img.onload = r; img.onerror = r; img.src = dataUrl; });
-    const origW = img.naturalWidth || img.width || 1200;
-    const origH = img.naturalHeight || img.height || 800;
+    const response = await fetch(dataUrl);
+    const blob = await response.blob();
+
+    const bitmap = await createImageBitmap(blob, {
+      imageOrientation: 'from-image'
+    });
+
+    const origW = bitmap.width || 1200;
+    const origH = bitmap.height || 800;
+
     const scale = Math.min(1, maxDimension / Math.max(origW, origH));
     const targetW = Math.max(1, Math.round(origW * scale));
     const targetH = Math.max(1, Math.round(origH * scale));
+
     const canvas = document.createElement('canvas');
     canvas.width = targetW;
     canvas.height = targetH;
+
     const ctx = canvas.getContext('2d');
-    ctx.drawImage(img,0,0,targetW,targetH);
+    ctx.drawImage(bitmap, 0, 0, targetW, targetH);
+
+    if (typeof bitmap.close === 'function') {
+      bitmap.close();
+    }
 
     const inputMime = getDataUrlMime(dataUrl);
     const outputMime = chooseOutputMime(inputMime);
-    
+
     let outputDataUrl = dataUrl;
+
     try {
       outputDataUrl = canvas.toDataURL(outputMime, 0.95);
     } catch (e) {
@@ -765,7 +746,13 @@
         outputDataUrl = dataUrl;
       }
     }
-    return { dataUrl: outputDataUrl, width: targetW, height: targetH, mimeType: outputMime };
+
+    return {
+      dataUrl: outputDataUrl,
+      width: targetW,
+      height: targetH,
+      mimeType: outputMime
+    };
   }
 
   async function persistProjectWithFallback(payload){
@@ -952,8 +939,6 @@
         }
       };
 
-      masks = [];
-      selectedMaskId = null;
       undoStack = [];
       if (btnUndo) btnUndo.disabled = true;
 

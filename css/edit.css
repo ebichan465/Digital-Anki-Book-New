@@ -69,15 +69,6 @@ body.edit-page .edit-topbar-btn--save:disabled:hover{
   filter:none;
 }
 
-body.edit-page .text-box{
-  position:absolute;
-  z-index:1;
-  white-space:pre-wrap;
-  color:#111;
-  pointer-events:none;
-  user-select:none;
-}
-
 body.edit-page .edit-topbar__title{
   justify-self:center;
   text-align:center;
@@ -267,7 +258,6 @@ body.edit-page .edit-book{
 body.edit-page .image-area{
   position:relative;
   width:min(100%, 900px);
-  min-height:1000px;
   box-sizing:border-box;
   overflow:visible;
   padding:28px 28px 28px 64px;
@@ -392,16 +382,6 @@ body.edit-page .panel-title{
   letter-spacing:.03em;
   color:#16488A;
   margin:0;
-}
-
-body.edit-page .zoom-hint{
-  margin:8px 0 0;
-  padding-left:64px;
-  color:#7a858d;
-  font-size:12px;
-  font-weight:600;
-  letter-spacing:.04em;
-  text-align:left;
 }
 
 body.edit-page .mask-swatches{
@@ -562,6 +542,24 @@ body.edit-page .project-panel[open] summary::after{
   transform:rotate(180deg);
 }
 
+body.edit-page .rotate-handle{
+  position:absolute;
+  left:50%;
+  top:calc(100% + 10px);
+  transform:translateX(-50%);
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  background:#fff;
+  border:1px solid #333;
+  box-shadow:0 1px 3px rgba(0,0,0,.2);
+  cursor:grab;
+  touch-action:none;
+  user-select:none;
+  z-index:2;
+  display:none;
+}
+
 body.edit-page .project-panel__body{
   margin-top:12px;
   display:flex;
@@ -630,10 +628,6 @@ body.edit-page .category-list{
   overflow:auto;
   margin:10px 0 8px;
   padding-right:2px;
-}
-
-body.edit-page .hidden{
-  display:none !important;
 }
 
 body.edit-page #textModal{
@@ -738,10 +732,6 @@ body.edit-page #textModal button{
     padding:12px 14px 14px;
   }
 
-  body.edit-page .edit-toolbar--primary{
-    grid-template-columns:repeat(4, minmax(0, 1fr));
-  }
-
   body.edit-page .edit-book{
     gap:10px;
     padding:12px 0 0 8px;
@@ -756,10 +746,5 @@ body.edit-page #textModal button{
   width:min(100%, 760px);
   min-height:350px;
   padding:22px 20px 22px 54px;
-  }
-
-  body.edit-page .zoom-hint{
-    padding-left:54px;
-    font-size:11px;
   }
 }
