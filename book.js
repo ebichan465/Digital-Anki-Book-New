@@ -357,27 +357,59 @@ function clearMaskElements() {
   }
 
   function updateMaskPositions() {
-  if (!maskEntries.length || !bookCanvas || !bookMainImage) return;
+    if (!maskEntries.length || !bookCanvas || !bookMainImage) return;
 
-  requestAnimationFrame(() => {
-    const imgRect = bookMainImage.getBoundingClientRect();
-    const canvasRect = bookCanvas.getBoundingClientRect();
-    if (!imgRect.width || !imgRect.height) return;
+    requestAnimationFrame(() => {
+      const imgRect = getImageContentRect(bookMainImage);
+      const canvasRect = bookCanvas.getBoundingClientRect();
+      if (!imgRect.width || !imgRect.height) return;
 
-    maskEntries.forEach((entry) => {
-      const mask = entry.model;
-      const left = (mask.x * imgRect.width) + (imgRect.left - canvasRect.left);
-      const top = (mask.y * imgRect.height) + (imgRect.top - canvasRect.top);
-      entry.el.style.left = `${left}px`;
-      entry.el.style.top = `${top}px`;
-      entry.el.style.width = `${mask.w * imgRect.width}px`;
-      entry.el.style.height = `${mask.h * imgRect.height}px`;
-      entry.el.style.transformOrigin = 'center center';
-      entry.el.style.transform = `rotate(${normalizeRotation(mask.rotation)}deg)`;
-      applyMaskVisual(entry);
+      maskEntries.forEach((entry) => {
+        const mask = entry.model;
+        const left = (mask.x * imgRect.width) + (imgRect.left - canvasRect.left);
+        const top = (mask.y * imgRect.height) + (imgRect.top - canvasRect.top);
+        entry.el.style.left = `${left}px`;
+        entry.el.style.top = `${top}px`;
+        entry.el.style.width = `${mask.w * imgRect.width}px`;
+        entry.el.style.height = `${mask.h * imgRect.height}px`;
+        entry.el.style.transformOrigin = 'center center';
+        entry.el.style.transform = `rotate(${normalizeRotation(mask.rotation)}deg)`;
+        applyMaskVisual(entry);
+      });
     });
-  });
-}
+  }
+
+  function getImageContentRect(imgEl){
+    const rect = imgEl.getBoundingClientRect();
+
+    const naturalWidth = imgEl.naturalWidth;
+    const naturalHeight = imgEl.naturalHeight;
+
+    if (!naturalWidth || !naturalHeight) {
+      return rect;
+    }
+
+    const imageRatio = naturalWidth / naturalHeight;
+    const elementRatio = rect.width / rect.height;
+
+    let contentWidth = rect.width;
+    let contentHeight = rect.height;
+
+    if (elementRatio > imageRatio) {
+      contentHeight = rect.height;
+      contentWidth = contentHeight * imageRatio;
+    } else {
+      contentWidth = rect.width;
+      contentHeight = contentWidth / imageRatio;
+    }
+
+    return {
+      left: rect.left + (rect.width - contentWidth) / 2,
+      top: rect.top + (rect.height - contentHeight) / 2,
+      width: contentWidth,
+      height: contentHeight
+    };
+  }
 
   function renderMasks() {
     clearMaskElements();

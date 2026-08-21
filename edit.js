@@ -199,6 +199,37 @@
     imageArea.classList.toggle('has-image', !!mainImage.getAttribute('src'));
   }
 
+  function getImageContentRect(imgEl){
+    const rect = imgEl.getBoundingClientRect();
+
+    const naturalWidth = imgEl.naturalWidth;
+    const naturalHeight = imgEl.naturalHeight;
+
+    if (!naturalWidth || !naturalHeight) {
+      return rect;
+    }
+
+    const imageRatio = naturalWidth / naturalHeight;
+    const elementRatio = rect.width / rect.height;
+
+    let contentWidth = rect.width;
+    let contentHeight = rect.height;
+
+    if (elementRatio > imageRatio) {
+      contentHeight = rect.height;
+      contentWidth = contentHeight * imageRatio;
+    } else {
+      contentWidth = rect.width;
+      contentHeight = contentWidth / imageRatio;
+    }
+
+    return {
+      left: rect.left + (rect.width - contentWidth) / 2,
+      top: rect.top + (rect.height - contentHeight) / 2,
+      width: contentWidth,
+      height: contentHeight
+    };
+  }
   async function refreshCategoryOptions(){
     const cats = await loadAllCategories();
     categoryList.innerHTML = '';
@@ -361,40 +392,40 @@
 
   // ===== mask rendering and interactions (unchanged except default visible handling) =====
     function updateMaskDOMFromModel(m){
-    if (!m.el) return;
-    const imgRect = mainImage.getBoundingClientRect();
-    const wrapperRect = imageArea.getBoundingClientRect();
-    if (!imgRect.width || !imgRect.height) {
-      setTimeout(()=> updateMaskDOMFromModel(m), 40);
-      return;
+      if (!m.el) return;
+      const imgRect = getImageContentRect(mainImage);
+      const wrapperRect = imageArea.getBoundingClientRect();
+      if (!imgRect.width || !imgRect.height) {
+        setTimeout(()=> updateMaskDOMFromModel(m), 40);
+        return;
+      }
+
+      const rotation = normalizeRotation(m.rotation);
+      m.rotation = rotation;
+
+      const left = (m.x * imgRect.width) + (imgRect.left - wrapperRect.left);
+      const top = (m.y * imgRect.height) + (imgRect.top - wrapperRect.top);
+
+      m.el.style.left = left + 'px';
+      m.el.style.top = top + 'px';
+      m.el.style.width = (m.w * imgRect.width) + 'px';
+      m.el.style.height = (m.h * imgRect.height) + 'px';
+      m.el.style.transformOrigin = 'center center';
+      m.el.style.transform = `rotate(${rotation}deg)`;
+      m.el.style.overflow = 'visible';
+
+      m.el.classList.remove('rect','circle');
+      m.el.classList.add(m.shape || 'rect');
+      m.el.style.background = m.color || '#000000';
+
+      const isVisible = (m.visible === undefined) ? true : Boolean(m.visible);
+      m.el.style.opacity = isVisible ? '0.5' : '0';
+      m.el.classList.toggle('selected', selectedMaskId === m.id);
+
+      if (m.rotateHandle) {
+        m.rotateHandle.style.display = selectedMaskId === m.id ? 'block' : 'none';
+      }
     }
-
-    const rotation = normalizeRotation(m.rotation);
-    m.rotation = rotation;
-
-    const left = (m.x * imgRect.width) + (imgRect.left - wrapperRect.left);
-    const top = (m.y * imgRect.height) + (imgRect.top - wrapperRect.top);
-
-    m.el.style.left = left + 'px';
-    m.el.style.top = top + 'px';
-    m.el.style.width = (m.w * imgRect.width) + 'px';
-    m.el.style.height = (m.h * imgRect.height) + 'px';
-    m.el.style.transformOrigin = 'center center';
-    m.el.style.transform = `rotate(${rotation}deg)`;
-    m.el.style.overflow = 'visible';
-
-    m.el.classList.remove('rect','circle');
-    m.el.classList.add(m.shape || 'rect');
-    m.el.style.background = m.color || '#000000';
-
-    const isVisible = (m.visible === undefined) ? true : Boolean(m.visible);
-    m.el.style.opacity = isVisible ? '0.5' : '0';
-    m.el.classList.toggle('selected', selectedMaskId === m.id);
-
-    if (m.rotateHandle) {
-      m.rotateHandle.style.display = selectedMaskId === m.id ? 'block' : 'none';
-    }
-  }
 
   function refreshAllMasks(){
     masks.forEach(updateMaskDOMFromModel);
@@ -441,7 +472,7 @@
 
     function commit(){
       const wrapperRect = imageArea.getBoundingClientRect();
-      const imgRect = mainImage.getBoundingClientRect();
+      const imgRect = getImageContentRect(mainImage);
       const left = parseFloat(el.style.left || 0);
       const top = parseFloat(el.style.top || 0);
       const width = parseFloat(el.style.width || 0);
@@ -615,7 +646,7 @@
     const orig = masks.find(x=>x.id===selectedMaskId);
     if (!orig) return;
     pushUndoState();
-    const imgRect = mainImage.getBoundingClientRect();
+      const imgRect = getImageContentRect(mainImage);
       const offsetX = Math.min(20, imgRect.width * 0.05) / imgRect.width;
       const offsetY = Math.min(20, imgRect.height * 0.05) / imgRect.height;
             const copy = {
@@ -640,7 +671,7 @@
     btnAddMask.addEventListener('click', ()=>{
       if (!mainImage.src) { alert('先に画像を読み込んでください'); return; }
       pushUndoState();
-      const rect = mainImage.getBoundingClientRect();
+      const rect = getImageContentRect(mainImage);
       const w = Math.min( Math.round(rect.width * 0.5), 800 );
       const h = Math.min( Math.round(rect.height * 0.12), 200 );
       const relX = 0.5 - (w / rect.width) / 2;
@@ -707,36 +738,23 @@
   }
 
   async function createCanvasFromDataURL(dataUrl, maxDimension=1200){
-    const response = await fetch(dataUrl);
-    const blob = await response.blob();
-
-    const bitmap = await createImageBitmap(blob, {
-      imageOrientation: 'from-image'
-    });
-
-    const origW = bitmap.width || 1200;
-    const origH = bitmap.height || 800;
-
+    const img = new Image();
+    await new Promise(r=>{ img.onload = r; img.onerror = r; img.src = dataUrl; });
+    const origW = img.naturalWidth || img.width || 1200;
+    const origH = img.naturalHeight || img.height || 800;
     const scale = Math.min(1, maxDimension / Math.max(origW, origH));
     const targetW = Math.max(1, Math.round(origW * scale));
     const targetH = Math.max(1, Math.round(origH * scale));
-
     const canvas = document.createElement('canvas');
     canvas.width = targetW;
     canvas.height = targetH;
-
     const ctx = canvas.getContext('2d');
-    ctx.drawImage(bitmap, 0, 0, targetW, targetH);
-
-    if (typeof bitmap.close === 'function') {
-      bitmap.close();
-    }
+    ctx.drawImage(img,0,0,targetW,targetH);
 
     const inputMime = getDataUrlMime(dataUrl);
     const outputMime = chooseOutputMime(inputMime);
-
+      
     let outputDataUrl = dataUrl;
-
     try {
       outputDataUrl = canvas.toDataURL(outputMime, 0.95);
     } catch (e) {
@@ -746,13 +764,7 @@
         outputDataUrl = dataUrl;
       }
     }
-
-    return {
-      dataUrl: outputDataUrl,
-      width: targetW,
-      height: targetH,
-      mimeType: outputMime
-    };
+    return { dataUrl: outputDataUrl, width: targetW, height: targetH, mimeType: outputMime };
   }
 
   async function persistProjectWithFallback(payload){
@@ -954,7 +966,7 @@
 
         masks.forEach(m => {
           const wrapperRect = imageArea.getBoundingClientRect();
-          const imgRect = mainImage.getBoundingClientRect();
+          const imgRect = getImageContentRect(mainImage);
           const left = parseFloat(m.el.style.left || 0);
           const top = parseFloat(m.el.style.top || 0);
           const width = parseFloat(m.el.style.width || 0);
