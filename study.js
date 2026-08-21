@@ -53,10 +53,6 @@
     return DigitalAnkiStorage.getAllProjects();
   }
 
-  async function saveAllProjects(projects) {
-    await DigitalAnkiStorage.saveProjects(projects);
-  }
-
   async function loadAllCategories() {
     return DigitalAnkiStorage.getAllCategories();
   }
@@ -434,9 +430,6 @@ if (!hasAnyFilteredBooks) {
       coverWrap.appendChild(title);
       coverWrap.appendChild(date);
 
-            // ===== お気に入り復活：この位置から =====
-      // ===== お気に入りボタン配置：この位置から =====
-
       openButton.addEventListener('click', () => {
         if (state.deleteMode) {
           toggleDeleteSelection(book.id, !state.selectedDeleteIds.has(book.id));
@@ -501,7 +494,6 @@ if (!hasAnyFilteredBooks) {
     }
 
     cancelDeleteMode();
-    await renderBooks();
   }
 
   if (sheetBackdrop) {

@@ -98,6 +98,7 @@ body.book-page .book-favorite-toggle{
   box-shadow:0 6px 18px rgba(0,0,0,.12);
 
   z-index:20;
+  color:#16488A;;
 }
 
 body.book-page .book-favorite-toggle input{
@@ -154,9 +155,6 @@ body.book-page .book-toolbar-btn:hover{
 }
 body.book-page .book-toolbar-btn:active{
   transform:translateY(1px);
-}
-body.book-page .book-favorite-toggle{
-  color:#16488A;;
 }
 
 body.book-page .book-review-complete-btn{
@@ -266,12 +264,6 @@ body.book-page .book-review-complete-btn:disabled{
 
 body.book-page .book-review-complete-btn:active{
   transform:translateY(1px);
-}
-
-body.book-page .book-review-complete-btn:disabled{
-  opacity:.45;
-  cursor:not-allowed;
-  transform:none;
 }
 
 body.book-page .book-topbar__meta{

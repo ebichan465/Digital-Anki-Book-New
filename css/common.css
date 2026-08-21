@@ -286,11 +286,7 @@ body.book-page{
 }
 
 body.study-page button,
-body.study-page .study-toolbar-btn,
-body.study-page .study-delete-panel__button,
-body.study-page .study-sheet__option,
-body.book-page button,
-body.book-page .book-toolbar-btn{
+body.book-page button{
   font-family: inherit;
 }
 
@@ -380,13 +376,7 @@ body.book-page .book-topbar-btn--back{
   aspect-ratio:1 / 1;
 }
 
-body.study-page .study-topbar-btn__icon{
-    display:block;
-    width:24px;
-    height:24px;
-    object-fit:contain;
-}
-
+body.study-page .study-topbar-btn__icon,
 body.book-page .book-topbar-btn__icon{
     display:block;
     width:24px;

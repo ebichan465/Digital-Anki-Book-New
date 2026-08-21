@@ -38,10 +38,9 @@
   const DEFAULT_MASK_ROTATION = 0;
 
   function normalizeRotation(value) {
-  const n = Number(value);
-  return Number.isFinite(n) ? n : DEFAULT_MASK_ROTATION;
+    const n = Number(value);
+    return Number.isFinite(n) ? n : DEFAULT_MASK_ROTATION;
   }
-
   function unique(values) {
   return Array.from(new Set(values.filter(Boolean)));
 }
@@ -86,9 +85,9 @@ function normalizeReview(review, createdAt) {
 }
 
   async function loadAllProjects() {
-  return DigitalAnkiStorage.getAllProjects();
+    return DigitalAnkiStorage.getAllProjects();
   }
-
+  
   async function saveAllProjects(projects) {
   await DigitalAnkiStorage.saveProjects(projects);
   }
@@ -166,9 +165,9 @@ function normalizeReview(review, createdAt) {
   }
 
   async function getBookById(id) {
-  const all = await loadAllProjects();
-  const found = all.find((project) => project.id === id);
-  return found ? normalizeBook(found) : null;
+    const all = await loadAllProjects();
+    const found = all.find((project) => project.id === id);
+    return found ? normalizeBook(found) : null;
   }
 
   function getActiveImageRecord() {
@@ -508,14 +507,6 @@ function clearMaskElements() {
     return currentBook;
   }
 
-  function parseCategories(input) {
-    return String(input || '')
-      .split(/[、,]/g)
-      .map((item) => item.trim())
-      .filter(Boolean)
-      .filter((value, index, array) => array.indexOf(value) === index);
-  }
-
   async function renameBook() {
     if (!currentBook) return;
     const nextName = prompt('新しいBook名を入力してください', currentBook.name || '');
@@ -752,7 +743,6 @@ function clearMaskElements() {
 
     if (btnResetMasks) btnResetMasks.disabled = true;
     if (btnRenameBook) btnRenameBook.disabled = true;
-    if (btnChangeCategory) btnChangeCategory.disabled = true;
     if (btnDeleteImage) btnDeleteImage.disabled = true;
     if (btnReviewComplete) {
       btnReviewComplete.classList.add('hidden');

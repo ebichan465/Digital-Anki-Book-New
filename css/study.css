@@ -200,9 +200,9 @@ body.study-page .book-card__open{
   color:inherit;
   cursor:pointer;
   display:block;
-  flex-direction:column;
   text-align:left;
 }
+
 body.study-page .book-card__open:active{
   transform:translateY(1px);
 }
@@ -210,11 +210,11 @@ body.study-page .book-card__open:active{
 body.study-page .book-card__cover{
   position:relative;
   width:100%;
-  aspect-ratio: 0.95;
-  background: transparent;
-  align-items:center;
+  aspect-ratio:0.95;
+  background:transparent;
   overflow:hidden;
 }
+
 body.study-page .book-card__cover::before{
   content:'';
   position:absolute;
@@ -519,16 +519,6 @@ body.study-page .study-selection-bar__button--delete{
   body.study-page .book-card__date{
     bottom:5px;
     left:50%;
-  }
-
-  /* ================================================ */
-
-  body.study-page .study-toolbar{
-    display:flex;
-  }
-
-  body.study-page .study-toolbar-btn:last-child{
-    border-right:none;
   }
 
   body.study-page .study-toolbar-btn__label,
