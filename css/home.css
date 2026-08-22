@@ -204,14 +204,14 @@ body.home-page .home-stage{
 
 body.home-page .home-decoration--pen{
   width:300px;
-  right:400px;
+  right:360px;
   bottom:-300px;
   transform:rotate(-12deg);
 }
 
 body.home-page .home-decoration--eraser{
   width:190px;
-  right:310px;
+  right:270px;
   bottom:-300px;
   transform:rotate(8deg);
 }
