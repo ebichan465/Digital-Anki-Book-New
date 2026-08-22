@@ -10,6 +10,7 @@ body.book-page .book-main{
   gap:8px;
   min-width:0;
   position:relative;
+  margin-top: 45px;
 }
 
 body.book-page .book-paper{
@@ -84,21 +85,21 @@ body.book-page .book-mask{
 
 body.book-page .book-favorite-toggle{
   position:absolute;
-  left:0px;
-  bottom:-40px;
+  left:0;
+  top:-50px;
 
   display:flex;
   align-items:center;
   gap:6px;
 
-  padding:6px 10px;
+  padding:10px 16px;
 
   border-radius:99px;
   background:rgba(255,255,255,.92);
   box-shadow:0 6px 18px rgba(0,0,0,.12);
 
   z-index:20;
-  color:#16488A;;
+  color:#16488A;
 }
 
 body.book-page .book-favorite-toggle input{
@@ -106,8 +107,8 @@ body.book-page .book-favorite-toggle input{
 }
 
 body.book-page .book-favorite-toggle span{
-  font-size:13px;
-  font-weight:600;
+  font-size:15px;
+  font-weight:700;
 }
 
 body.book-page .book-mask.circle{
@@ -125,7 +126,6 @@ body.book-page .book-toolbar{
   border:1px solid rgba(81, 90, 98, .12);
   background:rgba(255,255,255,.38);
   box-shadow:0 18px 28px -24px rgba(74, 58, 36, .35);
-  margin-top: 40px;
 }
 
 body.book-page .book-toolbar-btn{
@@ -172,7 +172,6 @@ body.book-page .book-review-complete-btn{
   font-family:inherit;
   font-size:15px;
   font-weight:800;
-  margin-top:50px;
   cursor:pointer;
   transition:transform .15s ease, filter .15s ease, box-shadow .15s ease;
 }
