@@ -203,15 +203,15 @@ body.home-page .home-stage{
 }
 
 body.home-page .home-decoration--pen{
-  width:250px;
-  right:380px;
+  width:300px;
+  right:400px;
   bottom:-300px;
   transform:rotate(-12deg);
 }
 
 body.home-page .home-decoration--eraser{
-  width:150px;
-  right:290px;
+  width:190px;
+  right:310px;
   bottom:-300px;
   transform:rotate(8deg);
 }
