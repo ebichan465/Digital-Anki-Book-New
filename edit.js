@@ -55,7 +55,7 @@
     };
   }
 
-  function syncSaveButtonState() {
+  function syncSaveButtonState(){
     if (!btnSave) return;
     btnSave.disabled = !mainImage.src;
   }
@@ -197,6 +197,14 @@
   function syncImageAreaState(){
     if (!imageArea || !mainImage) return;
     imageArea.classList.toggle('has-image', !!mainImage.getAttribute('src'));
+  }
+
+  function syncMaskSettingsVisibility(){
+    const maskSettings = document.querySelector('.edit-toolbar--secondary');
+    if (!maskSettings) return;
+
+    const hasContent = !!mainImage.getAttribute('src');
+    maskSettings.classList.toggle('hidden', !hasContent);
   }
 
   function getImageContentRect(imgEl){
@@ -802,10 +810,13 @@
   function loadImage(dataUrl){
     mainImage.src = dataUrl;
     syncImageAreaState();
+    syncMaskSettingsVisibility();
     syncSaveButtonState();
+
     masks.forEach(m=> m.el && m.el.remove());
     masks = [];
     selectedMaskId = null;
+
     mainImage.onload = () => {
       setTimeout(refreshAllMasks, 40);
       updateCategoryVisibility();
@@ -1087,6 +1098,7 @@
       masks = [];
       mainImage.src = currentProject.imageDataUrl;
       syncImageAreaState();
+      syncMaskSettingsVisibility();
       syncSaveButtonState();
 
       mainImage.onload = async ()=>{
@@ -1242,6 +1254,8 @@
   // (no additional listener needed here)
 
 async function initializeEditPage() {
+  syncMaskSettingsVisibility();
+
   await refreshProjectSelect();
   await updateCategoryVisibility();
 }
