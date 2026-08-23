@@ -749,7 +749,8 @@ body.edit-page #textModal button{
 
   body.edit-page .shape-btn{
     min-width:0;
-    flex:1 1 0;
+    flex:0 0 72px;
+    min-height:60px;
   }
 
   body.edit-page .project-panel,
