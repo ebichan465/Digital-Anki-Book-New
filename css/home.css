@@ -82,7 +82,6 @@ body.home-page .home-action-btn{
   overflow:visible;
   transform:rotate(var(--note-tilt));
   transition:
-    transform .16s ease,
     box-shadow .16s ease,
     filter .16s ease;
   background-color: var(--note-bg);
