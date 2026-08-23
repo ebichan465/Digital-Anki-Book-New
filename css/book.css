@@ -228,8 +228,8 @@ body.book-page .book-category-panel__delete{
 }
 
 body.book-page .book-category-panel__delete img{
-  width:20px;
-  height:20px;
+  width:25px;
+  height:25px;
   display:block;
   object-fit:contain;
 }
@@ -294,7 +294,7 @@ body.book-page .review-complete-toast{
 }
 
 body.book-page .review-complete-toast__icon{
-  width:clamp(72px, 18vw, 120px);
+  width:clamp(96px, 24vw, 160px);
   height:auto;
   display:block;
   animation:review-complete-pop 1s ease both;
