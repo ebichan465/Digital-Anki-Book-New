@@ -269,7 +269,13 @@
       trash.style.cursor = 'pointer';
       trash.style.padding = '4px';
       trash.style.marginLeft = '6px';
-      trash.textContent = '🗑️';
+
+      const trashIcon = document.createElement('img');
+      trashIcon.src = 'assets/delete.svg';
+      trashIcon.alt = '';
+      trashIcon.setAttribute('aria-hidden', 'true');
+
+      trash.appendChild(trashIcon);
       trash.addEventListener('click', async (ev)=>{
         ev.stopPropagation();
         if (!confirm(`本当にこのカテゴリを削除しますか？`)) return;

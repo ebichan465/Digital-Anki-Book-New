@@ -602,7 +602,13 @@ function clearMaskElements() {
       deleteButton.type = 'button';
       deleteButton.className = 'book-category-panel__delete';
       deleteButton.title = 'カテゴリを削除';
-      deleteButton.textContent = '🗑️';
+
+      const deleteIcon = document.createElement('img');
+      deleteIcon.src = 'assets/delete.svg';
+      deleteIcon.alt = '';
+      deleteIcon.setAttribute('aria-hidden', 'true');
+
+      deleteButton.appendChild(deleteIcon);
 
       deleteButton.addEventListener('click', async (ev) => {
         ev.stopPropagation();

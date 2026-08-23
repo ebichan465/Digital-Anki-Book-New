@@ -225,8 +225,13 @@ body.book-page .book-category-panel__delete{
   cursor:pointer;
   padding:4px;
   margin-left:6px;
-  font-size:16px;
-  line-height:1;
+}
+
+body.book-page .book-category-panel__delete img{
+  width:20px;
+  height:20px;
+  display:block;
+  object-fit:contain;
 }
 
 body.book-page .book-category-panel__button{

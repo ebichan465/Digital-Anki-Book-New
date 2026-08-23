@@ -184,7 +184,7 @@ body.study-page .book-card{
 }
 
 body.study-page .book-card.is-selected-for-delete{
-  outline:3px solid #ffd45c;
+  outline:3px solid #a89807;
   outline-offset:2px;
 }
 body.study-page .book-card.is-delete-mode{
@@ -394,7 +394,7 @@ body.study-page .study-sheet__option{
 }
 
 body.study-page .study-sheet__option.is-selected{
-  border-color:#ffd45c;
+  border-color:#a89807;
   background:linear-gradient(180deg, #fffdf7 0%, #f7eadf 100%);
 }
 

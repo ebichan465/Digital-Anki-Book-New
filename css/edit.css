@@ -412,7 +412,7 @@ body.edit-page .swatch:hover{
 }
 
 body.edit-page .swatch.is-selected{
-  outline:3px solid #fff06a;
+  outline:3px solid #a89807;
   outline-offset:2px;
   transform:translateY(-1px) scale(1.05);
   box-shadow:
@@ -490,7 +490,7 @@ body.edit-page .shape-btn:hover{
 }
 
 body.edit-page .shape-btn.is-selected{
-  outline:3px solid #fff06a;
+  outline:3px solid #a89807;
   outline-offset:2px;
   background:linear-gradient(180deg, #ffffff 0%, #f3ecdf 100%);
 }
@@ -631,6 +631,13 @@ body.edit-page .category-list{
   padding-right:2px;
 }
 
+body.edit-page .trash-btn img{
+  width:20px;
+  height:20px;
+  display:block;
+  object-fit:contain;
+}
+
 body.edit-page #textModal{
   color:#16488A;
 }
@@ -667,6 +674,7 @@ body.edit-page #textModal button{
 
   body.edit-page .edit-topbar-btn--save{
     min-width:88px;
+    transform:translateX(15px);
   }
 
   body.edit-page .edit-layout{
