@@ -548,17 +548,30 @@ body.edit-page .rotate-handle{
   left:50%;
   top:calc(100% + 10px);
   transform:translateX(-50%);
-  width:12px;
-  height:12px;
-  border-radius:50%;
-  background:#fff;
-  border:1px solid #333;
-  box-shadow:0 1px 3px rgba(0,0,0,.2);
+
+  width:40px;
+  height:40px;
+
+  background:url("../assets/handle.svg") center / contain no-repeat;
+  border:none;
+  border-radius:0;
+  box-shadow:none;
+
   cursor:grab;
   touch-action:none;
   user-select:none;
   z-index:2;
   display:none;
+}
+
+body.edit-page .rotate-handle::before{
+  left:-1px;
+  border-right:7px solid #333;
+}
+
+body.edit-page .rotate-handle::after{
+  right:-1px;
+  border-left:7px solid #333;
 }
 
 body.edit-page .project-panel__body{
@@ -632,8 +645,8 @@ body.edit-page .category-list{
 }
 
 body.edit-page .trash-btn img{
-  width:20px;
-  height:20px;
+  width:25px;
+  height:25px;
   display:block;
   object-fit:contain;
 }
@@ -670,6 +683,10 @@ body.edit-page #textModal button{
     min-height:42px;
     padding:9px 12px;
     font-size:14px;
+  }
+
+  body.edit-page .edit-topbar-btn--save:disabled{
+    transform:translateX(15px);
   }
 
   body.edit-page .edit-topbar-btn--save{
