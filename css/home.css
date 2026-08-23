@@ -256,12 +256,12 @@ body.home-page .home-decoration--eraser{
   }
   body.home-page .home-decoration--pen{
     right:110px;
-    bottom:-400px;
+    bottom:-350px;
   }
 
   body.home-page .home-decoration--eraser{
     right:20px;
-    bottom:-400px;
+    bottom:-350px;
   }
 }
 

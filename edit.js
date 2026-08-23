@@ -11,7 +11,6 @@
   const btnUndo = getEl('btnUndo');
   const projectSelect = getEl('projectSelect');
   const btnLoad = getEl('btnLoad');
-  const btnDeleteProject = getEl('btnDeleteProject');
   const colorPicker = getEl('colorPicker');
   const shapeSelect = getEl('shapeSelect');
   const btnInsertText = getEl('btnInsertText');
@@ -1152,32 +1151,6 @@
         // loaded saved project => clear dirty flag
         clearDirty();
       };
-    });
-  }
-
-  if (btnDeleteProject) {
-    btnDeleteProject.addEventListener('click', async ()=>{
-      const id = projectSelect.value;
-      if (!id) {
-        alert('選択してください');
-        return;
-      }
-
-      if (!confirm('本当に削除しますか？')) {
-        return;
-      }
-
-      try {
-        await DigitalAnkiStorage.deleteProject(id);
-      } catch (error) {
-        console.error('プロジェクトの削除に失敗しました。', error);
-        alert('削除に失敗しました');
-        return;
-      }
-
-      await refreshProjectSelect();
-      alert('削除しました');
-      await updateCategoryVisibility();
     });
   }
 

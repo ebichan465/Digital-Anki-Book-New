@@ -97,23 +97,21 @@
       </section>
 
       <aside class="edit-sidebar">
+        <section class="edit-panel" id="categoryBox" style="display:none;">
+          <h4 class="panel-title">カテゴリを選択</h4>
+          <div id="categoryList" class="category-list"></div>
+          <button id="btnNewCategory" class="secondary-btn edit-panel__button" type="button">新たなカテゴリ</button>
+        </section>
+
         <details class="project-panel">
           <summary class="panel-summary">保存している画像</summary>
           <div class="project-panel__body">
             <select id="projectSelect" class="project-select"></select>
             <div class="project-panel__actions">
               <button id="btnLoad" class="secondary-btn" type="button">読み込み</button>
-              <button id="btnDeleteProject" class="secondary-btn" type="button">削除</button>
             </div>
           </div>
         </details>
-
-        <section class="edit-panel" id="categoryBox" style="display:none;">
-          <h4 class="panel-title">カテゴリを選択</h4>
-          <div id="categoryList" class="category-list"></div>
-          <button id="btnNewCategory" class="secondary-btn edit-panel__button" type="button">新たなカテゴリ</button>
-        </section>
-      </aside>
     </main>
 
     <div class="hidden" aria-hidden="true">
