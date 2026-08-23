@@ -134,7 +134,7 @@ body.book-page .book-toolbar-btn{
   border-right:1px solid rgba(81, 90, 98, .12);
   background:linear-gradient(180deg, rgba(255,255,255,.95) 0%, rgba(246,239,227,.97) 100%);
   color:#16488A;
-  min-height:56px;
+  min-height:50px;
   padding:10px 10px;
   display:flex;
   align-items:center;
