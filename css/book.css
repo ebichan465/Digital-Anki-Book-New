@@ -343,7 +343,7 @@ body.book-page .review-complete-toast__icon{
   }
 
   body.book-page .book-toolbar-btn{
-    min-height:66px;
+    min-height:58px;
     padding:8px 6px;
     border-bottom:none;
     border-right:1px solid rgba(81, 90, 98, .12);
