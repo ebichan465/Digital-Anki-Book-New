@@ -216,15 +216,15 @@ function normalizeReview(review, createdAt) {
 
     if (bookMainImage) {
       bookMainImage.classList.toggle('hidden', !hasImage);
-      bookMainImage.alt = hasBook ? `${currentBook.name || 'Book'} の画像` : 'Bookの画像';
+      bookMainImage.alt = hasBook ? `${currentBook.name || 'Book'} の教材` : 'Bookの教材';
     }
 
     if (bookEmpty) {
       if (!hasBook) {
-        bookEmpty.textContent = 'Bookが見つかりませんでした。';
+        bookEmpty.textContent = '教材が見つかりませんでした。';
         bookEmpty.classList.remove('hidden');
       } else if (!hasImage) {
-        bookEmpty.textContent = 'このBookには画像がありません。';
+        bookEmpty.textContent = 'この教材には画像がありません。';
         bookEmpty.classList.remove('hidden');
       } else {
         bookEmpty.classList.add('hidden');
@@ -498,7 +498,7 @@ function clearMaskElements() {
     try {
       await DigitalAnkiStorage.saveProject(normalized);
     } catch (error) {
-      console.error('Bookの保存に失敗しました。', error);
+      console.error('教材の保存に失敗しました。', error);
       return null;
     }
 
@@ -509,7 +509,7 @@ function clearMaskElements() {
 
   async function renameBook() {
     if (!currentBook) return;
-    const nextName = prompt('新しいBook名を入力してください', currentBook.name || '');
+    const nextName = prompt('新しい教材名を入力してください', currentBook.name || '');
     if (nextName === null) return;
 
     const trimmed = nextName.trim();
@@ -641,7 +641,7 @@ function clearMaskElements() {
             await DigitalAnkiStorage.saveProject(project);
           } catch (error) {
             console.error(
-              'カテゴリ削除に伴うBook更新に失敗しました。',
+              'カテゴリ削除に伴う教材の更新に失敗しました。',
               error
             );
           }
@@ -695,14 +695,14 @@ function clearMaskElements() {
 
     const activeImage = getActiveImageRecord();
     if (!activeImage) {
-      alert('削除する画像がありません');
+      alert('削除する教材がありません');
       return;
     }
 
     const hasMultipleImages = Array.isArray(currentBook.images) && currentBook.images.length > 1;
     const confirmMessage = hasMultipleImages
-      ? '選択中の画像を削除しますか？'
-      : 'この画像を削除しますか？';
+      ? '選択中の教材を削除しますか？'
+      : 'この教材を削除しますか？';
 
     if (!confirm(confirmMessage)) return;
 
@@ -727,7 +727,7 @@ function clearMaskElements() {
     sessionMasks = deepClone(nextBook.images[0].masks || []).map(normalizeMaskModel);
     updateHeader();
     loadCurrentImage();
-    alert('画像を削除しました。');
+    alert('教材を削除しました。');
   }
 
   function showMissingBookState(message) {
@@ -793,13 +793,13 @@ function clearMaskElements() {
     window.addEventListener('orientationchange', updateMaskPositions);
 
     if (!bookId) {
-      showMissingBookState('Bookが見つかりませんでした。');
+      showMissingBookState('教材が見つかりませんでした。');
       return;
     }
 
     const found = await getBookById(bookId);
     if (!found) {
-      showMissingBookState('Bookが見つかりませんでした。');
+      showMissingBookState('教材が見つかりませんでした。');
       return;
     }
 

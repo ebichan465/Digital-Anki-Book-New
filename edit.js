@@ -97,8 +97,6 @@
     markDirty(true);
   }
 
-  // --- NEW: dirty flag (未保存状態) ---
-  // true = 編集している（保存されていない変更あり OR 新規に読み込んだ/作成したが未保存）
   let isDirty = false;
   function markDirty(flag = true) { isDirty = !!flag; }
   function clearDirty() { isDirty = false; }
@@ -165,7 +163,6 @@
     }
   }
 
-  // ----- utils -----
   function uid(prefix='id'){ return prefix + '-' + Math.random().toString(36).slice(2,9); }
 
   async function loadAllProjects(){
@@ -303,7 +300,7 @@
             await DigitalAnkiStorage.saveProject(project);
           } catch (error) {
             console.error(
-              'カテゴリ削除に伴うプロジェクト更新に失敗しました。',
+              'カテゴリ削除に伴う教材の更新に失敗しました。',
               error
             );
           }
@@ -312,7 +309,7 @@
         await refreshProjectSelect();
         await updateCategoryVisibility();
 
-        alert(`カテゴリ「${cat}」を削除しました。該当画像はカテゴリなしになります。`);
+        alert(`カテゴリ「${cat}」を削除しました。`);
       });
 
       // when checkbox toggled -> sync to currentProject and mark dirty
@@ -682,7 +679,7 @@
 
   if (btnAddMask) {
     btnAddMask.addEventListener('click', ()=>{
-      if (!mainImage.src) { alert('先に画像を読み込んでください'); return; }
+      if (!mainImage.src) { alert('先に教材を読み込んでください'); return; }
       pushUndoState();
       const rect = getImageContentRect(mainImage);
       const w = Math.min( Math.round(rect.width * 0.5), 800 );
@@ -805,7 +802,7 @@
         await DigitalAnkiStorage.saveProject(candidate);
         return candidate;
       } catch (error) {
-        console.error('プロジェクトの保存に失敗', error);
+        console.error('教材の保存に失敗', error);
       }
     }
 
@@ -978,7 +975,7 @@
   if (btnSave) {
     btnSave.addEventListener('click', async ()=>{
       try {
-        if (!mainImage.src) { alert('保存する画像がありません'); return; }
+        if (!mainImage.src) { alert('保存する教材がありません'); return; }
 
         masks.forEach(m => {
           const wrapperRect = imageArea.getBoundingClientRect();
@@ -1021,13 +1018,13 @@
         // Prompt for name; if user cancels (null) => abort save
         let name;
         if (currentProject && currentProject.name) {
-          const ans = prompt('プロジェクト名を入力してください', currentProject.name);
+          const ans = prompt('教材名を入力してください', currentProject.name);
           if (ans === null) {
             return;
           }
           name = (ans.trim() === '') ? currentProject.name : ans;
         } else {
-          const ans = prompt('プロジェクト名を入力してください');
+          const ans = prompt('教材名を入力してください');
           if (ans === null) {
             return;
           }
@@ -1082,10 +1079,10 @@
   if (btnLoad) {
     btnLoad.addEventListener('click', async ()=>{
       const id = projectSelect.value;
-      if (!id) { alert('読み込むプロジェクトを選んでください'); return; }
+      if (!id) { alert('読み込む教材を選んでください'); return; }
       const all = await loadAllProjects();
       const p = all.find(x => x.id === id);
-      if (!p) { alert('プロジェクトが見つかりません'); return; }
+      if (!p) { alert('教材が見つかりません'); return; }
       currentProject = JSON.parse(JSON.stringify(p));
 
       if (currentProject.contentType === 'text' && currentProject.textData) {
@@ -1165,7 +1162,7 @@
     btnBack.addEventListener('click', (ev) => {
       // Only warn when there are unsaved changes (either never saved or saved then modified)
       if (isDirty) {
-        const ok = confirm('プロジェクトが保存されていません。本当に戻りますか？');
+        const ok = confirm('教材が保存されていません。本当に戻りますか？');
         if (!ok) {
           // cancel navigation
           return;

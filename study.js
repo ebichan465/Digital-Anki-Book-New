@@ -194,7 +194,7 @@ function isTodayReviewTarget(book, now = Date.now()) {
     sheetTitle.textContent = type === 'sort' ? '並び替え' : '表示';
     sheetDescription.textContent = type === 'sort'
       ? '並び順を選んでください。'
-      : '表示方法を選んでください。';
+      : '表示条件を選んでください。';
 
     sheetOptions.innerHTML = '';
 
@@ -222,7 +222,7 @@ function isTodayReviewTarget(book, now = Date.now()) {
       makeOption('古い順', 'old', state.sortOrder === 'old');
     } else {
       makeOption('すべて表示', 'all', state.displayFilter === 'all');
-      makeOption('お気に入り画像のみ', 'checked', state.displayFilter === 'checked');
+      makeOption('お気に入り教材のみ', 'checked', state.displayFilter === 'checked');
       makeOption('今日の復習', 'todayReview', state.displayFilter === 'todayReview');
 
       const cats = await loadAllCategories();
@@ -331,7 +331,7 @@ function isTodayReviewTarget(book, now = Date.now()) {
       await DigitalAnkiStorage.saveProject(project);
       return true;
     } catch (error) {
-      console.error('Bookの更新に失敗しました。', error);
+      console.error('教材の更新に失敗しました。', error);
       return false;
     }
   }
@@ -396,8 +396,8 @@ if (!hasAnyFilteredBooks) {
   emptyState.textContent = filterVal === 'todayReview'
     ? '今日は復習するものがありません。'
     : hasAnyBooks
-      ? '条件に合うBookがありません。'
-      : '新しくBookを作りましょう。';
+      ? '条件に合う教材がありません。'
+      : '新しく教材を作りましょう。';
   return;
 }
 
@@ -478,7 +478,7 @@ if (!hasAnyFilteredBooks) {
     const ids = Array.from(state.selectedDeleteIds);
 
     if (!ids.length) {
-      alert('削除するBookを選んでください');
+      alert('削除する教材を選んでください');
       return;
     }
 
@@ -488,8 +488,8 @@ if (!hasAnyFilteredBooks) {
     try {
       await DigitalAnkiStorage.deleteProjects(ids);
     } catch (error) {
-      console.error('Bookの削除に失敗しました。', error);
-      alert('Bookの削除に失敗しました。');
+      console.error('教材の削除に失敗しました。', error);
+      alert('教材の削除に失敗しました。');
       return;
     }
 
