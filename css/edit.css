@@ -279,6 +279,14 @@ body.edit-page #mainImage{
   display:block;
 }
 
+body.edit-page .image-area:not(.has-image) #mainImage{
+  visibility:hidden;
+}
+
+body.edit-page .image-area.has-image #mainImage{
+  visibility:visible;
+}
+
 body.edit-page .edit-canvas{
   position:relative;
   min-height:320px;
