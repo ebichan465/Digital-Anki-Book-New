@@ -5,6 +5,9 @@
   const btnDisplayMenu = document.getElementById('btnDisplayMenu');
   const btnSortMenu = document.getElementById('btnSortMenu');
   const btnDeleteMode = document.getElementById('btnSelectDelete');
+  const btnDeleteModeLabel = btnDeleteMode
+    ? btnDeleteMode.querySelector('.study-toolbar-btn__label')
+    : null;
   const btnTodayReview = document.getElementById('btnTodayReview');
   const displayLabel = document.getElementById('displayCurrentLabel');
   const sortLabel = document.getElementById('sortCurrentLabel');
@@ -283,7 +286,9 @@ function isTodayReviewTarget(book, now = Date.now()) {
     }
 
     if (btnDeleteMode) {
-      btnDeleteMode.textContent = state.deleteMode ? '選択中' : '削除';
+      if (btnDeleteModeLabel) {
+        btnDeleteModeLabel.textContent = state.deleteMode ? '選択中' : '削除';
+      }
       btnDeleteMode.disabled = false;
     }
 
