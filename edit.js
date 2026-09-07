@@ -514,11 +514,18 @@
     rotateHandle.addEventListener('touchmove', preventTouchScroll, { passive: false });
 
     el.addEventListener('pointerdown', (ev)=>{
-    ev.preventDefault();
-    lockPageScroll();
-    selectMask(m.id);
+      ev.preventDefault();
 
-    pushUndoState();
+      const wasSelected = selectedMaskId === m.id;
+
+      selectMask(m.id);
+
+      if (!wasSelected) {
+        return;
+      }
+
+      lockPageScroll();
+      pushUndoState();
 
       startClient = { x: ev.clientX, y: ev.clientY };
       startBox = {
@@ -535,7 +542,10 @@
         startRotation = normalizeRotation(m.rotation);
         centerX = startBox.left + startBox.width / 2;
         centerY = startBox.top + startBox.height / 2;
-        startAngle = Math.atan2(ev.clientY - centerY, ev.clientX - centerX);
+        startAngle = Math.atan2(
+          ev.clientY - centerY,
+          ev.clientX - centerX
+        );
       } else if (ev.target === resizeHandle) {
         resizing = true;
         rotating = false;
@@ -547,7 +557,7 @@
       }
 
       el.setPointerCapture && el.setPointerCapture(ev.pointerId);
-    });
+  });
 
     window.addEventListener('pointermove', (ev)=>{
       if (!dragging && !resizing && !rotating) return;
@@ -1197,6 +1207,10 @@
     emptyOpt.value = '';
     emptyOpt.textContent = 'タップして選択';
     projectSelect.appendChild(emptyOpt);
+
+    all.sort((a, b) => {
+      return Number(b.createdAt || 0) - Number(a.createdAt || 0);
+    });
 
     all.forEach(p=>{
       const opt = document.createElement('option');
