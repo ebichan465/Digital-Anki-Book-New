@@ -654,7 +654,6 @@
         m.el && m.el.remove();
         masks.splice(idx,1);
         selectedMaskId = null;
-        btnDeleteSelected.disabled = true;
         markDirty(true); // deletion => dirty
       }
     });
