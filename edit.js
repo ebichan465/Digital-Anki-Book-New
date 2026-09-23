@@ -106,40 +106,59 @@
   function normalizeRotation(value){
   const n = Number(value);
   return Number.isFinite(n) ? n : DEFAULT_MASK_ROTATION;
-}
-
-  const REVIEW_INTERVAL_DAYS = [1, 7, 30, 90];
-  const DAY_MS = 24 * 60 * 60 * 1000;
+  }
 
   function buildInitialReview(createdAt){
     const base = Number(createdAt) || Date.now();
     return {
-      stage: 0,
-      nextReviewAt: base + REVIEW_INTERVAL_DAYS[0] * DAY_MS,
-      completed: false
+      createdAt: base,
+      currentStage: 0,
+      completedStages: [],
+      lastCompletedStage: 0
     };
   }
 
   function normalizeReviewForSave(review, createdAt){
     const base = Number(createdAt) || Date.now();
-    const fallback = buildInitialReview(base);
-    if (!review || typeof review !== 'object') return fallback;
-    const stageRaw = Number(review.stage);
-    const stage = Number.isFinite(stageRaw) ? Math.max(0, Math.min(4, Math.floor(stageRaw))) : 0;
-    const completed = !!review.completed || stage >= REVIEW_INTERVAL_DAYS.length;
-    const stepIndex = Math.min(stage, REVIEW_INTERVAL_DAYS.length - 1);
-    const nextReviewAt = Number.isFinite(Number(review.nextReviewAt))
-      ? Number(review.nextReviewAt)
-      : (completed ? null : base + REVIEW_INTERVAL_DAYS[stepIndex] * DAY_MS);
-    if (completed) {
-      return { stage: REVIEW_INTERVAL_DAYS.length, nextReviewAt: null, completed: true };
+
+    if (!review || typeof review !== 'object') {
+      return buildInitialReview(base);
     }
-    return { stage, nextReviewAt, completed: false };
+
+    const completedStages = Array.isArray(review.completedStages)
+      ? Array.from(new Set(
+          review.completedStages
+            .map((n) => Number(n))
+            .filter((n) => Number.isInteger(n) && n >= 1 && n <= 3)
+        )).sort((a, b) => a - b)
+      : [];
+
+    const currentStageRaw = Number(review.currentStage);
+    const currentStage = Number.isInteger(currentStageRaw)
+      ? Math.max(0, Math.min(3, currentStageRaw))
+      : 0;
+
+    const lastCompletedStageRaw = Number(review.lastCompletedStage);
+    const lastCompletedStage = Number.isInteger(lastCompletedStageRaw)
+      ? Math.max(0, Math.min(3, lastCompletedStageRaw))
+      : (completedStages.length ? completedStages[completedStages.length - 1] : 0);
+
+    return {
+      createdAt: Number.isFinite(Number(review.createdAt))
+        ? Number(review.createdAt)
+        : base,
+      currentStage,
+      completedStages,
+      lastCompletedStage
+    };
   }
 
   function refreshCurrentProjectReviewDefaults(){
     if (!currentProject) return;
-    currentProject.review = normalizeReviewForSave(currentProject.review, currentProject.createdAt);
+    currentProject.review = normalizeReviewForSave(
+      currentProject.review,
+      currentProject.createdAt
+    );
   }
 
   let activePointerInteractions = 0;
