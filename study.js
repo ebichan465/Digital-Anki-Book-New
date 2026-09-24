@@ -16,10 +16,6 @@
   const deleteModeCount = document.getElementById('deleteModeCount');
   const btnCancelDeleteMode = document.getElementById('btnCancelDeleteMode');
   const btnConfirmDeleteMode = document.getElementById('btnConfirmDeleteMode');
-  const selectionBar = document.getElementById('selectionBar');
-  const selectionCount = document.getElementById('selectionCount');
-  const selectionCancel = document.getElementById('selectionCancel');
-  const selectionDelete = document.getElementById('selectionDelete');
 
   const booksList = document.getElementById('booksList');
   const emptyState = document.getElementById('emptyState');
@@ -273,16 +269,8 @@ function isTodayReviewTarget(book, now = Date.now()) {
       deleteModePanel.classList.toggle('hidden', !state.deleteMode);
     }
 
-    if (selectionBar) {
-      selectionBar.classList.toggle('hidden', !state.deleteMode);
-    }
-
     if (deleteModeCount) {
       deleteModeCount.textContent = String(count);
-    }
-
-    if (selectionCount) {
-      selectionCount.textContent = `${count}冊`;
     }
 
     if (btnDeleteMode) {
@@ -294,10 +282,6 @@ function isTodayReviewTarget(book, now = Date.now()) {
 
     if (btnConfirmDeleteMode) {
       btnConfirmDeleteMode.disabled = count === 0;
-    }
-
-    if (selectionDelete) {
-      selectionDelete.disabled = count === 0;
     }
   }
 
@@ -460,9 +444,16 @@ if (!hasAnyFilteredBooks) {
       });
 
       weakInput.addEventListener('change', async () => {
-        await updateProjectField(book.id, (project) => {
-          project.checked = weakInput.checked;
+        const nextChecked = weakInput.checked;
+        const previousChecked = !nextChecked;
+
+        const saved = await updateProjectField(book.id, (project) => {
+          project.checked = nextChecked;
         });
+
+        if (!saved) {
+          weakInput.checked = previousChecked;
+        }
       });
 
       const weakText = document.createElement('span');
@@ -552,19 +543,6 @@ if (!hasAnyFilteredBooks) {
       await confirmDeleteSelectedBooks();
     });
   }
-
-  if (selectionCancel) {
-    selectionCancel.addEventListener('click', () => {
-      cancelDeleteMode();
-    });
-  }
-
-  if (selectionDelete) {
-    selectionDelete.addEventListener('click', async () => {
-      await confirmDeleteSelectedBooks();
-    });
-  }
-
 
   document.addEventListener('keydown', (ev) => {
     if (ev.key === 'Escape') {

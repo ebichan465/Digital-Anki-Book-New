@@ -288,6 +288,8 @@ async function completeReviewStage() {
 
   if (stage <= 0) return;
 
+    const previousReview = deepClone(currentBook.review);
+
   currentBook.review = {
     ...review,
     currentStage: stage,
@@ -295,7 +297,14 @@ async function completeReviewStage() {
     completedStages: unique([...review.completedStages, stage]).sort((a, b) => a - b),
   };
 
-  await persistCurrentBook();
+  const saved = await persistCurrentBook();
+
+  if (!saved) {
+    currentBook.review = previousReview;
+    alert('保存に失敗しました。');
+    return;
+  }
+
   setBookState();
   showReviewCompleteToast();
 }
@@ -570,6 +579,10 @@ function clearMaskElements() {
       checkbox.addEventListener('change', async () => {
         if (!currentBook) return;
 
+        const previousCategories = Array.isArray(currentBook.categories)
+          ? [...currentBook.categories]
+          : [];
+
         const nextCategories = new Set(
           Array.isArray(currentBook.categories)
             ? currentBook.categories
@@ -587,7 +600,9 @@ function clearMaskElements() {
         const saved = await persistCurrentBook();
 
         if (!saved) {
-          checkbox.checked = !checkbox.checked;
+          currentBook.categories = previousCategories;
+          checkbox.checked = previousCategories.includes(category);
+          updateHeader();
           return;
         }
 
@@ -681,8 +696,20 @@ function clearMaskElements() {
 
   async function toggleWeakFlag() {
     if (!currentBook || !bookWeakCheckbox) return;
+
+    const previousChecked = !!currentBook.checked;
     currentBook.checked = !!bookWeakCheckbox.checked;
-    await persistCurrentBook();
+
+    const saved = await persistCurrentBook();
+
+    if (!saved) {
+      currentBook.checked = previousChecked;
+      bookWeakCheckbox.checked = previousChecked;
+      alert('保存に失敗しました。');
+      updateHeader();
+      return;
+    }
+
     updateHeader();
   }
 
@@ -705,6 +732,7 @@ function clearMaskElements() {
       : 'この教材を削除しますか？';
 
     if (!confirm(confirmMessage)) return;
+    const previousBook = currentBook;
 
     const nextBook = normalizeBook(currentBook);
     nextBook.images = Array.isArray(nextBook.images)
@@ -712,7 +740,14 @@ function clearMaskElements() {
       : [];
 
     if (!nextBook.images.length) {
-      await DigitalAnkiStorage.deleteProject(currentBook.id);
+      try {
+        await DigitalAnkiStorage.deleteProject(currentBook.id);
+      } catch (error) {
+        console.error('教材の削除に失敗しました。', error);
+        alert('教材の削除に失敗しました。');
+        return;
+      }
+
       alert('Bookを削除しました。');
       location.href = 'study.html';
       return;
@@ -722,7 +757,16 @@ function clearMaskElements() {
     syncLegacyFields(nextBook);
 
     currentBook = nextBook;
-    await persistCurrentBook();
+
+    const saved = await persistCurrentBook();
+
+    if (!saved) {
+      currentBook = previousBook;
+      updateHeader();
+      alert('保存に失敗しました。');
+      return;
+    }
+
     currentImageIndex = 0;
     sessionMasks = deepClone(nextBook.images[0].masks || []).map(normalizeMaskModel);
     updateHeader();

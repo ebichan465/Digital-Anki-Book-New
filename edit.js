@@ -636,15 +636,34 @@
   function selectMask(id){
     selectedMaskId = id;
     refreshAllMasks();
+
     const m = masks.find(x=>x.id===id);
+
     if (m && colorPicker) {
       colorPicker.value = m.color || '#000000';
-      colorPicker.dispatchEvent(new Event('input', { bubbles: true }));
+
+      const colorValue = (m.color || '#000000').toLowerCase();
+      document.querySelectorAll('.swatch[data-color]').forEach((btn) => {
+        const buttonColor = String(btn.dataset.color || '').toLowerCase();
+        const active = buttonColor === colorValue;
+        btn.classList.toggle('is-selected', active);
+        btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
     }
+
     if (m && shapeSelect) {
       shapeSelect.value = m.shape || 'rect';
-      shapeSelect.dispatchEvent(new Event('change', { bubbles: true }));
+      defaultShape = shapeSelect.value;
+
+      const shapeValue = shapeSelect.value;
+      document.querySelectorAll('.shape-btn[data-shape]').forEach((btn) => {
+        const buttonShape = String(btn.dataset.shape || '');
+        const active = buttonShape === shapeValue;
+        btn.classList.toggle('is-selected', active);
+        btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
     }
+
     if (btnDeleteSelected) btnDeleteSelected.disabled = !selectedMaskId;
   }
 
@@ -735,17 +754,11 @@
   }
 
   if (btnChooseImage) {
-    btnChooseImage.addEventListener('click', ()=> {
-      currentProject = null;
-      masks.forEach(m=> m.el && m.el.remove());
-      masks = [];
-      selectedMaskId = null;
+    btnChooseImage.addEventListener('click', () => {
       if (imageInput) {
         imageInput.value = '';
         imageInput.click();
       }
-      markDirty(true);
-      updateCategoryVisibility();
     });
   }
 
@@ -757,6 +770,8 @@
       const canvasData = await createCanvasFromDataURL(dataUrl, 2000);
       loadImage(canvasData.dataUrl);
       currentProject = { id: uid('proj'), name: file.name.replace(/\.[^.]+$/,''), imageDataUrl: canvasData.dataUrl, imageBaseWidth: canvasData.width, imageBaseHeight: canvasData.height, masks: [], categories: [], createdAt: Date.now() };
+      undoStack = [];
+      if (btnUndo) btnUndo.disabled = true;
       masks = [];
       selectedMaskId = null;
       // new image loaded but not saved => dirty
