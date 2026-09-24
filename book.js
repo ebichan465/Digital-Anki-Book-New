@@ -188,7 +188,7 @@ function normalizeReview(review, createdAt) {
       metaParts.push(`カテゴリ: ${currentBook.categories.join(', ')}`);
     }
     if (currentBook.checked) {
-      metaParts.push('苦手');
+      metaParts.push('お気に入り');
     }
     if (bookMeta) bookMeta.textContent = metaParts.join(' / ');
 

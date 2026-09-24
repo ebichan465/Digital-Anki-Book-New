@@ -521,18 +521,4 @@ body.study-page .study-sheet__button--cancel{
     padding:12px 12px;
     font-size:14px;
   }
-
-  body.study-page .study-selection-bar{
-    flex-direction:column;
-    align-items:stretch;
-  }
-
-  body.study-page .study-selection-bar__actions{
-    justify-content:flex-end;
-  }
-
-  body.study-page .study-selection-bar__button{
-    padding:9px 12px;
-    font-size:13px;
-  }
 }
