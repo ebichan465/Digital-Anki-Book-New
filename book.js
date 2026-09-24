@@ -87,10 +87,6 @@ function normalizeReview(review, createdAt) {
   async function loadAllProjects() {
     return DigitalAnkiStorage.getAllProjects();
   }
-  
-  async function saveAllProjects(projects) {
-  await DigitalAnkiStorage.saveProjects(projects);
-  }
 
   async function loadAllCategories() {
     return DigitalAnkiStorage.getAllCategories();

@@ -22,7 +22,7 @@
         </a>
 
         <div class="home-study-wrap">
-          <a href="study.html" class="home-action-btn home-action-btn--red" id="homeStudyLink">
+          <a href="study.html" class="home-action-btn home-action-btn--red">
             <span class="home-action-label">暗記する</span>
             <img src="assets/book.svg" class="home-action-icon" alt="" aria-hidden="true" />
           </a>
@@ -140,11 +140,6 @@
           (project) =>
             isTodayReviewTarget(project)
         ).length;
-        console.log('IndexedDB projects:', projects);
-        console.log('今日の復習件数:', dueCount);
-
-        console.log(projects[0]);
-        console.log(projects[0].review);
 
         if (!bubble) return;
 

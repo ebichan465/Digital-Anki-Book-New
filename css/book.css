@@ -359,15 +359,8 @@ body.book-page .review-complete-toast__icon{
     border-right:none;
   }
 
-  body.book-page .book-toolbar-check{
-    min-height:44px;
-    margin-left:18px;
-    font-size:13px;
-  }
-
   body.book-page #btnReviewComplete,
-  body.book-page .book-review-complete-btn,
-  body.book-page .book-review-button{
+  body.book-page .book-review-complete-btn{
     min-height:48px;
     border-radius:20px;
     padding:10px 14px;

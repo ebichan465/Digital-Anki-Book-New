@@ -338,15 +338,6 @@ body.study-page .study-sheet{
   overflow:auto;
 }
 
-body.study-page .study-sheet__handle{
-  align-self:center;
-  width:54px;
-  height:5px;
-  border-radius:999px;
-  background:rgba(64,82,92,.18);
-  flex:none;
-}
-
 body.study-page .study-sheet__head{
   display:flex;
   flex-direction:column;
@@ -436,61 +427,6 @@ body.study-page .study-sheet__button{
 
 body.study-page .study-sheet__button--cancel{
   min-width:104px;
-}
-
-body.study-page .study-selection-bar{
-  border:1px solid rgba(81, 90, 98, .12);
-  border-radius:22px;
-  background:rgba(255,255,255,.46);
-  box-shadow:0 18px 28px -24px rgba(74, 58, 36, .35);
-  padding:14px 16px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-}
-
-body.study-page .study-selection-bar__info{
-  display:flex;
-  flex-direction:column;
-  gap:2px;
-}
-
-body.study-page .study-selection-bar__label{
-  font-size:12px;
-  font-weight:700;
-  color:#6b6d70;
-}
-
-body.study-page .study-selection-bar__count{
-  font-size:16px;
-  font-weight:800;
-  color:#40525c;
-}
-
-body.study-page .study-selection-bar__actions{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-}
-
-body.study-page .study-selection-bar__button{
-  appearance:none;
-  border:1px solid rgba(81, 90, 98, .16);
-  background:linear-gradient(180deg, #ffffff 0%, #f2ebdf 100%);
-  color:#29404f;
-  box-shadow:0 8px 18px -14px rgba(74,58,36,.22), inset 0 1px 0 rgba(255,255,255,.55);
-  cursor:pointer;
-  padding:10px 14px;
-  border-radius:14px;
-  font-size:14px;
-  font-weight:700;
-}
-
-body.study-page .study-selection-bar__button--delete{
-  border-color:rgba(200, 104, 80, .22);
-  background:linear-gradient(180deg, #fff4f0 0%, #f7ddd5 100%);
-  color:#8a3f2f;
 }
 
 @media (max-width: 768px){

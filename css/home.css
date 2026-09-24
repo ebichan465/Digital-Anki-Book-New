@@ -39,14 +39,6 @@ body.home-page{
   text-shadow:0 1px 0 rgba(255,255,255,.55);
 }
 
-.home-subtitle{
-  margin:2px 0 0;
-  font-size:clamp(14px, 4vw, 18px);
-  color:#16488A;
-  font-weight:600;
-  letter-spacing:.04em;
-}
-
 .home-actions{
   margin-top:clamp(56px, 12vw, 96px);
   display:flex;
@@ -250,9 +242,6 @@ body.home-page .home-decoration--eraser{
     font-size:clamp(33px, 8.6vw, 35px);
   }
 
-  .home-subtitle{
-    font-size:clamp(13px, 3.6vw, 16px);
-  }
   body.home-page .home-decoration--pen{
     right:110px;
     bottom:-350px;

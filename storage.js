@@ -380,84 +380,6 @@
     return safeClone(project);
   }
 
-  async function saveProjects(projects) {
-  if (!Array.isArray(projects)) {
-    throw new Error('projectsが配列ではありません。');
-  }
-
-  const db = await initializeStorage();
-
-  /*
-   * まずreadonly transactionで、
-   * 現在IndexedDBに存在するprojectのIDだけ取得する。
-   *
-   * readwrite transactionの途中でawaitして、
-   * transactionが自動終了してしまうのを防ぐ。
-   */
-  const readTransaction = db.transaction(
-    PROJECTS_STORE,
-    'readonly'
-  );
-
-  const readStore = readTransaction.objectStore(PROJECTS_STORE);
-
-  const existingProjects = await requestToPromise(
-    readStore.getAll()
-  );
-
-  /*
-   * 今回保存するprojectのID一覧
-   */
-  const nextIds = new Set(
-    projects
-      .filter((project) => (
-        project &&
-        typeof project === 'object' &&
-        project.id
-      ))
-      .map((project) => project.id)
-  );
-
-  /*
-   * ここから実際の書き込み。
-   * このtransaction内ではawaitしない。
-   */
-  const writeTransaction = db.transaction(
-    PROJECTS_STORE,
-    'readwrite'
-  );
-
-  const writeStore = writeTransaction.objectStore(PROJECTS_STORE);
-
-  /*
-   * 現在存在するが、今回保存する配列に存在しないprojectを削除。
-   */
-  for (const project of existingProjects) {
-    if (!nextIds.has(project.id)) {
-      writeStore.delete(project.id);
-    }
-  }
-
-  /*
-   * 今回保存するprojectを追加・更新。
-   */
-  for (const project of projects) {
-    if (!project || typeof project !== 'object') {
-      continue;
-    }
-
-    if (!project.id) {
-      continue;
-    }
-
-    writeStore.put(safeClone(project));
-  }
-
-  await transactionToPromise(writeTransaction);
-
-  return safeClone(projects);
-}
-
   async function deleteProject(projectId) {
     if (!projectId) {
       return false;
@@ -559,78 +481,6 @@
 
   /*
    * ------------------------------------------------------------
-   * Storage状態確認用
-   * ------------------------------------------------------------
-   *
-   * 今後のデバッグやテストで使えるようにする。
-   */
-
-  async function getStorageInfo() {
-    const db = await initializeStorage();
-
-    const projects = await getAllProjects();
-    const categories = await getAllCategories();
-
-    return {
-      databaseName: DB_NAME,
-      databaseVersion: db.version,
-      projectsCount: projects.length,
-      categoriesCount: categories.length,
-      migrationCompleted: isMigrationCompleted()
-    };
-  }
-
-  /*
-   * ------------------------------------------------------------
-   * DB削除
-   * ------------------------------------------------------------
-   *
-   * 開発・デバッグ用。
-   * 通常のアプリ処理からは使用しない。
-   */
-
-  async function deleteDatabase() {
-    if (dbPromise) {
-      try {
-        const db = await dbPromise;
-        db.close();
-      } catch (e) {
-        // ignore
-      }
-
-      dbPromise = null;
-    }
-
-    return new Promise((resolve, reject) => {
-      const request = indexedDB.deleteDatabase(DB_NAME);
-
-      request.onsuccess = () => {
-        try {
-          localStorage.removeItem(MIGRATION_FLAG_KEY);
-        } catch (e) {
-          // ignore
-        }
-
-        resolve(true);
-      };
-
-      request.onerror = () => {
-        reject(
-          request.error ||
-          new Error('IndexedDBの削除に失敗しました。')
-        );
-      };
-
-      request.onblocked = () => {
-        console.warn(
-          'IndexedDB削除がブロックされています。'
-        );
-      };
-    });
-  }
-
-  /*
-   * ------------------------------------------------------------
    * 公開API
    * ------------------------------------------------------------
    *
@@ -648,16 +498,11 @@
     getAllProjects,
     getProjectById,
     saveProject,
-    saveProjects,
     deleteProject,
     deleteProjects,
 
     getAllCategories,
-    saveAllCategories,
-
-    getStorageInfo,
-
-    deleteDatabase
+    saveAllCategories
   });
 
 })();
