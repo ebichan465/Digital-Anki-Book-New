@@ -640,7 +640,7 @@
       deleteButton.title = 'カテゴリを削除';
 
       const deleteIcon = document.createElement('img');
-      deleteIcon.src = 'assets/delete.svg';
+      deleteIcon.src = '../assets/delete.svg';
       deleteIcon.alt = '';
       deleteIcon.setAttribute('aria-hidden', 'true');
 
@@ -773,7 +773,7 @@
       }
 
       alert('Bookを削除しました。');
-      location.href = 'study.html';
+      location.href = '../html/study.html';
       return;
     }
 
@@ -835,7 +835,7 @@
   async function init() {
     if (btnBackStudy) {
       btnBackStudy.addEventListener('click', () => {
-        location.href = 'study.html';
+        location.href = '../html/study.html';
       });
     }
 

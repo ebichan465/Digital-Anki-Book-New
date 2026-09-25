@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#fbf7ed" />
   <title>Digital Anki Book - 編集</title>
-  <link rel="stylesheet" href="css/common.css">
-  <link rel="stylesheet" href="css/edit.css">
+  <link rel="stylesheet" href="../css/common.css">
+  <link rel="stylesheet" href="../css/edit.css">
 </head>
 <body class="edit-page">
   <!-- 編集画面 -->
@@ -14,7 +14,7 @@
     <!-- 編集画面のトップバー -->
     <div class="edit-topbar" aria-label="編集トップバー">
       <button id="btnBack" class="edit-topbar-btn edit-topbar-btn--back" type="button">
-        <img src="assets/back.svg" alt="戻る" class="edit-topbar-btn__icon">
+        <img src="../assets/back.svg" alt="戻る" class="edit-topbar-btn__icon">
       </button>
 
       <div class="edit-topbar__title">
@@ -33,29 +33,29 @@
         <!-- 上のツールバー -->
         <div class="edit-toolbar edit-toolbar--primary" role="toolbar" aria-label="編集ツール">
           <button id="btnInsertText" class="tool-card" type="button">
-            <img src="assets/text.svg" alt="テキスト" class="tool-card__icon">
+            <img src="../assets/text.svg" alt="テキスト" class="tool-card__icon">
             <span class="tool-card__label">テキスト<br>挿入</span>
           </button>
 
           <button id="btnAddMask" class="tool-card" type="button">
-            <img src="assets/mask.svg" alt="マスク追加" class="tool-card__icon">
+            <img src="../assets/mask.svg" alt="マスク追加" class="tool-card__icon">
             <span class="tool-card__label">マスク<br>追加</span>
           </button>
 
           <button id="btnDuplicateMask" class="tool-card" type="button">
-            <img src="assets/reproduce.svg" alt="複製" class="tool-card__icon">
+            <img src="../assets/reproduce.svg" alt="複製" class="tool-card__icon">
             <span class="tool-card__label">複製</span>
           </button>
 
           <button id="btnDeleteSelected" class="tool-card" type="button">
-            <img src="assets/delete.svg" alt="削除" class="tool-card__icon">
+            <img src="../assets/delete.svg" alt="削除" class="tool-card__icon">
             <span class="tool-card__label">マスク<br>削除</span>
           </button>
         </div>
 
         <div class="edit-main__back-row">
           <button id="btnUndo" class="edit-topbar-btn edit-topbar-btn--undo" type="button" disabled>
-            <img src="assets/mask-back.svg" alt="元に戻す" class="edit-topbar-btn__icon">
+            <img src="../assets/mask-back.svg" alt="元に戻す" class="edit-topbar-btn__icon">
           </button>
         </div>
         
@@ -63,7 +63,7 @@
         <div class="edit-book">
           <div class="image-area edit-canvas" id="imageArea">
             <button id="btnChooseImage" class="image-picker-card" type="button">
-              <img src="assets/picture.svg" alt="" class="image-picker-card__icon" aria-hidden="true">
+              <img src="../assets/picture.svg" alt="" class="image-picker-card__icon" aria-hidden="true">
               <span class="image-picker-card__label">タップして<br>画像を選択</span>
             </button>
             <img id="mainImage" alt="" />
@@ -213,7 +213,7 @@
   })();
   </script>
 
-  <script src="storage.js"></script>
-  <script src="edit.js"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/edit.js"></script>
 </body>
 </html>

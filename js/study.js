@@ -1,5 +1,5 @@
 (() => {
-  const BOOK_COVER_SVG = 'assets/bookcover.svg';
+  const BOOK_COVER_SVG = '../assets/bookcover.svg';
 
   const btnBackHome = document.getElementById('btnBackHome');
   const btnDisplayMenu = document.getElementById('btnDisplayMenu');
@@ -339,7 +339,7 @@ function isTodayReviewTarget(book, now = Date.now()) {
   }
 
   function navigateToBook(bookId) {
-    location.href = `book.html?id=${encodeURIComponent(bookId)}`;
+    location.href = `../html/book.html?id=${encodeURIComponent(bookId)}`;
   }
 
   // 教材の表紙作成
@@ -523,7 +523,7 @@ function isTodayReviewTarget(book, now = Date.now()) {
 
   if (btnBackHome) {
     btnBackHome.addEventListener('click', () => {
-      location.href = 'index.html';
+      location.href = '../html/index.html';
     });
   }
 

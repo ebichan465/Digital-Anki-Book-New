@@ -299,7 +299,7 @@
       trash.style.marginLeft = '6px';
 
       const trashIcon = document.createElement('img');
-      trashIcon.src = 'assets/delete.svg';
+      trashIcon.src = '../assets/delete.svg';
       trashIcon.alt = '';
       trashIcon.setAttribute('aria-hidden', 'true');
 
@@ -1228,7 +1228,7 @@
           return;
         }
       }
-      location.href = 'index.html';
+      location.href = '../html/index.html';
     });
   }
 

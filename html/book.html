@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#fbf7ed" />
   <title>Digital Anki Book - Book</title>
-  <link rel="stylesheet" href="css/common.css">
-  <link rel="stylesheet" href="css/book.css">
+  <link rel="stylesheet" href="../css/common.css">
+  <link rel="stylesheet" href="../css/book.css">
 </head>
 <body class="book-page">
   <!-- 画面 -->
@@ -16,7 +16,7 @@
     <header class="book-topbar" aria-label="Bookページトップバー">
       <button id="btnBackStudy" class="book-topbar-btn book-topbar-btn--back" type="button" aria-label="Book一覧へ戻る">
         <img
-          src="assets/back.svg"
+          src="../assets/back.svg"
           alt="戻る"
           class="book-topbar-btn__icon">
       </button>
@@ -72,12 +72,12 @@
 
       <!-- 復習完了通知 -->
       <div id="reviewCompleteToast" class="review-complete-toast hidden" aria-hidden="true">
-        <img src="assets/check.svg" alt="" class="review-complete-toast__icon">
+        <img src="../assets/check.svg" alt="" class="review-complete-toast__icon">
       </div>
     </main>
   </div>
 
-  <script src="storage.js"></script>
-  <script src="book.js"></script>
+  <script src="../js/storage.js"></script>
+  <script src="../js/book.js"></script>
 </body>
 </html>
