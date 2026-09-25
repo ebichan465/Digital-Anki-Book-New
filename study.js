@@ -446,20 +446,20 @@ function isTodayReviewTarget(book, now = Date.now()) {
       const controls = document.createElement('div');
       controls.className = 'book-card__controls';
 
-      const weakLabel = document.createElement('label');
-      weakLabel.className = 'book-card__weak-toggle';
+      const favoriteLabel = document.createElement('label');
+      favoriteLabel.className = 'book-card__favorite-toggle';
 
-      const weakInput = document.createElement('input');
-      weakInput.type = 'checkbox';
-      weakInput.checked = !!book.checked;
-      weakInput.title = 'お気に入りBook';
+      const favoriteInput = document.createElement('input');
+      favoriteInput.type = 'checkbox';
+      favoriteInput.checked = !!book.checked;
+      favoriteInput.title = 'お気に入りBook';
 
-      weakInput.addEventListener('click', (ev) => {
+      favoriteInput.addEventListener('click', (ev) => {
         ev.stopPropagation();
       });
 
-      weakInput.addEventListener('change', async () => {
-        const nextChecked = weakInput.checked;
+      favoriteInput.addEventListener('change', async () => {
+        const nextChecked = favoriteInput.checked;
         const previousChecked = !nextChecked;
 
         const saved = await updateProjectField(book.id, (project) => {
@@ -467,16 +467,16 @@ function isTodayReviewTarget(book, now = Date.now()) {
         });
 
         if (!saved) {
-          weakInput.checked = previousChecked;
+          favoriteInput.checked = previousChecked;
         }
       });
 
-      const weakText = document.createElement('span');
-      weakText.textContent = 'お気に入り';
+      const favoriteText = document.createElement('span');
+      favoriteText.textContent = 'お気に入り';
 
-      weakLabel.appendChild(weakInput);
-      weakLabel.appendChild(weakText);
-      controls.appendChild(weakLabel);
+      favoriteLabel.appendChild(favoriteInput);
+      favoriteLabel.appendChild(favoriteText);
+      controls.appendChild(favoriteLabel);
       card.appendChild(openButton);
       card.appendChild(controls);
       booksList.appendChild(card);

@@ -304,7 +304,7 @@ body.study-page .book-card__controls{
 }
 
 /* 苦手設定の切り替え */
-body.study-page .book-card__weak-toggle{
+body.study-page .book-card__favorite-toggle{
   display:inline-flex;
   align-items:center;
   justify-content:center;
@@ -318,7 +318,7 @@ body.study-page .book-card__weak-toggle{
   cursor:pointer;
 }
 
-body.study-page .book-card__weak-toggle input{
+body.study-page .book-card__favorite-toggle input{
   width:18px;
   height:18px;
   margin:0;
@@ -507,12 +507,12 @@ body.study-page .study-sheet__button--cancel{
     padding:6px 2px 2px;
   }
 
-  body.study-page .book-card__weak-toggle{
+  body.study-page .book-card__favorite-toggle{
     font-size:10px;
     gap:4px;
   }
 
-  body.study-page .book-card__weak-toggle input{
+  body.study-page .book-card__favorite-toggle input{
     width:14px;
     height:14px;
   }

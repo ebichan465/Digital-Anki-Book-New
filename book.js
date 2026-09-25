@@ -18,7 +18,7 @@
   const btnNewBookCategory = document.getElementById('btnNewBookCategory');
   const btnDeleteImage = document.getElementById('btnDeleteImage');
   const btnReviewComplete = document.getElementById('btnReviewComplete');
-  const bookWeakCheckbox = document.getElementById('bookWeakCheckbox');
+  const bookFavoriteCheckbox = document.getElementById('bookFavoriteCheckbox');
   const reviewCompleteToast = document.getElementById('reviewCompleteToast');
   let reviewCompleteToastTimer = null;
   
@@ -187,7 +187,7 @@
     if (!currentBook) {
       if (bookTitle) bookTitle.textContent = 'Book';
       if (bookMeta) bookMeta.textContent = '';
-      if (bookWeakCheckbox) bookWeakCheckbox.checked = false;
+      if (bookFavoriteCheckbox) bookFavoriteCheckbox.checked = false;
       document.title = 'Digital Anki Book - Book';
       return;
     }
@@ -203,9 +203,9 @@
     }
     if (bookMeta) bookMeta.textContent = metaParts.join(' / ');
 
-    if (bookWeakCheckbox) {
-      bookWeakCheckbox.checked = !!currentBook.checked;
-      bookWeakCheckbox.disabled = false;
+    if (bookFavoriteCheckbox) {
+      bookFavoriteCheckbox.checked = !!currentBook.checked;
+      bookFavoriteCheckbox.disabled = false;
     }
 
     document.title = `Digital Anki Book - ${currentBook.name || 'Book'}`;
@@ -220,7 +220,7 @@
     if (btnResetMasks) btnResetMasks.disabled = !hasImage;
     if (btnRenameBook) btnRenameBook.disabled = !hasBook;
     if (btnDeleteImage) btnDeleteImage.disabled = !hasImage;
-    if (bookWeakCheckbox) bookWeakCheckbox.disabled = !hasBook;
+    if (bookFavoriteCheckbox) bookFavoriteCheckbox.disabled = !hasBook;
 
     if (bookMainImage) {
       bookMainImage.classList.toggle('hidden', !hasImage);
@@ -717,17 +717,17 @@
   }
 
   // お気に入り状態の変更  
-  async function toggleWeakFlag() {
-    if (!currentBook || !bookWeakCheckbox) return;
+  async function toggleFavoriteFlag() {
+    if (!currentBook || !bookFavoriteCheckbox) return;
 
     const previousChecked = !!currentBook.checked;
-    currentBook.checked = !!bookWeakCheckbox.checked;
+    currentBook.checked = !!bookFavoriteCheckbox.checked;
 
     const saved = await persistCurrentBook();
 
     if (!saved) {
       currentBook.checked = previousChecked;
-      bookWeakCheckbox.checked = previousChecked;
+      bookFavoriteCheckbox.checked = previousChecked;
       alert('保存に失敗しました。');
       updateHeader();
       return;
@@ -823,9 +823,9 @@
       btnReviewComplete.classList.add('hidden');
       btnReviewComplete.disabled = true;
     }
-    if (bookWeakCheckbox) {
-      bookWeakCheckbox.disabled = true;
-      bookWeakCheckbox.checked = false;
+    if (bookFavoriteCheckbox) {
+      bookFavoriteCheckbox.disabled = true;
+      bookFavoriteCheckbox.checked = false;
     }
 
     document.title = 'Digital Anki Book - Book';
@@ -855,8 +855,8 @@
       btnReviewComplete.addEventListener('click', completeReviewStage);
     }
 
-    if (bookWeakCheckbox) {
-      bookWeakCheckbox.addEventListener('change', toggleWeakFlag);
+    if (bookFavoriteCheckbox) {
+      bookFavoriteCheckbox.addEventListener('change', toggleFavoriteFlag);
     }
 
     window.addEventListener('resize', updateMaskPositions);
