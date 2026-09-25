@@ -26,6 +26,7 @@
   const sheetOptions = document.getElementById('sheetOptions');
   const sheetCancel = document.getElementById('sheetCancel');
 
+  // 教材一覧画面の状態
   const state = {
     displayFilter: 'all',
     sortOrder: 'new',
@@ -33,12 +34,14 @@
     selectedDeleteIds: new Set(),
   };
 
+  // 表示条件の表示名
   const DISPLAY_LABELS = {
     all: 'すべて表示',
     checked: 'お気に入りのみ',
     todayReview: '今日の復習',
   };
 
+  // 並び順の表示名 
   const SORT_LABELS = {
     new: '新しい順',
     old: '古い順',
@@ -60,6 +63,7 @@
   return Array.from(new Set(values.filter(Boolean)));
 }
 
+// 復習間隔の定義
 const REVIEW_WINDOWS = [
   { stage: 1, minDays: 1, maxDays: 3 },
   { stage: 2, minDays: 7, maxDays: 14 },
@@ -68,6 +72,7 @@ const REVIEW_WINDOWS = [
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+// 日付を1日の始まりにそろえる処理
 function startOfDayMs(value) {
   const d = new Date(value);
   d.setHours(0, 0, 0, 0);
@@ -78,12 +83,14 @@ function diffDays(from, to = Date.now()) {
   return Math.floor((startOfDayMs(to) - startOfDayMs(from)) / DAY_MS);
 }
 
+// 復習段階の判定
 function getReviewStage(createdAt, now = Date.now()) {
   const days = diffDays(createdAt, now);
   const matched = REVIEW_WINDOWS.find((item) => days >= item.minDays && days <= item.maxDays);
   return matched ? matched.stage : 0;
 }
 
+// 復習に必要な情報を整える処理
 function normalizeReview(review, createdAt) {
   const baseCreatedAt = Number(createdAt) || Date.now();
   const safe = review && typeof review === 'object' ? review : {};
@@ -99,6 +106,7 @@ function normalizeReview(review, createdAt) {
   };
 }
 
+// 今日の復習対象の判定
 function isTodayReviewTarget(book, now = Date.now()) {
   if (!book) return false;
   const review = normalizeReview(book.review, book.createdAt);
@@ -115,6 +123,7 @@ function isTodayReviewTarget(book, now = Date.now()) {
     return `${y}/${m}/${d}`;
   }
 
+  // 教材データを表示用に整える処理
   function normalizeBook(record) {
     const base = record && typeof record === 'object' ? record : {};
     const copy = JSON.parse(JSON.stringify(base));
@@ -187,6 +196,7 @@ function isTodayReviewTarget(book, now = Date.now()) {
     await renderBooks();
   }
 
+  // 表示・並び替えメニューの表示
   async function openSheet(type) {
     if (!sheetBackdrop || !sheetTitle || !sheetDescription || !sheetOptions) return;
 
@@ -262,6 +272,7 @@ function isTodayReviewTarget(book, now = Date.now()) {
     });
   }
   
+    // 教材削除モードの表示更新
   function updateDeletePanel() {
     const count = state.selectedDeleteIds.size;
 
@@ -285,6 +296,7 @@ function isTodayReviewTarget(book, now = Date.now()) {
     }
   }
 
+  // 教材削除モードの操作
   function enterDeleteMode() {
     state.deleteMode = true;
     state.selectedDeleteIds.clear();
@@ -310,6 +322,7 @@ function isTodayReviewTarget(book, now = Date.now()) {
     renderBooks();
   }
 
+  // 教材データの更新と保存
   async function updateProjectField(projectId, updater) {
     const project = await DigitalAnkiStorage.getProjectById(projectId);
     if (!project) return false;
@@ -329,6 +342,7 @@ function isTodayReviewTarget(book, now = Date.now()) {
     location.href = `book.html?id=${encodeURIComponent(bookId)}`;
   }
 
+  // 教材の表紙作成
   function createCoverElement() {
     const coverWrap = document.createElement('div');
     coverWrap.className = 'book-card__cover';
@@ -352,6 +366,7 @@ function isTodayReviewTarget(book, now = Date.now()) {
     return coverWrap;
   }
 
+  // 教材一覧の表示
   async function renderBooks() {
     if (!booksList || !emptyState) return;
 
@@ -380,15 +395,15 @@ function isTodayReviewTarget(book, now = Date.now()) {
     const hasAnyBooks = allBooks.length > 0;
     const hasAnyFilteredBooks = filteredBooks.length > 0;
 
-if (!hasAnyFilteredBooks) {
-  emptyState.classList.remove('hidden');
-  emptyState.textContent = filterVal === 'todayReview'
-    ? '今日は復習するものがありません。'
-    : hasAnyBooks
-      ? '条件に合う教材がありません。'
-      : '新しく教材を作りましょう。';
-  return;
-}
+  if (!hasAnyFilteredBooks) {
+    emptyState.classList.remove('hidden');
+    emptyState.textContent = filterVal === 'todayReview'
+      ? '今日は復習するものがありません。'
+      : hasAnyBooks
+        ? '条件に合う教材がありません。'
+        : '新しく教材を作りましょう。';
+    return;
+  }
 
     emptyState.classList.add('hidden');
 
@@ -427,7 +442,7 @@ if (!hasAnyFilteredBooks) {
         navigateToBook(book.id);
       });
 
-      // Bookの下側に配置するための操作エリア
+      // 教材カードの操作エリア
       const controls = document.createElement('div');
       controls.className = 'book-card__controls';
 
@@ -470,6 +485,7 @@ if (!hasAnyFilteredBooks) {
     updateDeletePanel();
   }
 
+  // 選択した教材の削除
   async function confirmDeleteSelectedBooks() {
     const ids = Array.from(state.selectedDeleteIds);
 
@@ -492,6 +508,7 @@ if (!hasAnyFilteredBooks) {
     cancelDeleteMode();
   }
 
+  // 画面操作のイベント設定
   if (sheetBackdrop) {
   sheetBackdrop.addEventListener('click', (ev) => {
     if (ev.target === sheetBackdrop) {
@@ -554,23 +571,25 @@ if (!hasAnyFilteredBooks) {
     }
   });
 
+  // ツールバーの表示内容を更新
   function syncToolbarLabels() {
     if (displayLabel) displayLabel.textContent = getDisplayLabel(state.displayFilter);
     if (sortLabel) sortLabel.textContent = getSortLabel(state.sortOrder);
   }
 
-async function init() {
-  syncToolbarLabels();
-  updateDeletePanel();
+  // 教材一覧画面の初期化
+  async function init() {
+    syncToolbarLabels();
+    updateDeletePanel();
 
-  if (btnTodayReview) {
-    btnTodayReview.addEventListener('click', async () => {
-      await setDisplayFilter('todayReview');
-    });
+    if (btnTodayReview) {
+      btnTodayReview.addEventListener('click', async () => {
+        await setDisplayFilter('todayReview');
+      });
+    }
+
+    await renderBooks();
   }
-
-  await renderBooks();
-}
 
   init();
 })();

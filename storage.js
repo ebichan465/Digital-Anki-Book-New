@@ -1,19 +1,7 @@
 (() => {
   'use strict';
 
-  /*
-   * Digital Anki Book
-   * storage.js
-   *
-   * 役割:
-   * - IndexedDBの初期化・接続
-   * - projectsのCRUD
-   * - categoriesの保存・取得
-   * - 既存localStorageからIndexedDBへの初回移行
-   *
-   * 今回は既存データ構造を変更しない。
-   * imageDataUrlもそのまま保存する。
-   */
+  // IndexedDBを使った教材・カテゴリデータの保存処理
 
   const DB_NAME = 'DigitalAnkiBookDB';
   const DB_VERSION = 1;
@@ -28,12 +16,9 @@
 
   let dbPromise = null;
 
-  /*
-   * ------------------------------------------------------------
-   * 共通ユーティリティ
-   * ------------------------------------------------------------
-   */
+  // 共通処理
 
+  // IndexedDBの処理をPromiseとして扱うための変換
   function requestToPromise(request) {
     return new Promise((resolve, reject) => {
       request.onsuccess = () => {
@@ -46,6 +31,7 @@
     });
   }
 
+// IndexedDBの処理完了をPromiseとして扱うための変換 
   function transactionToPromise(transaction) {
     return new Promise((resolve, reject) => {
       transaction.oncomplete = () => {
@@ -62,6 +48,7 @@
     });
   }
 
+  // データの複製
   function safeClone(value) {
     if (value === undefined) return undefined;
 
@@ -69,7 +56,7 @@
       try {
         return structuredClone(value);
       } catch (e) {
-        // fallback
+        
       }
     }
 
@@ -80,6 +67,7 @@
     }
   }
 
+  // localStorageからJSONデータを取得  
   function readLegacyJson(key, fallback) {
     try {
       const raw = localStorage.getItem(key);
@@ -116,6 +104,7 @@
     return parsed.categories;
   }
 
+  // IndexedDBへの移行完了状態の確認  
   function isMigrationCompleted() {
     try {
       return localStorage.getItem(MIGRATION_FLAG_KEY) === '1';
@@ -124,6 +113,7 @@
     }
   }
 
+  // IndexedDBへの移行完了状態の保存 
   function markMigrationCompleted() {
     try {
       localStorage.setItem(MIGRATION_FLAG_KEY, '1');
@@ -132,12 +122,7 @@
     }
   }
 
-  /*
-   * ------------------------------------------------------------
-   * IndexedDB初期化
-   * ------------------------------------------------------------
-   */
-
+  // IndexedDBの初期化
   function openDatabase() {
     if (dbPromise) {
       return dbPromise;
@@ -155,27 +140,14 @@
       request.onupgradeneeded = (event) => {
         const db = request.result;
 
-        /*
-         * projects
-         *
-         * 1レコード = 1教材
-         *
-         * 現在のprojectオブジェクトを基本的にそのまま保存する。
-         */
+        // 教材データ用の保存場所
         if (!db.objectStoreNames.contains(PROJECTS_STORE)) {
           db.createObjectStore(PROJECTS_STORE, {
             keyPath: 'id'
           });
         }
 
-        /*
-         * categories
-         *
-         * カテゴリ全体を1レコードとして保存する。
-         * key = 'all'
-         *
-         * 今回はカテゴリデータの構造自体を変更しない。
-         */
+        // カテゴリ一覧をまとめて保存する場所
         if (!db.objectStoreNames.contains(CATEGORIES_STORE)) {
           db.createObjectStore(CATEGORIES_STORE, {
             keyPath: 'id'
@@ -212,21 +184,10 @@
     return dbPromise;
   }
 
-  /*
-   * ------------------------------------------------------------
-   * 初期化
-   * ------------------------------------------------------------
-   */
-
+  // 保存先の初期化
   async function initializeStorage() {
     const db = await openDatabase();
 
-    /*
-     * 初回のみlegacy localStorageから移行する。
-     *
-     * 移行後もlocalStorageのデータ自体は削除しない。
-     * これは既存データ消失を避けるため。
-     */
     if (!isMigrationCompleted()) {
       await migrateFromLocalStorage(db);
     }
@@ -234,28 +195,18 @@
     return db;
   }
 
-  /*
-   * ------------------------------------------------------------
-   * localStorage → IndexedDB 移行
-   * ------------------------------------------------------------
-   */
-
+  // localStorageからIndexedDBへの移行
   async function migrateFromLocalStorage(db) {
     const legacyProjects = getLegacyProjects();
     const legacyCategories = getLegacyCategories();
 
-    /*
-     * 何も移行するものがない場合でも、
-     * 「確認済み」としてフラグを立てる。
-     */
+    // 移行対象がない場合の処理
     if (!legacyProjects.length && !legacyCategories.length) {
       markMigrationCompleted();
       return;
     }
 
-    /*
-     * projectsを移行
-     */
+    // 教材データの移行
     if (legacyProjects.length) {
       const transaction = db.transaction(
         PROJECTS_STORE,
@@ -279,20 +230,7 @@
       await transactionToPromise(transaction);
     }
 
-    /*
-     * categoriesを移行
-     *
-     * 既存localStorage:
-     * {
-     *   categories: [...]
-     * }
-     *
-     * IndexedDB:
-     * {
-     *   id: 'all',
-     *   categories: [...]
-     * }
-     */
+    // カテゴリ一覧の移行
     if (legacyCategories.length) {
       const transaction = db.transaction(
         CATEGORIES_STORE,
@@ -309,18 +247,11 @@
       await transactionToPromise(transaction);
     }
 
-    /*
-     * すべての移行処理が完了してからフラグを立てる。
-     */
+    // 移行完了状態の保存
     markMigrationCompleted();
   }
 
-  /*
-   * ------------------------------------------------------------
-   * Projects
-   * ------------------------------------------------------------
-   */
-
+  // 教材データの取得・保存・削除
   async function getAllProjects() {
     const db = await initializeStorage();
 
@@ -428,12 +359,7 @@
     return true;
   }
 
-  /*
-   * ------------------------------------------------------------
-   * Categories
-   * ------------------------------------------------------------
-   */
-
+  // カテゴリ一覧の取得・保存
   async function getAllCategories() {
     const db = await initializeStorage();
 
@@ -479,19 +405,7 @@
     return safeClone(categories);
   }
 
-  /*
-   * ------------------------------------------------------------
-   * 公開API
-   * ------------------------------------------------------------
-   *
-   * 他のJSファイルからは、
-   *
-   * DigitalAnkiStorage.getAllProjects()
-   * DigitalAnkiStorage.saveProject(project)
-   *
-   * のように利用する。
-   */
-
+  // 他のJavaScriptファイルから利用する処理の公開
   window.DigitalAnkiStorage = Object.freeze({
     initializeStorage,
 

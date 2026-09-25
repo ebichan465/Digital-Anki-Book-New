@@ -1,7 +1,9 @@
 (() => {
+  // URLから教材IDを取得
   const params = new URLSearchParams(location.search);
   const bookId = params.get('id') || params.get('bookId') || '';
 
+  // 画面要素の取得 
   const btnBackStudy = document.getElementById('btnBackStudy');
   const bookTitle = document.getElementById('bookTitle');
   const bookMeta = document.getElementById('bookMeta');
@@ -20,7 +22,7 @@
   const reviewCompleteToast = document.getElementById('reviewCompleteToast');
   let reviewCompleteToastTimer = null;
   
-
+  // 教材画面の状態
   let currentBook = null;
   let currentImageIndex = 0;
   let sessionMasks = [];
@@ -43,46 +45,51 @@
   }
   function unique(values) {
   return Array.from(new Set(values.filter(Boolean)));
-}
+  }
 
-const REVIEW_WINDOWS = [
-  { stage: 1, minDays: 1, maxDays: 3 },
-  { stage: 2, minDays: 7, maxDays: 14 },
-  { stage: 3, minDays: 30, maxDays: 60 },
-];
+  // 復習期間の定義
+  const REVIEW_WINDOWS = [
+    { stage: 1, minDays: 1, maxDays: 3 },
+    { stage: 2, minDays: 7, maxDays: 14 },
+    { stage: 3, minDays: 30, maxDays: 60 },
+  ];
 
-const DAY_MS = 24 * 60 * 60 * 1000;
+  const DAY_MS = 24 * 60 * 60 * 1000;
 
-function startOfDayMs(value) {
-  const d = new Date(value);
-  d.setHours(0, 0, 0, 0);
-  return d.getTime();
-}
+  function startOfDayMs(value) {
+    const d = new Date(value);
+    d.setHours(0, 0, 0, 0);
+    return d.getTime();
+  }
 
-function diffDays(from, to = Date.now()) {
-  return Math.floor((startOfDayMs(to) - startOfDayMs(from)) / DAY_MS);
-}
+  // 日単位での経過日数の計算
+  function diffDays(from, to = Date.now()) {
+    return Math.floor((startOfDayMs(to) - startOfDayMs(from)) / DAY_MS);
+  }
 
-function getReviewStage(createdAt, now = Date.now()) {
-  const days = diffDays(createdAt, now);
-  const matched = REVIEW_WINDOWS.find((item) => days >= item.minDays && days <= item.maxDays);
-  return matched ? matched.stage : 0;
-}
+  // 復習段階の判定
+  function getReviewStage(createdAt, now = Date.now()) {
+    const days = diffDays(createdAt, now);
+    const matched = REVIEW_WINDOWS.find((item) => days >= item.minDays && days <= item.maxDays);
+    return matched ? matched.stage : 0;
+  }
 
-function normalizeReview(review, createdAt) {
-  const baseCreatedAt = Number(createdAt) || Date.now();
-  const safe = review && typeof review === 'object' ? review : {};
-  return {
-    createdAt: Number.isFinite(Number(safe.createdAt)) ? Number(safe.createdAt) : baseCreatedAt,
-    currentStage: Number.isFinite(Number(safe.currentStage))
-      ? Number(safe.currentStage)
-      : getReviewStage(baseCreatedAt),
-    completedStages: Array.isArray(safe.completedStages)
-      ? unique(safe.completedStages.map((n) => Number(n)).filter((n) => Number.isFinite(n)))
-      : [],
-    lastCompletedStage: Number.isFinite(Number(safe.lastCompletedStage)) ? Number(safe.lastCompletedStage) : 0,
-  };
-}
+
+  // 復習に必要な情報を整える処理
+  function normalizeReview(review, createdAt) {
+    const baseCreatedAt = Number(createdAt) || Date.now();
+    const safe = review && typeof review === 'object' ? review : {};
+    return {
+      createdAt: Number.isFinite(Number(safe.createdAt)) ? Number(safe.createdAt) : baseCreatedAt,
+      currentStage: Number.isFinite(Number(safe.currentStage))
+        ? Number(safe.currentStage)
+        : getReviewStage(baseCreatedAt),
+      completedStages: Array.isArray(safe.completedStages)
+        ? unique(safe.completedStages.map((n) => Number(n)).filter((n) => Number.isFinite(n)))
+        : [],
+      lastCompletedStage: Number.isFinite(Number(safe.lastCompletedStage)) ? Number(safe.lastCompletedStage) : 0,
+    };
+  }
 
   async function loadAllProjects() {
     return DigitalAnkiStorage.getAllProjects();
@@ -96,6 +103,7 @@ function normalizeReview(review, createdAt) {
     await DigitalAnkiStorage.saveAllCategories(categories);
   }
 
+  // 画像データを表示用に整える処理 
   function normalizeImageRecord(image, fallbackTitle, fallbackCreatedAt) {
     if (!image || typeof image !== 'object') return null;
     const imageDataUrl = image.imageDataUrl || image.dataUrl || '';
@@ -110,6 +118,7 @@ function normalizeReview(review, createdAt) {
     };
   }
 
+  // 教材データを表示用に整える処理
   function normalizeBook(record) {
     const source = record && typeof record === 'object' ? record : {};
     const base = deepClone(source) || {};
@@ -166,12 +175,14 @@ function normalizeReview(review, createdAt) {
     return found ? normalizeBook(found) : null;
   }
 
+  // 現在表示する教材画像の取得
   function getActiveImageRecord() {
     if (!currentBook || !Array.isArray(currentBook.images) || !currentBook.images.length) return null;
     currentImageIndex = Math.max(0, Math.min(currentImageIndex, currentBook.images.length - 1));
     return currentBook.images[currentImageIndex] || null;
   }
 
+  // ヘッダーの表示更新
   function updateHeader() {
     if (!currentBook) {
       if (bookTitle) bookTitle.textContent = 'Book';
@@ -200,6 +211,7 @@ function normalizeReview(review, createdAt) {
     document.title = `Digital Anki Book - ${currentBook.name || 'Book'}`;
   }
 
+  // 教材画面の表示状態を更新 
   function setBookState() {
     const hasBook = !!currentBook;
     const activeImage = getActiveImageRecord();
@@ -229,91 +241,96 @@ function normalizeReview(review, createdAt) {
     updateReviewButton();
   }
   
-function updateReviewButton() {
-  if (!btnReviewComplete) return;
+  // 復習完了ボタンの表示更新
+  function updateReviewButton() {
+    if (!btnReviewComplete) return;
 
-  if (!currentBook) {
-    btnReviewComplete.classList.add('hidden');
-    btnReviewComplete.disabled = true;
-    return;
+    if (!currentBook) {
+      btnReviewComplete.classList.add('hidden');
+      btnReviewComplete.disabled = true;
+      return;
+    }
+
+    const activeImage = getActiveImageRecord();
+    const review = normalizeReview(currentBook.review, currentBook.createdAt);
+    const stage = getReviewStage(
+      review.createdAt ||
+      (activeImage && activeImage.createdAt) ||
+      currentBook.createdAt
+    );
+
+    const shouldShow =
+      !!(activeImage && activeImage.imageDataUrl) &&
+      stage > 0 &&
+      !review.completedStages.includes(stage);
+
+    btnReviewComplete.classList.toggle('hidden', !shouldShow);
+    btnReviewComplete.disabled = !shouldShow;
   }
 
-  const activeImage = getActiveImageRecord();
-  const review = normalizeReview(currentBook.review, currentBook.createdAt);
-  const stage = getReviewStage(
-    review.createdAt ||
-    (activeImage && activeImage.createdAt) ||
-    currentBook.createdAt
-  );
+  // 復習完了通知の表示
+  function showReviewCompleteToast() {
+    if (!reviewCompleteToast) return;
 
-  const shouldShow =
-    !!(activeImage && activeImage.imageDataUrl) &&
-    stage > 0 &&
-    !review.completedStages.includes(stage);
+    if (reviewCompleteToastTimer) {
+      clearTimeout(reviewCompleteToastTimer);
+      reviewCompleteToastTimer = null;
+    }
 
-  btnReviewComplete.classList.toggle('hidden', !shouldShow);
-  btnReviewComplete.disabled = !shouldShow;
-}
+    reviewCompleteToast.classList.remove('hidden');
 
-function showReviewCompleteToast() {
-  if (!reviewCompleteToast) return;
-
-  if (reviewCompleteToastTimer) {
-    clearTimeout(reviewCompleteToastTimer);
-    reviewCompleteToastTimer = null;
+    reviewCompleteToastTimer = window.setTimeout(() => {
+      reviewCompleteToast.classList.add('hidden');
+      reviewCompleteToastTimer = null;
+    }, 1000);
   }
 
-  reviewCompleteToast.classList.remove('hidden');
+  // 復習段階の完了処理
+  async function completeReviewStage() {
+    if (!currentBook) return;
 
-  reviewCompleteToastTimer = window.setTimeout(() => {
-    reviewCompleteToast.classList.add('hidden');
-    reviewCompleteToastTimer = null;
-  }, 1000);
-}
+    const activeImage = getActiveImageRecord();
+    const review = normalizeReview(currentBook.review, currentBook.createdAt);
+    const stage = getReviewStage(
+      review.createdAt ||
+      (activeImage && activeImage.createdAt) ||
+      currentBook.createdAt
+    );
 
-async function completeReviewStage() {
-  if (!currentBook) return;
+    if (stage <= 0) return;
 
-  const activeImage = getActiveImageRecord();
-  const review = normalizeReview(currentBook.review, currentBook.createdAt);
-  const stage = getReviewStage(
-    review.createdAt ||
-    (activeImage && activeImage.createdAt) ||
-    currentBook.createdAt
-  );
+      const previousReview = deepClone(currentBook.review);
 
-  if (stage <= 0) return;
+    currentBook.review = {
+      ...review,
+      currentStage: stage,
+      lastCompletedStage: stage,
+      completedStages: unique([...review.completedStages, stage]).sort((a, b) => a - b),
+    };
 
-    const previousReview = deepClone(currentBook.review);
+    const saved = await persistCurrentBook();
 
-  currentBook.review = {
-    ...review,
-    currentStage: stage,
-    lastCompletedStage: stage,
-    completedStages: unique([...review.completedStages, stage]).sort((a, b) => a - b),
-  };
+    if (!saved) {
+      currentBook.review = previousReview;
+      alert('保存に失敗しました。');
+      return;
+    }
 
-  const saved = await persistCurrentBook();
-
-  if (!saved) {
-    currentBook.review = previousReview;
-    alert('保存に失敗しました。');
-    return;
+    setBookState();
+    showReviewCompleteToast();
   }
 
-  setBookState();
-  showReviewCompleteToast();
-}
+  // 表示中のマスクを削除
+  function clearMaskElements() {
+    maskEntries.forEach((entry) => {
+      if (entry.el && entry.el.parentNode) {
+        entry.el.parentNode.removeChild(entry.el);
+      }
+    });
+    maskEntries = [];
+  }
 
-function clearMaskElements() {
-  maskEntries.forEach((entry) => {
-     if (entry.el && entry.el.parentNode) {
-       entry.el.parentNode.removeChild(entry.el);
-     }
-  });
-  maskEntries = [];
-}
-
+  // マスクの情報を整える処理
   function normalizeMaskModel(mask) {
   const safe = mask && typeof mask === 'object' ? mask : {};
   return {
@@ -327,8 +344,9 @@ function clearMaskElements() {
     color: safe.color || '#000000',
     shape: safe.shape === 'circle' ? 'circle' : 'rect',
   };
-}
+  }
 
+  // マスクの見た目を反映
   function applyMaskVisual(entry) {
     if (!entry || !entry.el || !entry.model) return;
     const mask = entry.model;
@@ -360,6 +378,7 @@ function clearMaskElements() {
     });
   }
 
+  // マスク位置の更新
   function updateMaskPositions() {
     if (!maskEntries.length || !bookCanvas || !bookMainImage) return;
 
@@ -383,6 +402,7 @@ function clearMaskElements() {
     });
   }
 
+  // 画像の実際の表示領域の計算
   function getImageContentRect(imgEl){
     const rect = imgEl.getBoundingClientRect();
 
@@ -415,6 +435,7 @@ function clearMaskElements() {
     };
   }
 
+  // マスクの表示
   function renderMasks() {
     clearMaskElements();
 
@@ -449,6 +470,7 @@ function clearMaskElements() {
     updateMaskPositions();
   }
 
+  // 現在の教材画像を読み込む
   function loadCurrentImage() {
     if (!currentBook) {
       setBookState();
@@ -490,6 +512,7 @@ function clearMaskElements() {
     setBookState();
   }
 
+  // 現在の教材を保存
   async function persistCurrentBook(mutator) {
     if (!currentBook) return null;
 
@@ -512,6 +535,7 @@ function clearMaskElements() {
     return currentBook;
   }
 
+  // 教材名の変更
   async function renameBook() {
     if (!currentBook) return;
     const nextName = prompt('新しい教材名を入力してください', currentBook.name || '');
@@ -554,6 +578,7 @@ function clearMaskElements() {
     });
   }
 
+  // カテゴリ一覧の更新
   async function refreshBookCategoryOptions() {
     if (!bookCategoryList) return;
 
@@ -678,6 +703,7 @@ function clearMaskElements() {
     });
   }
 
+  // マスクをすべて表示
   function resetMasks() {
     if (!currentBook) return;
     sessionMasks = sessionMasks.map((mask) => ({
@@ -690,6 +716,7 @@ function clearMaskElements() {
     });
   }
 
+  // お気に入り状態の変更  
   async function toggleWeakFlag() {
     if (!currentBook || !bookWeakCheckbox) return;
 
@@ -709,6 +736,7 @@ function clearMaskElements() {
     updateHeader();
   }
 
+  // 表示中の教材画像の削除  
   async function deleteCurrentImage() {
     if (!currentBook) return;
 
@@ -770,6 +798,7 @@ function clearMaskElements() {
     alert('教材を削除しました。');
   }
 
+  // 教材が見つからない場合の表示  
   function showMissingBookState(message) {
     currentBook = null;
     currentImageIndex = 0;
@@ -802,6 +831,7 @@ function clearMaskElements() {
     document.title = 'Digital Anki Book - Book';
   }
 
+  // 教材画面の初期化  
   async function init() {
     if (btnBackStudy) {
       btnBackStudy.addEventListener('click', () => {

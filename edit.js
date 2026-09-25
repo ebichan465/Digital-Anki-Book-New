@@ -1,3 +1,4 @@
+  // 画面要素の取得
 (() => {
   const getEl = id => document.getElementById(id);
   const imageInput = getEl('imageInput');
@@ -16,7 +17,7 @@
   const btnInsertText = getEl('btnInsertText');
   const btnDuplicateMask = getEl('btnDuplicateMask');
 
-  // category controls
+  // カテゴリ操作用の要素
   const categoryBox = getEl('categoryBox');
   const categoryList = getEl('categoryList');
   const btnNewCategory = getEl('btnNewCategory');
@@ -32,7 +33,7 @@
     return;
   }
 
-  // ----- state -----
+  // 編集画面の状態
   let masks = [];
   let selectedMaskId = null;
   let currentProject = null;
@@ -108,6 +109,7 @@
   return Number.isFinite(n) ? n : DEFAULT_MASK_ROTATION;
   }
 
+    // 復習情報の初期化
   function buildInitialReview(createdAt){
     const base = Number(createdAt) || Date.now();
     return {
@@ -118,6 +120,7 @@
     };
   }
 
+  // 復習に必要な情報を保存用に整える処理
   function normalizeReviewForSave(review, createdAt){
     const base = Number(createdAt) || Date.now();
 
@@ -164,6 +167,7 @@
   let activePointerInteractions = 0;
   let previousBodyOverflow = '';
 
+  // マスク操作中の画面スクロール制御
   function lockPageScroll(){
     if (activePointerInteractions === 0) {
       previousBodyOverflow = document.body.style.overflow || '';
@@ -184,6 +188,7 @@
 
   function uid(prefix='id'){ return prefix + '-' + Math.random().toString(36).slice(2,9); }
 
+  // 教材・カテゴリの読み込みと保存
   async function loadAllProjects(){
     return DigitalAnkiStorage.getAllProjects();
   }
@@ -196,6 +201,7 @@
     await DigitalAnkiStorage.saveAllCategories(arr);
   }
 
+  // 画像形式の判定
   function getDataUrlMime(dataUrl){
     const match = /^data:([^;,]+)[;,]/.exec(dataUrl || '');
     return match ? match[1].toLowerCase() : '';
@@ -222,6 +228,7 @@
     maskSettings.classList.toggle('hidden', !hasContent);
   }
 
+  // 画像の実際の表示領域の計算
   function getImageContentRect(imgEl){
     const rect = imgEl.getBoundingClientRect();
 
@@ -253,6 +260,8 @@
       height: contentHeight
     };
   }
+
+  // カテゴリ一覧の更新
   async function refreshCategoryOptions(){
     const cats = await loadAllCategories();
     categoryList.innerHTML = '';
@@ -263,19 +272,22 @@
       row.style.alignItems = 'center';
       row.style.gap = '8px';
       row.style.cursor = 'default';
-      // checkbox
+      
+      // カテゴリ選択用チェックボックス
       const chk = document.createElement('input');
       chk.type = 'checkbox';
       chk.value = cat;
       chk.dataset.cat = cat;
       chk.id = id;
       chk.style.margin = '0';
-      // label text
+
+      // カテゴリ名
       const span = document.createElement('span');
       span.textContent = cat;
       span.style.fontSize = '0.95rem';
       span.style.flex = '1';
-      // trash icon button (delete per-category)
+
+      // カテゴリ削除ボタン
       const trash = document.createElement('button');
       trash.type = 'button';
       trash.title = 'カテゴリを削除';
@@ -295,7 +307,8 @@
       trash.addEventListener('click', async (ev)=>{
         ev.stopPropagation();
         if (!confirm(`本当にこのカテゴリを削除しますか？`)) return;
-        // delete category: remove from global list, and remove from all projects; projects that had only this become categories = []
+        
+        // カテゴリ削除処理
         const catsAll = (await loadAllCategories()).filter(c => c !== cat);
         await saveAllCategories(catsAll);
 
@@ -324,14 +337,15 @@
             );
           }
         }
-        // refresh UI
+
+      // カテゴリ変更を現在の教材へ反映
         await refreshProjectSelect();
         await updateCategoryVisibility();
 
         alert(`カテゴリ「${cat}」を削除しました。`);
       });
 
-      // when checkbox toggled -> sync to currentProject and mark dirty
+      // カテゴリ変更を現在の教材へ反映
       chk.addEventListener('change', () => {
         syncCategoriesFromUIToCurrentProject();
         markDirty(true);
@@ -419,7 +433,7 @@
     });
   }
 
-  // ===== mask rendering and interactions (unchanged except default visible handling) =====
+    // マスクの表示
     function updateMaskDOMFromModel(m){
       if (!m.el) return;
       const imgRect = getImageContentRect(mainImage);
@@ -676,7 +690,7 @@
           pushUndoState();
           m.color = c;
           if (m.el) m.el.style.background = c;
-          markDirty(true); // color change => dirty
+          markDirty(true); // マスクの形変更を未保存状態として記録
         }
       }
     });
@@ -692,7 +706,7 @@
         m.el && m.el.remove();
         masks.splice(idx,1);
         selectedMaskId = null;
-        markDirty(true); // deletion => dirty
+        markDirty(true); // マスクの削除を未保存状態として記録
       }
     });
   }
@@ -720,7 +734,7 @@
       masks.push(copy);
       renderMask(copy);
       selectMask(copy.id);
-      markDirty(true); // duplication => dirty
+      markDirty(true); // マスクの複製を未保存状態として記録
     });
   }
 
@@ -749,7 +763,7 @@
       masks.push(m);
       renderMask(m);
       selectMask(m.id);
-      markDirty(true); // adding mask => dirty
+      markDirty(true); // マスクの追加を未保存状態として記録
     });
   }
 
@@ -774,7 +788,8 @@
       if (btnUndo) btnUndo.disabled = true;
       masks = [];
       selectedMaskId = null;
-      // new image loaded but not saved => dirty
+
+      // 新しい画像を読み込んだため未保存状態として記録
       markDirty(true);
       updateCategoryVisibility();
     });
@@ -868,7 +883,7 @@
     };
   }
 
-  // TEXT insertion UI: show modal
+  // テキスト挿入画面の表示
   if (btnInsertText) {
     btnInsertText.addEventListener('click', ()=>{
       const hasImage = !!mainImage.src;
@@ -902,7 +917,7 @@
 
   if (btnInsertCancel) btnInsertCancel.addEventListener('click', ()=> textModal.classList.add('hidden'));
 
-  // robust text wrapping function that preserves explicit paragraph breaks
+  // テキストの折り返し処理
   function wrapTextPreserveNewlines(ctx, text, maxWidth){
     const paragraphs = text.replace(/\r\n/g, '\n').split('\n');
     const outLines = [];
@@ -1058,7 +1073,7 @@
           shape: m.shape
         }));
 
-        // Prompt for name; if user cancels (null) => abort save
+        // 教材名の入力
         let name;
         if (currentProject && currentProject.name) {
           const ans = prompt('教材名を入力してください', currentProject.name);
@@ -1106,7 +1121,8 @@
         }
 
         await refreshProjectSelect();
-        // update currentProject to saved payload and clear dirty flag
+
+        // 保存した教材を現在の教材に反映
         currentProject = JSON.parse(JSON.stringify(savedPayload));
         clearDirty();
         alert('保存しました');
@@ -1194,20 +1210,21 @@
         const checks = categoryList.querySelectorAll('input[type="checkbox"]');
         checks.forEach(ch => ch.checked = currentProject.categories.includes(ch.value));
         updateCategoryVisibility();
-        // loaded saved project => clear dirty flag
+
+        // 保存済み教材を読み込んだため未保存状態を解除
         clearDirty();
       };
     });
   }
 
-  // --- UPDATED: btnBack handler checks isDirty and asks confirm when unsaved ---
+  // 未保存の教材を確認してから戻る処理
   if (btnBack) {
     btnBack.addEventListener('click', (ev) => {
-      // Only warn when there are unsaved changes (either never saved or saved then modified)
+      // 未保存の変更がある場合に確認
       if (isDirty) {
         const ok = confirm('教材が保存されていません。本当に戻りますか？');
         if (!ok) {
-          // cancel navigation
+          // 戻る処理を中止
           return;
         }
       }
@@ -1273,8 +1290,6 @@
       markDirty(true);
     });
   }
-  // categoryList already wires checkbox change to mark dirty in refreshCategoryOptions
-  // (no additional listener needed here)
 
 async function initializeEditPage() {
   syncMaskSettingsVisibility();

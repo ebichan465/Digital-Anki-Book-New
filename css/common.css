@@ -41,8 +41,8 @@ p {
     font-size:25px;
 }
 
-/* 大きなボタン */
-.big-btn{
+/* 挿入ボタン */
+.insert-btn{
   padding:12px 10px;
   border-radius:10px;
   font-size:16px;
@@ -152,7 +152,7 @@ p {
 .hidden { display:none !important; }
 
 button,
-.big-btn,
+.insert-btn,
 .secondary-btn,
 .home-action-btn,
 
@@ -206,7 +206,7 @@ input[type="color"]::-moz-color-swatch{
     font-size:16px;
   }
 
-  .big-btn{
+  .insert-btn{
     padding:11px 12px;
     font-size:15px;
   }

@@ -10,7 +10,7 @@ body.edit-page{
 }
 
 body.edit-page button,
-body.edit-page .big-btn,
+body.edit-page .insert-btn,
 body.edit-page .secondary-btn{
   font-family: inherit;
 }
@@ -622,7 +622,7 @@ body.edit-page .project-panel__actions{
 }
 
 body.edit-page .secondary-btn,
-body.edit-page .big-btn{
+body.edit-page .insert-btn{
   border-radius:14px;
   border:1px solid rgba(81, 90, 98, .16);
   background:linear-gradient(180deg, #ffffff 0%, #f2ebdf 100%);
@@ -633,13 +633,13 @@ body.edit-page .big-btn{
 }
 
 body.edit-page .secondary-btn:hover,
-body.edit-page .big-btn:hover{
+body.edit-page .insert-btn:hover{
   transform:translateY(-1px);
   filter:saturate(1.02) brightness(1.01);
 }
 
 body.edit-page .secondary-btn:active,
-body.edit-page .big-btn:active{
+body.edit-page .insert-btn:active{
   transform:translateY(1px);
 }
 
@@ -648,7 +648,7 @@ body.edit-page .secondary-btn{
   font-size:14px;
 }
 
-body.edit-page .big-btn{
+body.edit-page .insert-btn{
   padding:10px 18px;
   font-size:15px;
 }
