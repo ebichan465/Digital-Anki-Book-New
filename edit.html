@@ -9,7 +9,9 @@
   <link rel="stylesheet" href="css/edit.css">
 </head>
 <body class="edit-page">
+  <!-- 編集画面 -->
   <div class="edit-scene">
+    <!-- 編集画面のトップバー -->
     <div class="edit-topbar" aria-label="編集トップバー">
       <button id="btnBack" class="edit-topbar-btn edit-topbar-btn--back" type="button">
         <img src="assets/back.svg" alt="戻る" class="edit-topbar-btn__icon">
@@ -28,6 +30,7 @@
 
     <main class="edit-layout">
       <section class="edit-main">
+        <!-- 上のツールバー -->
         <div class="edit-toolbar edit-toolbar--primary" role="toolbar" aria-label="編集ツール">
           <button id="btnInsertText" class="tool-card" type="button">
             <img src="assets/text.svg" alt="テキスト" class="tool-card__icon">
@@ -55,7 +58,8 @@
             <img src="assets/mask-back.svg" alt="元に戻す" class="edit-topbar-btn__icon">
           </button>
         </div>
-
+        
+        <!-- 画像編集エリア -->
         <div class="edit-book">
           <div class="image-area edit-canvas" id="imageArea">
             <button id="btnChooseImage" class="image-picker-card" type="button">
@@ -65,6 +69,8 @@
             <img id="mainImage" alt="" />
           </div>
         </div>
+
+        <!-- 下のツールバー -->
         <div class="edit-toolbar edit-toolbar--secondary hidden" aria-label="マスク設定">
           <section class="mask-settings-group mask-settings-group--color">
             <div class="mask-settings-title">マスクの色</div>
@@ -96,6 +102,7 @@
         </div>
       </section>
 
+      <!-- 教材管理 -->
       <aside class="edit-sidebar">
         <section class="edit-panel" id="categoryBox" style="display:none;">
           <h4 class="panel-title">カテゴリを選択</h4>
@@ -115,6 +122,7 @@
       </aside>
       </main>
 
+    <!-- 非表示の入力要素 -->
     <div class="hidden" aria-hidden="true">
       <input type="file" id="imageInput" accept="image/*" />
       <input type="color" id="colorPicker" title="マスクの色" />
@@ -124,6 +132,7 @@
       </select>
     </div>
 
+    <!-- テキスト挿入ダイアログ -->
     <div id="textModal" class="modal hidden" role="dialog" aria-modal="true">
       <div class="modal-content">
         <h3 style="margin-top:0;">テキスト挿入</h3>
@@ -147,6 +156,7 @@
 
   <script>
   (() => {
+    // 保存完了メッセージの表示調整
     const nativeAlert = window.alert.bind(window);
     window.alert = (message) => {
       if (message === '保存しました') {
@@ -161,6 +171,7 @@
     const colorButtons = Array.from(document.querySelectorAll('[data-color]'));
     const shapeButtons = Array.from(document.querySelectorAll('[data-shape]'));
 
+    // 色・形状ボタンの選択状態を同期
     function syncButtons(buttons, attrName, value, selectedClass) {
       const normalizedValue = String(value || '').toLowerCase();
       buttons.forEach((btn) => {
@@ -179,6 +190,8 @@
       syncButtons(shapeButtons, 'shape', value, 'is-selected');
     }
 
+    // 色・形状ボタンによる入力値の変更
+    // 色ボタンによる色の変更
     colorButtons.forEach((btn) => {
       btn.addEventListener('click', () => {
         if (!colorInput) return;
@@ -188,6 +201,7 @@
       });
     });
 
+    // 形状ボタンによる形状の変更
     shapeButtons.forEach((btn) => {
       btn.addEventListener('click', () => {
         if (!shapeSelect) return;

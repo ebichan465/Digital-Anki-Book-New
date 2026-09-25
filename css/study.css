@@ -1,3 +1,4 @@
+/* 教材選択画面のメイン領域 */
 body.study-page .study-main{
   display:flex;
   flex-direction:column;
@@ -5,6 +6,7 @@ body.study-page .study-main{
   min-width:0;
 }
 
+/* ツールバー */
 body.study-page .study-toolbar{
   display:flex;
   flex-wrap:nowrap;
@@ -16,6 +18,7 @@ body.study-page .study-toolbar{
   box-shadow:0 18px 28px -24px rgba(74, 58, 36, .35);
 }
 
+/* ツールバーボタンの基本設定 */
 body.study-page .study-toolbar-btn{
   appearance:none;
   border:none;
@@ -45,12 +48,15 @@ body.study-page .study-toolbar-btn:active{
   transform:translateY(1px);
 }
 
+/* ツールバーボタンの表示名 */
 body.study-page .study-toolbar-btn__label{
   font-size:11px;
   line-height:1;
   font-weight:900;
   letter-spacing:.04em;
 }
+
+/* ツールバーボタンの表示値 */
 body.study-page .study-toolbar-btn__value{
   font-size:12px;
   line-height:1.1;
@@ -63,10 +69,7 @@ body.study-page .study-toolbar-btn__value{
   max-width:100%;
 }
 
-body.study-page .study-toolbar-btn:nth-child(3){
-  background:linear-gradient(180deg, #fffdf7 0%, #f7eadf 100%);
-}
-
+/* 今日の復習ボタン */
 body.study-page .study-review-btn{
   appearance:none;
   width:100%;
@@ -114,6 +117,7 @@ body.study-page .study-review-btn:disabled{
   }
 }
 
+/* 削除モードの操作パネル */
 body.study-page .study-delete-panel{
   border:1px solid rgba(81, 90, 98, .12);
   border-radius:22px;
@@ -131,6 +135,8 @@ body.study-page .study-delete-panel__info{
   color:#16488A;
   font-family:"Zen Kaku Gothic New", "Noto Sans JP", "Yu Gothic", "Hiragino Sans", sans-serif;
 }
+
+/* 削除パネルの操作ボタン配置 */
 body.study-page .study-delete-panel__actions{
   display:flex;
   gap:8px;
@@ -153,6 +159,7 @@ body.study-page .study-delete-panel__button:disabled{
   cursor:not-allowed;
 }
 
+/* 教材一覧の配置 */
 body.study-page .study-books{
   display:grid;
   grid-template-columns:repeat(auto-fill, minmax(160px, 1fr));
@@ -160,6 +167,7 @@ body.study-page .study-books{
   align-items:stretch;
 }
 
+/* 教材がない場合の表示 */
 body.study-page .study-empty{
   margin:10px 0 0;
   padding:14px 16px;
@@ -172,6 +180,7 @@ body.study-page .study-empty{
   box-shadow:0 16px 22px -18px rgba(0,0,0,.22);
 }
 
+/* 表紙の基本設定 */
 body.study-page .book-card{
   position:relative;
   display:flex;
@@ -207,6 +216,7 @@ body.study-page .book-card__open:active{
   transform:translateY(1px);
 }
 
+/* 表紙 */
 body.study-page .book-card__cover{
   position:relative;
   width:100%;
@@ -227,6 +237,7 @@ body.study-page .book-card__cover::after{
   content:none;
 }
 
+/* 表紙の画像 */
 body.study-page .book-card__cover-image{
   width:100%;
   height:100%;
@@ -234,6 +245,7 @@ body.study-page .book-card__cover-image{
   display:block;
 }
 
+/* 表紙の代替表示 */
 body.study-page .book-card__cover-placeholder{
   width:70%;
   aspect-ratio:1 / 1;
@@ -247,6 +259,7 @@ body.study-page .book-card__cover-placeholder{
   box-shadow:inset 0 1px 0 rgba(255,255,255,.55);
 }
 
+/* 表紙のタイトル */
 body.study-page .book-card__title{
   position:absolute;
   left:50%;
@@ -267,6 +280,7 @@ body.study-page .book-card__title{
   color:#2d3b45;
 }
 
+/* 表紙の日付 */
 body.study-page .book-card__date{
   position:absolute;
   left:50%;
@@ -281,6 +295,7 @@ body.study-page .book-card__date{
 color:#353638;
 }
 
+/* 表紙の操作部分 */
 body.study-page .book-card__controls{
   padding:8px 4px 4px;
   display:flex;
@@ -288,6 +303,7 @@ body.study-page .book-card__controls{
   align-items:center;
 }
 
+/* 苦手設定の切り替え */
 body.study-page .book-card__weak-toggle{
   display:inline-flex;
   align-items:center;
@@ -309,6 +325,7 @@ body.study-page .book-card__weak-toggle input{
   accent-color:#2b6ef6;
 }
 
+/* 設定シートの背景 */
 body.study-page .study-sheet-backdrop{
   position:fixed;
   inset:0;
@@ -324,6 +341,7 @@ body.study-page .study-sheet-backdrop.hidden{
   display:none !important;
 }
 
+/* 設定シート本体 */
 body.study-page .study-sheet{
   position:relative;
   width:min(100%, 720px);
@@ -338,6 +356,7 @@ body.study-page .study-sheet{
   overflow:auto;
 }
 
+/* 設定シートの見出し */
 body.study-page .study-sheet__head{
   display:flex;
   flex-direction:column;
@@ -358,6 +377,7 @@ body.study-page .study-sheet__description{
   color:#6b6d70;
 }
 
+/* 設定シートの選択肢 */
 body.study-page .study-sheet__options{
   display:flex;
   flex-direction:column;
@@ -399,6 +419,7 @@ body.study-page .study-sheet__option__mark{
   flex:none;
 }
 
+/* 設定シートの補足表示 */
 body.study-page .study-sheet-note{
   padding:10px 12px;
   border-radius:14px;
@@ -407,11 +428,13 @@ body.study-page .study-sheet-note{
   font-size:13px;
 }
 
+/* 設定シートの下部操作 */
 body.study-page .study-sheet__footer{
   display:flex;
   justify-content:flex-end;
 }
 
+/* 設定シートの操作ボタン */
 body.study-page .study-sheet__button{
   appearance:none;
   border:1px solid rgba(81, 90, 98, .16);
@@ -443,13 +466,11 @@ body.study-page .study-sheet__button--cancel{
     padding:7px 6px;
   }
 
-  /* ===== Book表紙のタイトル位置調整：ここから ===== */
   body.study-page .book-card__title{
     top:7%;
     left:50%;
   }
 
-  /* ===== Book表紙の日付位置調整：ここから ===== */
   body.study-page .book-card__date{
     bottom:5px;
     left:50%;

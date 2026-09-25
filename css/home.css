@@ -1,3 +1,4 @@
+/* トップページの基本設定 */
 body.home-page{
   min-height:100%;
   font-family:"Zen Kaku Gothic New", "Noto Sans JP", "Yu Gothic", "Hiragino Sans", sans-serif;
@@ -8,6 +9,7 @@ body.home-page{
   position:relative;
 }
 
+/* トップページのレイアウト */
 .home-scene{
   min-height:100svh;
   display:grid;
@@ -39,6 +41,7 @@ body.home-page{
   text-shadow:0 1px 0 rgba(255,255,255,.55);
 }
 
+/* ボタンのレイアウト */
 .home-actions{
   margin-top:clamp(56px, 12vw, 96px);
   display:flex;
@@ -48,6 +51,7 @@ body.home-page{
   flex-wrap:nowrap;
 }
 
+/* メインボタンの外観 */
 body.home-page .home-action-btn{
   --tape-left:50%;
   --tape-rotate:0deg;
@@ -84,6 +88,7 @@ body.home-page .home-action-btn{
     radial-gradient(circle at 18% 14%, rgba(255,255,255,.16), transparent 38%);
 }
 
+/* ボタンのテープ装飾 */
 body.home-page .home-action-btn::before{
   content:'';
   position:absolute;
@@ -164,6 +169,7 @@ body.home-page .home-study-wrap{
   align-items:center;
 }
 
+/* 復習件数の表示 */
 body.home-page .review-bubble{
   margin-top:25px;
 
@@ -182,6 +188,7 @@ body.home-page .review-bubble{
   box-shadow:0 4px 10px rgba(0,0,0,.08);
 }
 
+/* トップページの装飾 */
 body.home-page .home-decoration{
   position:absolute;
   z-index:0;
@@ -189,6 +196,7 @@ body.home-page .home-decoration{
   user-select:none;
 }
 
+/* 装飾配置の基準位置 */
 body.home-page .home-stage{
   position:relative;
 }
@@ -207,6 +215,7 @@ body.home-page .home-decoration--eraser{
   transform:rotate(8deg);
 }
 
+/* スマートフォン向け調整 */
 @media (max-width: 768px){
   .home-scene{
     min-height:100svh;

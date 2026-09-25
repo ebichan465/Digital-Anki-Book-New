@@ -9,7 +9,10 @@
   <link rel="stylesheet" href="css/study.css">
 </head>
 <body class="study-page">
+  <!-- 画面 -->
   <div class="study-scene">
+
+    <!-- 暗記画面のトップバー -->
     <header class="study-topbar" aria-label="暗記するトップバー">
       <button id="btnBackHome" class="study-topbar-btn study-topbar-btn--back" type="button" aria-label="トップページへ戻る">
         <img
@@ -26,6 +29,8 @@
     </header>
 
     <main class="study-main">
+
+      <!-- ツールバー -->
       <section class="study-toolbar" aria-label="Book一覧の操作">
         <button id="btnDisplayMenu" class="study-toolbar-btn" type="button">
           <span class="study-toolbar-btn__label">表示</span>
@@ -42,10 +47,12 @@
         </button>
       </section>
 
+      <!-- 今日の復習 -->
       <button id="btnTodayReview" class="study-review-btn" type="button">
         今日の復習
       </button>
 
+      <!-- 教材削除モードの操作 -->
       <section id="deleteModePanel" class="study-delete-panel hidden" aria-label="選択して削除の操作">
         <div class="study-delete-panel__info">
           <span id="deleteModeCount">0</span>冊選択中
@@ -56,11 +63,13 @@
         </div>
       </section>
 
+      <!-- 教材一覧 -->
       <section id="booksList" class="study-books" aria-label="Book一覧"></section>
       <p id="emptyState" class="study-empty">新しくBookを作りましょう。</p>
     </main>
   </div>
 
+  <!-- 表示・並び替えメニュー -->
   <div id="sheetBackdrop" class="study-sheet-backdrop hidden" aria-hidden="true">
     <div class="study-sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
       <div class="study-sheet__head">
@@ -74,7 +83,7 @@
     </div>
   </div>
 
- <script src="storage.js"></script>
- <script src="study.js"></script>
+  <script src="storage.js"></script>
+  <script src="study.js"></script>
 </body>
 </html>

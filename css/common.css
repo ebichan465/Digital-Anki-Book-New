@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap");
+/* 共通設定 */
 :root{
   --toolbar-bg: #f6f7fb;
   --btn-bg: #2b6ef6;
@@ -8,7 +9,7 @@
   --selected-border: 2px solid #ffd54d;
 }
 
-/* リセット */
+/* ページ全体の基本設定 */
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
@@ -40,7 +41,7 @@ p {
     font-size:25px;
 }
 
-/* 28pxを2倍にした */
+/* 大きなボタン */
 .big-btn{
   padding:12px 10px;
   border-radius:10px;
@@ -60,12 +61,12 @@ p {
   cursor:pointer;
 }
 
-/* 図形選択をコンパクトにする（最小幅を120pxから80pxへ変更） */
+/* 図形選択 */
 #shapeSelect {
   min-width:80px;
 }
 
-/* 画像エリア */
+/* 画像編集エリア */
 .image-area{
   position:relative;
   width:100%;
@@ -86,14 +87,14 @@ p {
   height:auto;
 }
 
-/* マスクの基本 */
+/* マスク */
 .mask{
   position:absolute;
   background:var(--mask-color);
   opacity:var(--mask-opacity);
   cursor:move;
   box-sizing:border-box;
-  z-index: 60; /* 編集モードでマスクをテキストボックスより前面に出す */
+  z-index: 60;
   touch-action: none;
   -webkit-user-select: none;
   user-select: none;
@@ -104,13 +105,13 @@ p {
   border-radius:50%;
 }
 
-/* 選択時の見た目 */
+/* 選択中のマスク */
 .mask.selected{
   outline: var(--selected-border);
   outline-offset: 0px;
 }
 
-/* リサイズ用ハンドル */
+/* マスクのサイズ変更用ハンドル */
 .resize-handle{
   position:absolute;
   width:12px;
@@ -126,7 +127,7 @@ p {
   user-select: none;
 }
 
-/* テキスト挿入用モーダル */
+/* テキスト挿入モーダル */
 .modal{
   position:fixed;
   left:0;
@@ -147,7 +148,7 @@ p {
   box-shadow: 0 6px 24px rgba(0,0,0,0.2);
 }
 
-/* 補助用の小さなクラス */
+/* 非表示用クラス */
 .hidden { display:none !important; }
 
 button,
@@ -181,7 +182,7 @@ input[type="color"]::-moz-color-swatch{
   border-radius:4px;
 }
 
-/* スマホ向け調整 */
+/* スマートフォン向け調整 */
 @media (max-width: 768px){
   header{
     padding:16px 18px;
@@ -249,7 +250,7 @@ input[type="color"]::-moz-color-swatch{
   }
 }
 
-/* ===== study / book pages ===== */
+/*教材選択画面と教材画面の共通設定 */
 body.study-page,
 body.book-page{
   min-height:100%;
@@ -267,6 +268,7 @@ body.book-page button{
   font-family: inherit;
 }
 
+/* 教材選択画面と教材画面のメイン領域 */
 body.study-page .study-scene,
 body.book-page .book-scene{
   min-height:100svh;
@@ -280,6 +282,7 @@ body.book-page .book-scene{
   z-index:1;
 }
 
+/*教材選択画面と教材画面のトップバー */
 body.study-page .study-topbar,
 body.book-page .book-topbar{
   display:grid;
@@ -294,6 +297,7 @@ body.book-page .book-topbar{
   backdrop-filter: blur(4px);
 }
 
+/* トップバーのタイトル配置 */
 body.study-page .study-topbar__title,
 body.book-page .book-topbar__title{
   justify-self:center;
@@ -311,6 +315,7 @@ body.book-page .book-topbar__title h1{
   text-shadow:0 1px 0 rgba(255,255,255,.45);
 }
 
+/* トップバーのボタン */
 body.study-page .study-topbar-btn,
 body.book-page .book-topbar-btn{
   appearance:none;
@@ -341,6 +346,7 @@ body.book-page .book-topbar-btn:active{
   transform:translateY(1px) scale(.99);
 }
 
+/* トップバーの戻るボタン */
 body.study-page .study-topbar-btn--back,
 body.book-page .book-topbar-btn--back{
   justify-self:start;
@@ -368,6 +374,7 @@ body.book-page .book-topbar__spacer{
   height:48px;
 }
 
+/* スマートフォン向け調整 */
 @media (max-width: 768px){
   body.study-page .study-scene,
   body.book-page .book-scene{

@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="css/home.css">
 </head>
 <body class="home-page">
+  <!-- トップページの画面 -->
   <main class="home-scene">
     <section class="home-stage" aria-label="Digital Anki Book">
       <div class="home-title">
@@ -40,6 +41,7 @@
   (() => {
     const bubble = document.getElementById('homeReviewBubble');
 
+    // 復習期間の定義
     const REVIEW_WINDOWS = [
       { stage: 1, minDays: 1, maxDays: 3 },
       { stage: 2, minDays: 7, maxDays: 14 },
@@ -52,6 +54,7 @@
       return Array.from(new Set(values.filter(Boolean)));
     }
 
+    // 日付単位での経過日数の計算
     function startOfDayMs(value) {
       const d = new Date(value);
       d.setHours(0, 0, 0, 0);
@@ -64,6 +67,7 @@
       );
     }
 
+    // 復習段階の判定
     function getReviewStage(createdAt, now = Date.now()) {
       const days = diffDays(createdAt, now);
 
@@ -76,6 +80,7 @@
       return matched ? matched.stage : 0;
     }
 
+    // 保存された復習情報を確認して整える処理
     function normalizeReview(review, createdAt) {
       const baseCreatedAt =
         Number(createdAt) || Date.now();
@@ -112,6 +117,7 @@
       };
     }
 
+    // 今日の復習対象の判定
     function isTodayReviewTarget(project, now = Date.now()) {
       if (!project) return false;
 
@@ -131,6 +137,7 @@
       );
     }
 
+    // 今日の復習件数の表示
     async function updateReviewCount() {
       try {
         const projects =

@@ -1,3 +1,4 @@
+/* 教材画面の全体レイアウト */
 body.book-page .book-layout{
   display:flex;
   flex-direction:column;
@@ -13,6 +14,7 @@ body.book-page .book-main{
   margin-top: 45px;
 }
 
+/* ルーズリーフ */
 body.book-page .book-paper{
   position:relative;
   min-height:calc(440px + 4px);
@@ -30,6 +32,7 @@ body.book-page .book-paper{
     inset 0 1px 0 rgba(255,255,255,.48);
 }
 
+/* ルーズリーフの穴 */
 body.book-page .book-paper::after{
   content:'';
   position:absolute;
@@ -48,6 +51,7 @@ body.book-page .book-paper::after{
     ) 0 0 / 34px 58px repeat-y;
 }
 
+/* 教材画像の表示領域 */
 body.book-page .book-canvas{
   position:relative;
   min-height:440px;
@@ -58,6 +62,8 @@ body.book-page .book-canvas{
   overflow:visible;
   background:transparent;
 }
+
+/* 教材画像 */
 body.book-page .book-canvas img{
   display:block;
   max-width:calc(100% - 40px);
@@ -65,6 +71,7 @@ body.book-page .book-canvas img{
   transform:translateX(20px);
   box-shadow:0 10px 20px rgba(54,41,21,.16), 0 2px 5px rgba(54,41,21,.08);
 }
+
 body.book-page .book-empty{
   margin:0;
   padding:18px 16px;
@@ -73,6 +80,7 @@ body.book-page .book-empty{
   color:#6b6d70;
 }
 
+/* マスク */
 body.book-page .book-mask{
   position:absolute;
   background:var(--mask-color, #000);
@@ -83,6 +91,7 @@ body.book-page .book-mask{
   user-select:none;
 }
 
+/* お気に入り設定 */
 body.book-page .book-favorite-toggle{
   position:absolute;
   left:0;
@@ -118,6 +127,7 @@ body.book-page .book-mask.rect{
   border-radius:0;
 }
 
+/* ツールバー */
 body.book-page .book-toolbar{
   display:grid;
   grid-template-columns:repeat(3, minmax(0, 1fr));
@@ -128,6 +138,7 @@ body.book-page .book-toolbar{
   box-shadow:0 18px 28px -24px rgba(74, 58, 36, .35);
 }
 
+/* ツールバーボタン */
 body.book-page .book-toolbar-btn{
   appearance:none;
   border:none;
@@ -157,6 +168,7 @@ body.book-page .book-toolbar-btn:active{
   transform:translateY(1px);
 }
 
+/* 復習完了ボタン */
 body.book-page .book-review-complete-btn{
   appearance:none;
   width:100%;
@@ -176,6 +188,7 @@ body.book-page .book-review-complete-btn{
   transition:transform .15s ease, filter .15s ease, box-shadow .15s ease;
 }
 
+/* カテゴリ設定パネル */
 body.book-page .book-category-panel{
   border:1px solid rgba(81, 90, 98, .12);
   border-radius:22px;
@@ -284,6 +297,7 @@ body.book-page .hidden{
   display:none !important;
 }
 
+/* 復習完了通知 */
 body.book-page .review-complete-toast{
   position:fixed;
   inset:0;
@@ -300,6 +314,7 @@ body.book-page .review-complete-toast__icon{
   animation:review-complete-pop 1s ease both;
 }
 
+/* 復習完了通知のアニメーション */
 @keyframes review-complete-pop{
   0%{
     transform:scale(.75);
@@ -318,6 +333,7 @@ body.book-page .review-complete-toast__icon{
   }
 }
 
+/* スマートフォン向け調整 */
 @media (max-width: 768px){
   body.book-page .book-category-panel{
     padding:12px 14px 14px;

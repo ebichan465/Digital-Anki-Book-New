@@ -9,7 +9,10 @@
   <link rel="stylesheet" href="css/book.css">
 </head>
 <body class="book-page">
+  <!-- 画面 -->
   <div class="book-scene">
+
+    <!-- 教材画面のトップバー -->
     <header class="book-topbar" aria-label="Bookページトップバー">
       <button id="btnBackStudy" class="book-topbar-btn book-topbar-btn--back" type="button" aria-label="Book一覧へ戻る">
         <img
@@ -26,17 +29,20 @@
       <div class="book-topbar__spacer" aria-hidden="true"></div>
     </header>
 
+    <!-- 教材の内容 -->
     <main class="book-layout">
       <section class="book-main" aria-label="Bookの内容">
         <div class="book-paper-shell">
           <div class="book-hole-strip" aria-hidden="true"></div>
 
           <div class="book-paper">
+            <!-- お気に入り設定 -->
             <label class="book-favorite-toggle">
               <input id="bookWeakCheckbox" type="checkbox">
               <span>お気に入り</span>
             </label>
 
+            <!-- 教材表示エリア -->
             <div id="bookCanvas" class="book-canvas">
               <img id="bookMainImage" alt="Bookの教材" class="hidden" />
               <p id="bookEmpty" class="book-empty hidden">教材が見つかりませんでした。</p>
@@ -45,22 +51,26 @@
         </div>
       </section>
 
+      <!-- 復習完了ボタン -->
       <button id="btnReviewComplete" class="book-review-complete-btn hidden" type="button">
         復習完了
       </button>
 
+      <!-- Book操作 -->
       <section class="book-toolbar" aria-label="Book操作">
         <button id="btnResetMasks" class="book-toolbar-btn" type="button">リセット</button>
         <button id="btnRenameBook" class="book-toolbar-btn" type="button">名前を変更</button>
         <button id="btnDeleteImage" class="book-toolbar-btn" type="button">教材削除</button>
       </section>
 
+      <!-- カテゴリ設定 -->
       <section class="book-category-panel" id="bookCategoryBox" aria-label="カテゴリを選択">
         <h4 class="book-category-panel__title">カテゴリを選択</h4>
         <div id="bookCategoryList" class="book-category-panel__list"></div>
         <button id="btnNewBookCategory" class="book-category-panel__button" type="button">新たなカテゴリ</button>
       </section>
-      
+
+      <!-- 復習完了通知 -->
       <div id="reviewCompleteToast" class="review-complete-toast hidden" aria-hidden="true">
         <img src="assets/check.svg" alt="" class="review-complete-toast__icon">
       </div>
