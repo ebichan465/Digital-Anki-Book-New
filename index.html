@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#fbf7ed" />
+  <title>Digital Anki Book</title>
+  <link rel="stylesheet" href="css/common.css">
+  <link rel="stylesheet" href="css/home.css">
+</head>
+<body class="home-page">
+  <!-- トップページの画面 -->
+  <main class="home-scene">
+    <section class="home-stage" aria-label="Digital Anki Book">
+      <div class="home-title">
+        <h1>Digital Anki Book</h1>
+      </div>
+
+      <div class="home-actions">
+        <a href="html/edit.html" class="home-action-btn home-action-btn--blue">
+          <span class="home-action-label">マスクを<br>つくる</span>
+          <img src="../assets/plus.svg" class="home-action-icon" alt="" aria-hidden="true" />
+        </a>
+
+        <div class="home-study-wrap">
+          <a href="html/study.html" class="home-action-btn home-action-btn--red">
+            <span class="home-action-label">暗記する</span>
+            <img src="../assets/book.svg" class="home-action-icon" alt="" aria-hidden="true" />
+          </a>
+          <div id="homeReviewBubble" class="review-bubble hidden" aria-live="polite"></div>
+        </div>
+      </div>
+      <img src="assets/pen.png" class="home-decoration home-decoration--pen" alt="" aria-hidden="true">
+      <img src="assets/eraser.png" class="home-decoration home-decoration--eraser" alt="" aria-hidden="true">
+    </section>
+  </main>
+
+  <script src="js/storage.js"></script>
+
+  <script>
+  (() => {
+    const bubble = document.getElementById('homeReviewBubble');
+
+    // 復習期間の定義
+    const REVIEW_WINDOWS = [
+      { stage: 1, minDays: 1, maxDays: 3 },
+      { stage: 2, minDays: 7, maxDays: 14 },
+      { stage: 3, minDays: 30, maxDays: 60 },
+    ];
+
+    const DAY_MS = 24 * 60 * 60 * 1000;
+
+    function unique(values) {
+      return Array.from(new Set(values.filter(Boolean)));
+    }
+
+    // 日付単位での経過日数の計算
+    function startOfDayMs(value) {
+      const d = new Date(value);
+      d.setHours(0, 0, 0, 0);
+      return d.getTime();
+    }
+
+    function diffDays(from, to = Date.now()) {
+      return Math.floor(
+        (startOfDayMs(to) - startOfDayMs(from)) / DAY_MS
+      );
+    }
+
+    // 復習段階の判定
+    function getReviewStage(createdAt, now = Date.now()) {
+      const days = diffDays(createdAt, now);
+
+      const matched = REVIEW_WINDOWS.find(
+        (item) =>
+          days >= item.minDays &&
+          days <= item.maxDays
+      );
+
+      return matched ? matched.stage : 0;
+    }
+
+    // 保存された復習情報を確認して整える処理
+    function normalizeReview(review, createdAt) {
+      const baseCreatedAt =
+        Number(createdAt) || Date.now();
+
+      const safe =
+        review && typeof review === 'object'
+          ? review
+          : {};
+
+      return {
+        createdAt:
+          Number.isFinite(Number(safe.createdAt))
+            ? Number(safe.createdAt)
+            : baseCreatedAt,
+
+        currentStage:
+          Number.isFinite(Number(safe.currentStage))
+            ? Number(safe.currentStage)
+            : getReviewStage(baseCreatedAt),
+
+        completedStages:
+          Array.isArray(safe.completedStages)
+            ? unique(
+                safe.completedStages
+                  .map((n) => Number(n))
+                  .filter((n) => Number.isFinite(n))
+              )
+            : [],
+
+        lastCompletedStage:
+          Number.isFinite(Number(safe.lastCompletedStage))
+            ? Number(safe.lastCompletedStage)
+            : 0,
+      };
+    }
+
+    // 今日の復習対象の判定
+    function isTodayReviewTarget(project, now = Date.now()) {
+      if (!project) return false;
+
+      const review = normalizeReview(
+        project.review,
+        project.createdAt
+      );
+
+      const stage = getReviewStage(
+        review.createdAt,
+        now
+      );
+
+      return (
+        stage > 0 &&
+        !review.completedStages.includes(stage)
+      );
+    }
+
+    // 今日の復習件数の表示
+    async function updateReviewCount() {
+      try {
+        const projects =
+          await DigitalAnkiStorage.getAllProjects();
+
+        const dueCount = projects.filter(
+          (project) =>
+            isTodayReviewTarget(project)
+        ).length;
+
+        if (!bubble) return;
+
+        bubble.textContent =
+          `今日の復習 ${dueCount}枚`;
+
+        bubble.classList.remove('hidden');
+      } catch (error) {
+        console.error(
+          '今日の復習件数の取得に失敗しました。',
+          error
+        );
+      }
+    }
+
+    updateReviewCount();
+  })();
+  </script>
+</body>
+</html>
