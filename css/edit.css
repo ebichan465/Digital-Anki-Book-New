@@ -576,7 +576,7 @@ body.edit-page .rotate-handle{
   width:40px;
   height:40px;
 
-  background:url("../../assets/handle.svg") center / contain no-repeat;
+  background:url("../assets/handle.svg") center / contain no-repeat;
   border:none;
   border-radius:0;
   box-shadow:none;
