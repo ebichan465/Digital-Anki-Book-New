@@ -1228,7 +1228,7 @@
           return;
         }
       }
-      location.href = '../html/index.html';
+      location.href = '../index.html';
     });
   }
 

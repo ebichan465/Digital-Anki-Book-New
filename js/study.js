@@ -523,7 +523,7 @@ function isTodayReviewTarget(book, now = Date.now()) {
 
   if (btnBackHome) {
     btnBackHome.addEventListener('click', () => {
-      location.href = '../html/index.html';
+      location.href = '../index.html';
     });
   }
 
