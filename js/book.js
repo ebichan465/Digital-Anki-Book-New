@@ -772,7 +772,7 @@
         return;
       }
 
-      alert('Bookを削除しました。');
+      alert('教材を削除しました。');
       location.href = '../html/study.html';
       return;
     }
